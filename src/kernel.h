@@ -8,8 +8,8 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
-#define CONSOLE_SIZE_X = 80;
-#define CONSOLE_SIZE_y = 25;
+#define CONSOLE_WIDTH  80
+#define CONSOLE_HEIGHT 25
 
 GOODENOUGHT = "\n\
                        @@&@&%(%%\n\
