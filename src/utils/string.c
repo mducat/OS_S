@@ -50,6 +50,18 @@ int strcmp(char const *str1, char const *str2)
     return (str1[i] - str2[i]);
 }
 
+int strncmp(char const *str1, char const *str2, int nb)
+{
+    int i = 0;
+
+    while (str1[i] == str2[i] && str1[i] && str2[i]) {
+        if (i == nb)
+            break;
+        i++;
+    }
+    return (str1[i] - str2[i]);
+}
+
 void strcat(char *dest, char const *src)
 {
     int x = 0;
@@ -67,5 +79,5 @@ strchr done Mathieu
 strdup
 strcmp done Mathieu
 strcat done Maxime
-strncmp
+strncmp done Mathieu
 */
