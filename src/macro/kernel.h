@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2020
-** project
+** OS_S
 ** File description:
 ** kernel.h
 */
@@ -8,10 +8,11 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
-#define CONSOLE_WIDTH  80
-#define CONSOLE_HEIGHT 25
+#define CONSOLE_WIDTH   (80)
+#define CONSOLE_HEIGHT  (25)
+#define OS_S_SCREEN     ((void *)0xb8000)
 
-GOODENOUGHT = "\n\
+#define GOODENOUGHT  ("\n\
                        @@&@&%(%%\n\
                      @@@@&(,    ..                                   .,(\n\
                     @@@@(,  .   /#(*                            / .,./\n\
@@ -30,6 +31,6 @@ GOODENOUGHT = "\n\
          .(&%/..../   @@@@@@,.    . ,    &@@((@#  .. ,,@%\n\
         ,.     * (./ *@@@@@@* . .       , @##@(@(   . .,@\n\
       ., , //*, (%/.*.@@@@@@.* , . , . ,,#&@@#@##@ , . .@*\n\
-";
+")
 
 #endif

@@ -5,23 +5,24 @@
 ** Kernel main file
 */
 
-#include "kernel.h"
+#include "macro/kernel.h"
+#include "macro/color.h"
 
 //25 80 -> window size
 int mvprint(int x, int y, char *str, char color)
 {
-    char *screen = (void *) 0xb8000;
+    char *screen = OS_S_SCREEN;
     int str_p = 0;
-    int screen_p = (x+y*80);
+    int screen_p = (x + y * CONSOLE_WIDTH);
 
     for (; str[str_p]; screen_p++, str_p++){
         if (str[str_p] == '\n'){
-            screen_p += 80;
-            screen_p -= screen_p % 80;
+            screen_p += CONSOLE_WIDTH;
+            screen_p -= screen_p % CONSOLE_WIDTH;
             str_p += 1;
         }
         screen[screen_p * 2] = str[str_p];
-        screen[screen_p * 2 + 1] = color; // Color 0x9 = light blue
+        screen[screen_p * 2 + 1] = color;
     }
     return (screen_p);
 }
@@ -32,12 +33,25 @@ void write_screen(char *str)
     int x = cursor % CONSOLE_WIDTH;
     int y = cursor / CONSOLE_WIDTH;
 
-    cursor = mvprint(x, y, str, 0x07);
+    cursor = mvprint(x, y, str, OS_SCREEN_COLOR_WHITE);
+}
+
+void clear(void)
+{
+    char *screen = OS_S_SCREEN;
+    int x = 0;
+    int y = 0;
+    int screen_p = (x + y * CONSOLE_WIDTH);
+
+    for (int i = 0; i < CONSOLE_HEIGHT; i++)
+        for (int ii = 0; ii < CONSOLE_WIDTH; ii++, screen_p++)
+            screen[screen_p * 2] = 0, screen[screen_p * 2 + 1] = OS_SCREEN_COLOR_BLACK;
 }
 
 void kernel_main(void)
 {
-    mvprint(0, 0, GOODENOUGHT, 0x09);
+    mvprint(0, 0, GOODENOUGHT, OS_SCREEN_COLOR_DARK_BLUE);
+    clear();
     /*
     write_screen(GOODENOUGHT);
     write_screen("florent\nest\nobese\nquand\nil\nparle de david");*/
