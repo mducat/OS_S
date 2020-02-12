@@ -15,18 +15,35 @@ int strlen(const char *str)
     return (length);
 }
 
-int strstr (const char *head, const char *search)
+char *strstr (const char *head, const char *search)
 {
     int size_search = strlen(search);
-    int ptr = 0;
+    int current = 0;
 
     for (int i = 0; head[i]; i++) {
-
+        if (search[current] && head[i] == search[current]) {
+            current++;
+        }
+        if (size_search == current) {
+            return (head[i-current]);
+        }
     }
+    return (0);
 }
+
+char *strchr(const char *s, int c)
+{
+    for (int i = 0; s[i]; i++) {
+        if (s[i] == c)
+            return (&s[i]);
+    }
+    return (0);
+}
+
 /*
-strstr
-strchr
+strlen done Mathieu
+strstr done Mathieu
+strchr done Mathieu
 strdup
 strcmp
 strcat
