@@ -13,7 +13,7 @@
 #define OS_S_SCREEN     ((void *)0xb8000)
 
 int mvprint(int x, int y, char *str, char color);
-void write_screen(char *str);
+void write_screen(char *str, int size);
 void clear(void);
 
 #endif
