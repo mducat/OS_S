@@ -24,7 +24,7 @@ GRUB_CFG=	$(ISO_DIR)/boot/grub/grub.cfg
 CFLAGS	=	-m32 -Wall -fno-stack-protector -nostdinc -ffreestanding
 ASFLAGS	=	--32
 LDFLAGS	=	-m elf_i386
-VMFLAGS	=	-m 512M
+VMFLAGS	=	-m 512M -full-screen -display sdl
 
 all:	$(NAME)
 
