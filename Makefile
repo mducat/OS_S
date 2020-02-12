@@ -6,6 +6,7 @@
 ##
 
 SRC	=	src/kernel.c		\
+		src/hardware/segments.c	\
 		src/utils/mem.c		\
 		src/utils/screen.c	\
 		src/utils/string.c
