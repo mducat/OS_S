@@ -18,6 +18,7 @@ int encode_entry(uint8_t *dest, gdt_entry_t source)
         dest[6] = 1 << 6;
     }
 
+    source.limit &= 0xFFFFF;
     dest[0]  = source.limit & 0xFF;
     dest[1]  = source.limit >> 8;
     dest[6] |= source.limit >> 16;
