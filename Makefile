@@ -5,7 +5,11 @@
 ## Makefile
 ##
 
-SRC	=	src/kernel.c
+SRC	=	src/kernel.c		\
+		src/utils/mem.c		\
+		src/utils/screen.c	\
+		src/utils/string.c
+
 OBJ	=	$(SRC:.c=.o)
 
 ASM	=	builder/pointer.s
@@ -21,7 +25,7 @@ ISO_DIR	=	iso
 TAB_NAME=	OS S v1.17.0
 GRUB_CFG=	$(ISO_DIR)/boot/grub/grub.cfg
 
-CFLAGS	=	-m32 -Wall -fno-stack-protector -nostdinc -ffreestanding
+CFLAGS	=	-m32 -Wall -fno-stack-protector -nostdinc -ffreestanding -Iinclude
 ASFLAGS	=	--32
 LDFLAGS	=	-m elf_i386
 VMFLAGS	=	-m 512M -full-screen -display sdl

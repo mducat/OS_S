@@ -25,7 +25,7 @@ char *strstr (const char *head, const char *search)
             current++;
         }
         if (size_search == current) {
-            return (head[i-current]);
+            return (&head[i-current]);
         }
     }
     return (0);

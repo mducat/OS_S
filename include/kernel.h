@@ -8,10 +8,6 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
-#define CONSOLE_WIDTH   (80)
-#define CONSOLE_HEIGHT  (25)
-#define OS_S_SCREEN     ((void *)0xb8000)
-
 #define GOODENOUGHT  ("\n\
                        @@&@&%(%%\n\
                      @@@@&(,    ..                                   .,(\n\
