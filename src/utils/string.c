@@ -40,12 +40,22 @@ char *strchr(const char *s, int c)
     return (0);
 }
 
+int strcmp(char const *str1, char const *str2)
+{
+    int i = 0;
+
+    while (str1[i] == str2[i] && str1[i] && str2[i]) {
+        i++;
+    }
+    return (str1[i] - str2[i]);
+}
+
 /*
 strlen done Mathieu
 strstr done Mathieu
 strchr done Mathieu
 strdup
-strcmp
+strcmp done Mathieu
 strcat
 strncmp
 */
