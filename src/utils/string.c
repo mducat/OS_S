@@ -50,12 +50,22 @@ int strcmp(char const *str1, char const *str2)
     return (str1[i] - str2[i]);
 }
 
+void strcat(char *dest, char const *src)
+{
+    int x = 0;
+
+    for (; dest[x]; x++);
+    for (; src[x]; x++)
+        dest[x] = src[x];
+    dest[x] = 0;
+}
+
 /*
 strlen done Mathieu
 strstr done Mathieu
 strchr done Mathieu
 strdup
 strcmp done Mathieu
-strcat
+strcat done Maxime
 strncmp
 */
