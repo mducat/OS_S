@@ -13,12 +13,12 @@ OBJ_S	=	builder/pointer.o
 
 LINKER	=	builder/linker.ld
 
-NAME	=	shield_kernel
+NAME	=	os_s
 
 ISO_NAME=	system.iso
 ISO_DIR	=	iso
 
-TAB_NAME=	SHIELD OS
+TAB_NAME=	OS S v1.17.0
 GRUB_CFG=	$(ISO_DIR)/boot/grub/grub.cfg
 
 CFLAGS	=	-m32 -Wall -fno-stack-protector -nostdinc -ffreestanding
