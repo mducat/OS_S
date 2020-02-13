@@ -14,8 +14,10 @@
 int my_strlen(char const *str);
 void strdup(char *str, char *dest);
 int my_put_nbr(int nb);
-char *my_putnbr_base(int nbr, char *base);
+char *my_putnbr_base(long int nbr, char *base);
 void mem_print(int x, int y, void *start, int size);
+void malloc_print(int x, int y, void *p);
+void malloc_list(int x, int y);
 //endtempo
 
 void *malloc(unsigned int size);
