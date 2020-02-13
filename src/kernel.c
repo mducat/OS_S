@@ -9,7 +9,7 @@
 #include "kernel.h"
 #include "malloc.h"
 
-void kernel_main(void)
+void kernel_main(void *data)
 {
     //mvprint(0, 0, GOODENOUGHT, OS_SCREEN_COLOR_DARK_BLUE);
     //mvprint(0, 0, GOODENOUGHT, 0x09);

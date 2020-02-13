@@ -35,7 +35,7 @@ VMFLAGS	=	-m 512M -full-screen -display sdl
 all:	$(NAME)
 
 $(NAME):$(OBJ) $(OBJ_S)
-	ld $(LDFLAGS) $(LINKER) -o $(NAME) $(OBJ) $(OBJ_S)
+	ld $(LDFLAGS) $(LINKER) -o $(NAME) $(OBJ_S) $(OBJ)
 
 clean:
 	rm -f  $(OBJ)

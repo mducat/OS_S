@@ -21,6 +21,9 @@ typedef unsigned long long uint64_t;
 typedef long  intptr_t;
 typedef _Bool uint1_t;
 
+#define true  (1)
+#define false (0)
+
 #define INT8_MIN  (-127-1)
 #define INT16_MIN (-32767-1)
 #define INT32_MIN (-2147483647-1)

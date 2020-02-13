@@ -44,3 +44,59 @@ uint8_t encode_access(seg_access_t info)
     res |= priv_secured    << 5;
     return (res);
 }
+
+void activate_interrupts(void)
+{
+    asm volatile("sti");
+}
+
+void deactivate_interrupts(void)
+{
+    asm volatile("cli");
+}
+
+void load_gdt(uint8_t *gdt)
+{
+    asm volatile("lgdt (%0)"
+                 : /* no output */
+                 : "p" (gdt)
+                 :);
+}
+
+void setup_gdt(void)
+{
+    uint8_t gdt[256];
+    seg_access_t kcode_access = {
+        .read_write = false,
+        .direction = 0,
+        .executable = true,
+        .system = true,
+        .privilege = 0
+    };
+    uint8_t kernel_access = encode_access(kcode_access);
+
+    seg_access_t kdata_access = {
+        .read_write = true,
+        .direction = 0,
+        .executable = false,
+        .system = true,
+        .privilege = 0
+    };
+    uint8_t kernel_data = encode_access(kdata_access);
+
+    gdt_entry_t kcode_segment = {
+        .base = 0,
+        .limit = 0xFFFFF,
+        .access = kernel_access
+    };
+    gdt_entry_t kdata_segment = {
+        .base = 0,
+        .limit = 0xFFFFF,
+        .access = kernel_data
+    };
+    encode_entry(gdt + 0, kcode_segment);
+    encode_entry(gdt + 8, kdata_segment);
+
+    load_gdt(gdt);
+    activate_interrupts();
+}
