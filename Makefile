@@ -11,7 +11,21 @@ SRC	=	src/kernel.c			\
 		src/utils/mem.c			\
 		src/utils/screen.c		\
 		src/utils/string.c 		\
-		src/utils/malloc.c
+		src/utils/malloc.c \
+		src/utils/lld/lld_db.c \
+		src/utils/lld/lld_free.c \
+		src/utils/lld/lld_init.c \
+		src/utils/lld/lld_insert_node.c \
+		src/utils/lld/lld_insert.c \
+		src/utils/lld/lld_len_db.c \
+		src/utils/lld/lld_len.c \
+		src/utils/lld/lld_pop_node.c \
+		src/utils/lld/lld_pop.c \
+		src/utils/lld/lld_print_int.c \
+		src/utils/lld/lld_print_str.c \
+		src/utils/lld/lld_read.c \
+		src/utils/lld/lld_sort.c \
+		src/utils/lld/lld_write.c
 
 OBJ	=	$(SRC:.c=.o)
 

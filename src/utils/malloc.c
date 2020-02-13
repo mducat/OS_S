@@ -45,7 +45,7 @@ int my_put_nbr(int nb)
     return (len);
 }
 
-char *my_putnbr_base(long int nbr, char *base)
+char *my_putnbr_base(unsigned long int nbr, char *base)
 {
     int len = my_strlen(base);
     int i;
@@ -66,27 +66,55 @@ char *my_putnbr_base(long int nbr, char *base)
 }
 //print memory
 void mem_print(int x, int y, void *start, int size)
-{
+ {
     char *c_start = (char *)start;
+    int xx = x;
+    char hexa[] = "0123456789ABCDEF";
+    static char str[2];
+    str[1] = 0;
+    int x2 = x;
+    x--;
+    y--;
+    for (int i = 0; i < size/sizeof(char); i++){
+        if (!(i % 8))
+            y++, x = xx, x2 = x;
+        if (!(i % 2))
+            x++;
+        char c = c_start[i];
+        str[0] = hexa[c & 0x0F];
+        mvprint(x, y, str, 0x07);
+        str[0] = hexa[c >> 4 & 0x0F];
+        mvprint(x+1, y, str, 0x07);
+        str[0] = c;
+        mvprint(x2+21, y, str, 0x09);
+        x2++;
+        x += 2;
+    }
+ }
+/*void mem_print(int x, int y, void *start, int size)
+{
+    short *c_start = (short *)start;
     int xx = x;
     char *screen = OS_S_SCREEN;
 
     x--, y--;
-    for (int i = 0; i < size; i++){
-        if (i % 8 == 0)
+    for (int i = 0; i < size/sizeof(int); i++){
+        if (i % 4 == 0)
             y++, x = xx;
-        else if (i % 2 == 0)
+        else
             x++;
-        int nbr = (int)c_start[i];
+        short nbr = c_start[i];
         screen[((x-xx)/2+xx+20+y*CONSOLE_WIDTH)*2] = nbr;
         screen[((x-xx)/2+xx+20+y*CONSOLE_WIDTH)*2+1] = 0x07;
+        screen[((x-xx)/2+xx+21+y*CONSOLE_WIDTH)*2] = nbr/256;
+        screen[((x-xx)/2+xx+21+y*CONSOLE_WIDTH)*2+1] = 0x07;
         char *str = my_putnbr_base(nbr, "0123456789ABCDEF");
-        for (int j = 0; my_strlen(str) + j < 2; j++, x++)
+        for (int j = 0; my_strlen(str) + j < sizeof(int); j++, x++)
             mvprint(x, y, "0", 0x07);
         mvprint(x, y, str, 0x07);
         x += my_strlen(str);
     }
-}
+}*/
 
 
 //end tempo
@@ -180,6 +208,13 @@ void *malloc(unsigned int size)
         return (0);
     }
     return (0);
+}
+
+long int malloc_get_id(void)
+{
+    static long int id = 0;
+    id++;
+    return (id);
 }
 
 int free(void *p)

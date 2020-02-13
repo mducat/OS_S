@@ -10,17 +10,18 @@
     #define MEM_END  0x8000000
     //133Mo de ram
 
-//tempo
-int my_strlen(char const *str);
-void strdup(char *str, char *dest);
-int my_put_nbr(int nb);
-char *my_putnbr_base(long int nbr, char *base);
-void mem_print(int x, int y, void *start, int size);
-void malloc_print(int x, int y, void *p);
-void malloc_list(int x, int y);
-//endtempo
+    //tempo
+    int my_strlen(char const *str);
+    void strdup(char *str, char *dest);
+    int my_put_nbr(int nb);
+    char *my_putnbr_base(unsigned long int nbr, char *base);
+    void mem_print(int x, int y, void *start, int size);
+    void malloc_print(int x, int y, void *p);
+    void malloc_list(int x, int y);
+    //endtempo
 
-void *malloc(unsigned int size);
-int init_malloc(void *mem_start, void *mem_end);
+    void *malloc(unsigned int size);
+    int init_malloc(void *mem_start, void *mem_end);
+    int free(void *);
 
 #endif
