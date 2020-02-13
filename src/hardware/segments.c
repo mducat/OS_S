@@ -6,6 +6,7 @@
 */
 
 #include "segments.h"
+#include "interrupts.h"
 
 int encode_entry(uint8_t *dest, gdt_entry_t source)
 {
@@ -45,22 +46,14 @@ uint8_t encode_access(seg_access_t info)
     return (res);
 }
 
-void activate_interrupts(void)
-{
-    asm volatile("sti");
-}
-
-void deactivate_interrupts(void)
-{
-    asm volatile("cli");
-}
-
 void load_gdt(uint8_t *gdt)
 {
+    deactivate_interrupts();
     asm volatile("lgdt (%0)"
                  : /* no output */
                  : "p" (gdt)
                  :);
+    activate_interrupts();
 }
 
 void setup_gdt(void)
@@ -94,8 +87,10 @@ void setup_gdt(void)
         .limit = 0xFFFFF,
         .access = kernel_data
     };
-    encode_entry(gdt + 0, kcode_segment);
-    encode_entry(gdt + 8, kdata_segment);
+    for (int i = 0; i < 256; i++)
+        gdt[i] = 0;
+    encode_entry(gdt + 8 , kcode_segment);
+    encode_entry(gdt + 16, kdata_segment);
 
     load_gdt(gdt);
     activate_interrupts();
