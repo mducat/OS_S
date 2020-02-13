@@ -12,14 +12,10 @@
 
 void kernel_main(void *data)
 {
-    //mvprint(0, 0, GOODENOUGHT, OS_SCREEN_COLOR_DARK_BLUE);
-    //mvprint(0, 0, GOODENOUGHT, 0x09);
-    /*write_screen(GOODENOUGHT, my_strlen(GOODENOUGHT));
-    //write_screen("florent\nest\nobese\nquand\nil\nparle de david");
-    clear();
-    */
-    setup_gdt();
+    //setup_gdt();
     init_malloc((void *)0x100000, (void *)0x8000000);
+    //change_mode(0x37);
+
     char *str1 = malloc(7);
     strdup("abcdef", str1);
     char *str2 = malloc(11);
@@ -55,5 +51,5 @@ void kernel_main(void *data)
     write_screen("|\n", 2);
 
     mem_print(40, 0, str1, 256);
-
+    mvprint(0,0,GOODENOUGHT, 0x7);
 }
