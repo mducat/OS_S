@@ -15,6 +15,17 @@ void outb(uint8_t value, uint16_t port)
                  :);
 }
 
+uint8_t inb(uint16_t port)
+{
+    uint8_t ret;
+
+    asm volatile("inb %b0,%0"
+                 :
+                 : "=a" (ret), "Nd" (port)
+                 :);
+    return (ret);
+}
+
 void activate_interrupts(void)
 {
     asm volatile("sti");

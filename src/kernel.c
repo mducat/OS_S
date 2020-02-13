@@ -8,6 +8,7 @@
 #include "screen.h"
 #include "kernel.h"
 #include "malloc.h"
+#include "segments.h"
 
 void kernel_main(void *data)
 {
@@ -17,6 +18,7 @@ void kernel_main(void *data)
     //write_screen("florent\nest\nobese\nquand\nil\nparle de david");
     clear();
     */
+    setup_gdt();
     init_malloc((void *)0x100000, (void *)0x8000000);
     char *str1 = malloc(7);
     strdup("abcdef", str1);
