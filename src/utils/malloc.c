@@ -9,13 +9,18 @@
 
 //tempo pour les test de malloc
 #include "screen.h"
-void strdup(char *str, char *dest)
+char *strdup(char *str)
 {
     int i = 0;
+    char *dest = malloc(my_strlen(str)+1);
+    if (dest == 0)
+        return (0);
+
     for (; str[i]; i++){
         dest[i] = str[i];
     }
     dest[i] = 0;
+    return (dest);
 }
 
 int my_strlen(char const *str)
@@ -68,12 +73,11 @@ char *my_putnbr_base(unsigned long int nbr, char *base)
 void mem_print(int x, int y, void *start, int size)
  {
     char *c_start = (char *)start;
-    int xx = x;
+    int xx = x-1;
     char hexa[] = "0123456789ABCDEF";
     static char str[2];
     str[1] = 0;
     int x2 = x;
-    x--;
     y--;
     for (int i = 0; i < size/sizeof(char); i++){
         if (!(i % 8))
@@ -91,31 +95,6 @@ void mem_print(int x, int y, void *start, int size)
         x += 2;
     }
  }
-/*void mem_print(int x, int y, void *start, int size)
-{
-    short *c_start = (short *)start;
-    int xx = x;
-    char *screen = OS_S_SCREEN;
-
-    x--, y--;
-    for (int i = 0; i < size/sizeof(int); i++){
-        if (i % 4 == 0)
-            y++, x = xx;
-        else
-            x++;
-        short nbr = c_start[i];
-        screen[((x-xx)/2+xx+20+y*CONSOLE_WIDTH)*2] = nbr;
-        screen[((x-xx)/2+xx+20+y*CONSOLE_WIDTH)*2+1] = 0x07;
-        screen[((x-xx)/2+xx+21+y*CONSOLE_WIDTH)*2] = nbr/256;
-        screen[((x-xx)/2+xx+21+y*CONSOLE_WIDTH)*2+1] = 0x07;
-        char *str = my_putnbr_base(nbr, "0123456789ABCDEF");
-        for (int j = 0; my_strlen(str) + j < sizeof(int); j++, x++)
-            mvprint(x, y, "0", 0x07);
-        mvprint(x, y, str, 0x07);
-        x += my_strlen(str);
-    }
-}*/
-
 
 //end tempo
 
@@ -136,17 +115,6 @@ struct malloc_data *data;
 [end, mal_mov, next, prev, size, 0, 0, 0]
 
 */
-int init_malloc(void *mem_start, void *mem_end)
-{
-    data = (struct malloc_data *)mem_start;
-    data->end = mem_end;
-    mal_t *mal_o = (mal_t *)(data + sizeof(struct malloc_data));
-    data->mal_mov = mal_o;
-    mal_o->prev = 0;
-    mal_o->next = mem_end;
-    mal_o->size = 0;
-    return (0);
-}
 
 void malloc_print2(void *p, int x, int y)
 {
@@ -173,40 +141,72 @@ void malloc_print(int x, int y, void *p)
 
 void malloc_list(int x, int y)
 {
-    mal_t *mov = (mal_t *)(data + sizeof(struct malloc_data));
+    mal_t *mov = (mal_t *)((char *)data + sizeof(struct malloc_data));
     mvprint(x, y, "  adr      prev     next     size ", 0x07);
-    for (; mov->next; mov = mov->next){
+    for (; mov != data->end; mov = mov->next){
         y++;
         malloc_print(x, y, mov);
     }
+    y++;
+    malloc_print(x, y, mov);
+
 }
 
-
-void *malloc(unsigned int size)
+int init_malloc(void *mem_start, void *mem_end)
 {
+    data = (struct malloc_data *)mem_start;
+    mal_t *mal_o = (mal_t *)((char *)data + sizeof(struct malloc_data));
+    data->mal_mov = mal_o;
+    mal_o->prev = 0;
+    mal_o->size = 0;
+    mal_t *mal_end = (mal_t *)((char *)mem_end - sizeof(mal_t));
+    data->end = mal_end;
+    mal_o->next = mal_end;
+    mal_o->prev = mal_end;
+    mal_end->next = mal_o;
+    mal_end->prev = mal_o;
+    mal_end->size = 0;
+    return (0);
+}
+
+void *malloc(int size)
+{
+    if (size <= 0) return (0);
     static int db_line = -1;
     db_line++;
-    mal_t *mov = data->mal_mov;
+    //mal_t *start = data->mal_mov;//speedy
+    mal_t *start = (mal_t *)((char *)data + sizeof(struct malloc_data));//slowy
+    mal_t *mov = start;
 
-    for (; mov->size != 0; mov = mov->next){
+    unsigned int block_size = size + sizeof(mal_t)*2;
+    for (; mov != start->prev; mov = mov->next){
+        if ((long int)mov->next - (long int)mov - mov->size >= (long int)block_size){
+            mal_t *new = (mal_t *)((char *)mov + sizeof(mal_t) + mov->size);
+            new->next = mov->next;
+            new->next->prev = new;
+            new->prev = mov;
+            new->size = size;
+            mov->next = new;
+            data->mal_mov = new;
+            void *p = (void *)((char *)new + sizeof(mal_t));
+            return (p);
+        }
     }
-    //mvprint(20*db_line, 10, my_putnbr_base(data->mal_mov, "0123456789ABCDEF"), 0x09);
-    //mvprint(20*db_line, 11, my_putnbr_base(sizeof(void *), "0123456789"), 0x09);
-    unsigned int block_size = size + sizeof(mal_t);
-    if ((char *)data->end - ((char *)mov > (char *)block_size)){
-        void *p = (void *)((char *)mov + sizeof(mal_t));
-        mov->size = size;
-        mov->next = p + size;
-        data->mal_mov = mov->next;
-        mov->next->prev = mov;
-        mov = mov->next;
-        mov->size = 0;
-        mov->next = 0;
+    mvprint(35, db_line, "fail", 0x09);
+    return (0);
+}
 
-        return (p);
-    } else {
-        return (0);
+int free(void *p)
+{
+    if ((char *)data + sizeof(mal_t) > (char *)p || (char *)p >= (char *)data->end){
+        //mvprint(60, 0, "invalide free", 0x07);
+        return (-1);
     }
+    mal_t *mov = (mal_t *)((char *)p - sizeof(mal_t));
+    if (data->mal_mov == mov)
+    data->mal_mov = mov->prev;
+    mov->prev->next = mov->next;
+    mov->next->prev = mov->prev;
     return (0);
 }
 
@@ -215,16 +215,4 @@ long int malloc_get_id(void)
     static long int id = 0;
     id++;
     return (id);
-}
-
-int free(void *p)
-{
-    mal_t *mov = (mal_t *)((char *)p - sizeof(mal_t));
-    if (mov->prev->size == 0){
-        mov->prev->next = mov->next;
-        mov->next->prev = mov->prev;
-    } else {
-        mov->size = 0;
-    }
-    return (0);
 }
