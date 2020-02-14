@@ -25,4 +25,6 @@ typedef struct {
     uint1_t read_write;
 } seg_access_t;
 
+void setup_gdt(void);
+
 #endif

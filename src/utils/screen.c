@@ -8,6 +8,16 @@
 #include "screen.h"
 #include "color.h"
 
+void change_mode(char mode)
+{
+    asm volatile("movb %0,%%al\n\t"
+                 "movb %1,%%ah\n\t"
+                 "int $0x10"
+                 :
+                 :"r" (mode), "N" (0)
+                 :);
+}
+
 //25 80 -> window size
 int mvprint(int x, int y, char *str, char color)
 {
