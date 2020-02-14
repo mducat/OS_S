@@ -10,9 +10,15 @@
 #include "malloc.h"
 #include "segments.h"
 
+void freeze(void)
+{
+    asm volatile("cli\n\t"
+                 "hlt");
+}
+
 void kernel_main(void *data)
 {
-    //setup_gdt();
+    setup_gdt();
     init_malloc((void *)0x100000, (void *)0x8000000);
     //change_mode(0x37);
 
@@ -51,5 +57,5 @@ void kernel_main(void *data)
     write_screen("|\n", 2);
 
     mem_print(40, 0, str1, 256);
-    mvprint(0,0,GOODENOUGHT, 0x7);
+    //mvprint(0,0,GOODENOUGHT, 0x7);
 }

@@ -35,32 +35,34 @@ int encode_entry(uint8_t *dest, gdt_entry_t source)
 
 uint8_t encode_access(seg_access_t info)
 {
-    uint8_t res = 1 << 6;
+    uint8_t res = 1 << 7;
     uint8_t priv_secured = info.privilege & 0x3;
+    uint1_t descriptor = info.system;
 
     res |= info.read_write << 1;
     res |= info.direction  << 2;
     res |= info.executable << 3;
-    res |= info.system     << 4;
+    res |= descriptor      << 4;
     res |= priv_secured    << 5;
     return (res);
 }
 
 void load_gdt(uint8_t *gdt)
 {
-    deactivate_interrupts();
+    uint32_t ptr[2];
+    ptr[0] = 255 << 16;
+    ptr[1] = (uint32_t) gdt;
     asm volatile("lgdt (%0)"
                  : /* no output */
-                 : "p" (gdt)
+                 : "p" (ptr + 2)
                  :);
-    activate_interrupts();
 }
 
 void setup_gdt(void)
 {
     uint8_t gdt[256];
     seg_access_t kcode_access = {
-        .read_write = false,
+        .read_write = true,
         .direction = 0,
         .executable = true,
         .system = true,
@@ -89,9 +91,8 @@ void setup_gdt(void)
     };
     for (int i = 0; i < 256; i++)
         gdt[i] = 0;
-    encode_entry(gdt + 8 , kcode_segment);
-    encode_entry(gdt + 16, kdata_segment);
+    encode_entry(gdt + 16, kcode_segment);
+    encode_entry(gdt + 24, kdata_segment);
 
     load_gdt(gdt);
-    activate_interrupts();
 }
