@@ -9,20 +9,23 @@
 #include "kernel.h"
 #include "malloc.h"
 #include "segments.h"
+#include "interrupts.h"
 
 void freeze(void)
 {
-    asm volatile("cli\n\t"
+    asm volatile("cli\n\r"
                  "hlt");
 }
 
 void kernel_main(void *data)
 {
     setup_gdt();
+    init_interrupts();
     init_malloc((void *)0x100000, (void *)0x8000000);
-    //change_mode(0x37);
+    
+    //change_mode(0x13);
 
-    char *str1 = malloc(7);
+/*    char *str1 = malloc(7);
     strdup("abcdef", str1);
     char *str2 = malloc(11);
     strdup("ghijqlmnop", str2);
@@ -54,8 +57,11 @@ void kernel_main(void *data)
     write_screen(print, my_strlen(print));
     write_screen("|", 1);
     write_screen(str4, 11);
-    write_screen("|\n", 2);
+    write_screen("|\n", 2);*/
 
-    mem_print(40, 0, str1, 256);
-    //mvprint(0,0,GOODENOUGHT, 0x7);
+    //mem_print(40, 0, str1, 256);
+    //char *ptr = 0x1D * 8;
+    //mem_print(40, 0, ptr, 256);
+    //mem_print(40, 0, 1, 256);
+    //mvprint(0,0,GOODENOUGHT, 0x2);
 }

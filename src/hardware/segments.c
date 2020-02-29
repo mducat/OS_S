@@ -10,7 +10,7 @@
 
 int encode_entry(uint8_t *dest, gdt_entry_t source)
 {
-    if (source.limit > UINT16_MAX * 16 && (source.limit % 4096) != 0)
+    if (source.limit > UINT16_MAX * 16 && (source.limit % 4096) != 0xFFF)
         return (84);
     if (source.limit > UINT16_MAX * 16){
         source.limit >>= 12;
@@ -58,9 +58,13 @@ void load_gdt(uint8_t *gdt)
                  :);
 }
 
+uint16_t get_kernel_code_location(void)
+{
+    return (0x10); // TODO: get kernel code location dynamically
+}
+
 void setup_gdt(void)
 {
-    uint8_t gdt[256];
     seg_access_t kcode_access = {
         .read_write = true,
         .direction = 0,

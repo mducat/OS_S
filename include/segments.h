@@ -25,6 +25,10 @@ typedef struct {
     uint1_t read_write;
 } seg_access_t;
 
+uint8_t gdt[256];
+
 void setup_gdt(void);
+
+uint16_t get_kernel_code_location(void);
 
 #endif
