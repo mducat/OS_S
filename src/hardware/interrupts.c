@@ -10,6 +10,7 @@
 #include "segments.h"
 
 #include "screen.h"
+#include "malloc.h"
 
 void outb(uint8_t value, uint16_t port)
 {
@@ -100,14 +101,12 @@ void irq0_handler(void)
 {
     write_screen("INTERRUPT", 9);
     end_of_interrupt(0);
-    asm volatile ("iret");
 }
 
 void irq1_handler(void)
 {
     write_screen("INTERRUPT 2", 11);
     end_of_interrupt(1);
-    asm volatile ("iret");
 }
 
 void activate_interrupts(void)
@@ -136,8 +135,8 @@ void init_interrupts(void)
 {
     remap_pic();
 
-    register_int_handler(0x20, &irq0_handler);
-    register_int_handler(0x21, &irq1_handler);
+    //register_int_handler(0x20, &irq0_handler);
+    //register_int_handler(0x21, &irq1_handler);
 
     //char *str = my_putnbr_base(idt[256], "0123456789");
     //mvprint(0, 2, str, 0x3);
@@ -146,5 +145,5 @@ void init_interrupts(void)
         char *str = my_putnbr_base(get_requested_interrupts(), "01");
         mvprint(0, 0, str, 0x3);
     }
-    //load_idt(idt);
+    load_idt(idt);
 }
