@@ -37,6 +37,11 @@ void deactivate_interrupts(void);
 #define OCW3_IRR  (0x0A)
 #define OCW3_ISR  (0x0B)
 
-#define INTERRUPT_GATE (0x8e)
+// FORMAT:
+// [P,PL,0,D,1,1,0]
+// P = segment present flag
+// PL = Privilege level (ring) [0-3]
+// D = Gate size (0 = 16 bits, 1 = 32 bits) 
+#define INTERRUPT_GATE (0b10001110)
 
 #endif

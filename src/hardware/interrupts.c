@@ -70,15 +70,15 @@ void remap_pic(void)
     outb(SLAVE_DATA, ICW4_8086);
 
     // set new PIC mask
-    outb(MASTER_DATA, 0x0);
-    outb(SLAVE_DATA, 0x0);
+    outb(MASTER_DATA, 0xFF);
+    outb(SLAVE_DATA, 0xFF);
 }
 
 void register_int_handler(uint8_t irq, void (*handler)())
 {
     uint32_t ptr = (uint32_t) handler;
     uint16_t loc = irq * 8;
-    uint16_t kernel = get_kernel_code_location();
+    uint16_t kernel = 0; //get_kernel_code_location();
 
     idt[loc + 0] = (ptr >> 0) & 0xFF;
     idt[loc + 1] = (ptr >> 8) & 0xFF;
@@ -105,7 +105,7 @@ void irq0_handler(void)
 
 void irq1_handler(void)
 {
-    write_screen("INTERRUPT 2", 11);
+    mvprint(15, 15, "SALUT ", 0x6);
     end_of_interrupt(1);
 }
 
@@ -122,7 +122,8 @@ void deactivate_interrupts(void)
 void load_idt(uint8_t* idt)
 {
     uint32_t ptr[2];
-    ptr[0] = IDT_LEN << 16;
+    ptr[0] = (IDT_LEN) << 16;
+//    ptr[0] = 0;
     ptr[1] = (uint32_t) idt;
     asm volatile("lidt (%0)"
                  : /* no output */
@@ -131,19 +132,45 @@ void load_idt(uint8_t* idt)
     activate_interrupts();
 }
 
+extern void irq1_caller(void);
+
 void init_interrupts(void)
 {
     remap_pic();
 
     //register_int_handler(0x20, &irq0_handler);
-    //register_int_handler(0x21, &irq1_handler);
+    //register_int_handler(0x21, &irq1_caller);
 
     //char *str = my_putnbr_base(idt[256], "0123456789");
     //mvprint(0, 2, str, 0x3);
     mem_print(1, 1, &(idt[256]), 0x30);
-    while (1){
-        char *str = my_putnbr_base(get_requested_interrupts(), "01");
-        mvprint(0, 0, str, 0x3);
-    }
+    mem_print(1, 1, 0, 0x50);
     load_idt(idt);
+
+    uint16_t ret[4];
+    ret[3] = 0x72;
+    ret[1] = 0x42;
+    asm("sidt %0"
+        : 
+        : "m" (ret)
+        :);
+
+    char *str = my_putnbr_base(ret[0], "0123456789ABCDEF");
+    mvprint(0, 0, str, 0x2);
+    str = my_putnbr_base(ret[1], "0123456789ABCDEF");
+    mvprint(0, 1, str, 0x2);
+    str = my_putnbr_base(ret[2], "0123456789ABCDEF");
+    mvprint(0, 2, str, 0x2);
+    str = my_putnbr_base(ret[3], "0123456789ABCDEF");
+    mvprint(0, 3, str, 0x2);
+
+    while (1) {
+        short reg = get_requested_interrupts();
+        char *str = my_putnbr_base(reg, "01");
+        mvprint(10, 0, str, 0x3);
+        if (reg & 0x2) {
+            irq1_handler();
+            break;
+        }
+    }
 }

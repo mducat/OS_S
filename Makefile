@@ -29,8 +29,9 @@ SRC	=	src/kernel.c			\
 
 OBJ	=	$(SRC:.c=.o)
 
-ASM	=	builder/pointer.s
-OBJ_S	=	builder/pointer.o
+ASM	=	builder/pointer.s		\
+		src/hardware/int_handler.s
+OBJ_S	=	$(ASM:.s=.o)
 
 LINKER	=	builder/linker.ld
 
@@ -66,6 +67,9 @@ re:	fclean all
 
 vm:	iso
 	qemu-system-i386 $(VMFLAGS) -cdrom $(ISO_NAME)
+
+debug:	iso
+	bochs -q
 
 iso:	fclean $(NAME)
 	mkdir -p $(ISO_DIR)/boot/grub
