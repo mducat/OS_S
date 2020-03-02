@@ -12,16 +12,14 @@
 
 #define IDT_LEN (2048)
 
-uint8_t idt[IDT_LEN];
-
 void init_interrupts(void);
 
 void activate_interrupts(void);
 void deactivate_interrupts(void);
 
 #define MASTER_CMD  (0x20)
-#define MASTER_DATA (0x21)
 #define SLAVE_CMD   (0xA0)
+#define MASTER_DATA (0x21)
 #define SLAVE_DATA  (0xA1)
 
 // EOI = End Of Interrupt

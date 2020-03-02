@@ -20,6 +20,7 @@
 .global _start
 _start:
     // init stack
+    cli
     mov $kernel_stack, %esp
 
     call kernel_main

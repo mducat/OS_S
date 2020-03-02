@@ -70,15 +70,15 @@ void remap_pic(void)
     outb(SLAVE_DATA, ICW4_8086);
 
     // set new PIC mask
-    outb(MASTER_DATA, 0xFF);
-    outb(SLAVE_DATA, 0xFF);
+    outb(MASTER_DATA, 0x0);
+    outb(SLAVE_DATA, 0x0);
 }
 
-void register_int_handler(uint8_t irq, void (*handler)())
+void register_int_handler(uint8_t *idt, uint8_t irq, void (*handler)())
 {
     uint32_t ptr = (uint32_t) handler;
     uint16_t loc = irq * 8;
-    uint16_t kernel = 0; //get_kernel_code_location();
+    uint16_t kernel = get_kernel_code_location();
 
     idt[loc + 0] = (ptr >> 0) & 0xFF;
     idt[loc + 1] = (ptr >> 8) & 0xFF;
@@ -105,7 +105,8 @@ void irq0_handler(void)
 
 void irq1_handler(void)
 {
-    mvprint(15, 15, "SALUT ", 0x6);
+    write_screen("INTERRUPT", 9);
+    //mvprint(15, 15, "SALUT ", 0x6);
     end_of_interrupt(1);
 }
 
@@ -123,28 +124,28 @@ void load_idt(uint8_t* idt)
 {
     uint32_t ptr[2];
     ptr[0] = (IDT_LEN) << 16;
-//    ptr[0] = 0;
     ptr[1] = (uint32_t) idt;
     asm volatile("lidt (%0)"
                  : /* no output */
-                 : "p" (ptr + 2)
+                 : "p" ((char *) ptr + 2)
                  :);
     activate_interrupts();
 }
 
-extern void irq1_caller(void);
-
 void init_interrupts(void)
 {
+    static uint8_t *idt = (uint8_t *) 0x1000000;//[IDT_LEN];
     remap_pic();
 
-    //register_int_handler(0x20, &irq0_handler);
-    //register_int_handler(0x21, &irq1_caller);
+    register_int_handler(idt, 0x21, irq1_handler);
+    register_int_handler(idt, 0x06, irq1_handler);
+    register_int_handler(idt, 0x08, irq1_handler);
+    register_int_handler(idt, 0x0d, irq1_handler);
 
     //char *str = my_putnbr_base(idt[256], "0123456789");
     //mvprint(0, 2, str, 0x3);
     mem_print(1, 1, &(idt[256]), 0x30);
-    mem_print(1, 1, 0, 0x50);
+    //mem_print(1, 1, 0, 0x50);
     load_idt(idt);
 
     uint16_t ret[4];

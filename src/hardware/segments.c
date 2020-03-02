@@ -54,7 +54,7 @@ void load_gdt(uint8_t *gdt)
     ptr[1] = (uint32_t) gdt;
     asm volatile("lgdt (%0)"
                  : /* no output */
-                 : "p" (ptr + 2)
+                 : "p" ((char *) ptr + 2)
                  :);
 }
 
@@ -65,6 +65,7 @@ uint16_t get_kernel_code_location(void)
 
 void setup_gdt(void)
 {
+    static uint8_t *gdt = (uint8_t *) 0x1000800;//[256];
     seg_access_t kcode_access = {
         .read_write = true,
         .direction = 0,
@@ -85,12 +86,12 @@ void setup_gdt(void)
 
     gdt_entry_t kcode_segment = {
         .base = 0,
-        .limit = 0xFFFFF,
+        .limit = 0xFFFFFFFF,
         .access = kernel_access
     };
     gdt_entry_t kdata_segment = {
         .base = 0,
-        .limit = 0xFFFFF,
+        .limit = 0xFFFFFFFF,
         .access = kernel_data
     };
     for (int i = 0; i < 256; i++)

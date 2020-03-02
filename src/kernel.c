@@ -21,7 +21,7 @@ void kernel_main(void *data)
 {
     setup_gdt();
     init_interrupts();
-    init_malloc((void *)0x100000, (void *)0x8000000);
+    //init_malloc((void *)0x100000, (void *)0x8000000);
     
     //change_mode(0x13);
 
