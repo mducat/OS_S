@@ -95,18 +95,36 @@ void end_of_interrupt(uint8_t irq)
     if (irq > 8)
         outb(SLAVE_CMD, EOI);
     outb(MASTER_CMD, EOI);
+    asm ("iret");
 }
 
 void irq0_handler(void)
 {
-    write_screen("INTERRUPT", 9);
+    write_screen("i1", 2);
     end_of_interrupt(0);
 }
 
 void irq1_handler(void)
 {
-    write_screen("INTERRUPT", 9);
-    //mvprint(15, 15, "SALUT ", 0x6);
+    write_screen("I1", 2);
+    end_of_interrupt(1);
+}
+
+void irq2_handler(void)
+{
+    write_screen("I2", 2);
+    end_of_interrupt(1);
+}
+
+void irq3_handler(void)
+{
+    write_screen("I3", 2);
+    end_of_interrupt(1);
+}
+
+void irq4_handler(void)
+{
+    write_screen("I4", 2);
     end_of_interrupt(1);
 }
 
@@ -137,10 +155,10 @@ void init_interrupts(void)
     static uint8_t *idt = (uint8_t *) 0x1000000;//[IDT_LEN];
     remap_pic();
 
-    register_int_handler(idt, 0x21, irq1_handler);
-    register_int_handler(idt, 0x06, irq1_handler);
-    register_int_handler(idt, 0x08, irq1_handler);
-    register_int_handler(idt, 0x0d, irq1_handler);
+    register_int_handler(idt, 0x09, irq2_handler);
+    register_int_handler(idt, 0x06, irq2_handler);
+    register_int_handler(idt, 0x08, irq3_handler);
+    register_int_handler(idt, 0x0d, irq4_handler);
 
     //char *str = my_putnbr_base(idt[256], "0123456789");
     //mvprint(0, 2, str, 0x3);
