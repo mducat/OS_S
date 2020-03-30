@@ -50,7 +50,7 @@ uint8_t encode_access(seg_access_t info)
 void load_gdt(uint8_t *gdt)
 {
     uint32_t ptr[2];
-    ptr[0] = 255 << 16;
+    ptr[0] = 65535 << 16;
     ptr[1] = (uint32_t) gdt;
     asm volatile("lgdt (%0)"
                  : /* no output */
@@ -60,7 +60,7 @@ void load_gdt(uint8_t *gdt)
 
 uint16_t get_kernel_code_location(void)
 {
-    return (0x10); // TODO: get kernel code location dynamically
+    return (0x8); // TODO: get kernel code location dynamically
 }
 
 void setup_gdt(void)
@@ -94,10 +94,10 @@ void setup_gdt(void)
         .limit = 0xFFFFFFFF,
         .access = kernel_data
     };
-    for (int i = 0; i < 256; i++)
+    for (int i = 0; i < 65536; i++)
         gdt[i] = 0;
-    encode_entry(gdt + 16, kcode_segment);
-    encode_entry(gdt + 24, kdata_segment);
+    encode_entry(gdt + 0x08, kcode_segment);
+    encode_entry(gdt + 0x10, kdata_segment);
 
     load_gdt(gdt);
 }
