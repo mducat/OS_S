@@ -1,2 +1,2 @@
-# OS OS v1.17
+# OS S v1.17
 Kernel and EFI bootloader
