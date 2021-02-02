@@ -1,5 +1,0 @@
-ata0-master: type=disk, path="system.iso", status=inserted
-ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
-boot: disk
-memory: guest=512, host=256
-display_library: x

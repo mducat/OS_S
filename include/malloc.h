@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2020
-** OS_S
-** File description:
-** Header for malloc functions
-*/
 
 #ifndef _MALLOC_
     #define MEM_START 0x100000

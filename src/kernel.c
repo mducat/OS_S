@@ -1,26 +1,24 @@
-/*
-** EPITECH PROJECT, 2019
-** OSS
-** File description:
-** Kernel main file
-*/
 
+/*
 #include "screen.h"
 #include "kernel.h"
 #include "malloc.h"
 #include "segments.h"
 #include "interrupts.h"
+*/
 
 void freeze(void)
 {
-    asm volatile("cli\n\r"
-                 "hlt");
+    __asm__ __volatile__ ("hlt"); // "cli\n\r"
 }
 
-void kernel_main(void *data)
+void k_start(void *data)
 {
-    setup_gdt();
-    init_interrupts();
+    
+    freeze();
+
+    //setup_gdt();
+    //init_interrupts();
     //init_malloc((void *)0x100000, (void *)0x8000000);
     
     //change_mode(0x13);

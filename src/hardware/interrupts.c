@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2020
-** OS_S
-** File description:
-** interrupts handling
-*/
 
 #include "types.h"
 #include "interrupts.h"
@@ -160,7 +154,7 @@ void init_interrupts(void)
     uint8_t *idt = (uint8_t *) 0x1000000;//[IDT_LEN];
 
     for (uint8_t i = 0; i < 255; i++)
-        register_int_handler(idt, i, int_ignore,INT_GATE);
+        register_int_handler(idt, i, int_ignore, INT_GATE);
     //register_int_handler(idt, 0x09, irq2_handler);
     //register_int_handler(idt, 0x06, irq2_handler);
     register_int_handler(idt, 0x08, irq3_handler, INT_GATE);
@@ -172,7 +166,7 @@ void init_interrupts(void)
     mem_print(1, 1, &(idt[256]), 0x30);
     //mem_print(1, 1, 0, 0x50);
     remap_pic();
-    load_idt(idt);
+    //load_idt(idt);
 
     uint16_t ret[4];
     ret[3] = 0x72;

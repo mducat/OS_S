@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2020
-** OS_S
-** File description:
-** All memory functions
-*/
 
 int memset(char *str, char c, int size)
 {

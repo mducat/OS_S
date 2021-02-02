@@ -1,63 +1,56 @@
 ##
-## EPITECH PROJECT, 2019
-## SHIELD_OS
+## EPITECH PROJECT, 2020
+## SHIELD-OS
 ## File description:
-## Bootloader makefile
+## bootloader makefile
 ##
 
-SRC	=	efi.c
-OBJ	=	$(SRC:.c=.o)
-SO	=	bootloader.so
-NAME	=	shield.efi
+ARCH            = $(shell uname -m | sed s,i[3456789]86,ia32,)
+TARGET          = shield.efi
+OBJS			= efi.o
 
-CFLAGS	=			\
-      -c			\
-      -fno-stack-protector	\
-      -fpic			\
-      -fshort-wchar		\
-      -mno-red-zone		\
-      -I /lib/gnu-efi/inc	\
-      -I /lib/gnu-efi/inc/x86_64\
-      -DEFI_FUNCTION_WRAPPER
+EFIINC          = lib/inc
+EFIINCS         = -I$(EFIINC) -I$(EFIINC)/$(ARCH) -I$(EFIINC)/protocol
+LIB             = lib/$(ARCH)/lib
+EFILIB          = lib/$(ARCH)/gnuefi
+EFI_CRT_OBJS    = $(EFILIB)/crt0-efi-$(ARCH).o
+EFI_LDS         = lib/gnuefi/elf_$(ARCH)_efi.lds
 
-LDFLAGS	=						\
-     /lib/gnu-efi/x86_64/gnuefi/crt0-efi-x86_64.o	\
-     -nostdlib						\
-     -znocombreloc					\
-     -T /lib/gnu-efi/gnuefi/elf_x86_64_efi.lds		\
-     -shared						\
-     -Bsymbolic						\
-     -L /lib/gnu-efi/x86_64/gnuefi			\
-     -L /lib/gnu-efi/x86_64/lib				\
-     -l:libgnuefi.a					\
-     -l:libefi.a					\
+SELFINCS		= -Iinc
 
-OBJFLAGS=			\
-	-j .text                \
-	-j .sdata               \
-        -j .data                \
-        -j .dynamic             \
-        -j .dynsym              \
-        -j .rel                 \
-        -j .rela                \
-        -j .reloc               \
-        --target=efi-app-x86_64
+CFLAGS          = $(EFIINCS)-fno-stack-protector -fpic \
+		  -fshort-wchar -mno-red-zone -Wall $(SELFINCS) -Wextra -g
+ifeq ($(ARCH),x86_64)
+  CFLAGS += -DEFI_FUNCTION_WRAPPER
+endif
 
-all:	$(OBJ)
-	ld $(OBJ) $(LDFLAGS) -o $(SO)
-	objcopy $(OBJFLAGS) $(SO) $(NAME)
+LDFLAGS         = -nostdlib -znocombreloc -T $(EFI_LDS) -shared \
+		  -Bsymbolic -L $(EFILIB) -L $(LIB) $(EFI_CRT_OBJS)
+
+all: $(TARGET)
+
+%.so: $(OBJS)
+	$(MAKE) -C lib
+	ld $(LDFLAGS) $(OBJS) -o $@ -lefi -lgnuefi
+
+%.efi: %.so
+	objcopy -j .text -j .sdata -j .data -j .dynamic \
+		-j .dynsym  -j .rel -j .rela -j .reloc \
+		--target=efi-app-$(ARCH) $^ $@
 
 clean:
-	rm -f $(OBJ)
-	rm -f $(SO)
+	rm -f *.so
+	rm -f $(OBJS)
 
 fclean:	clean
-	rm -f $(NAME)
+	$(MAKE) -C lib clean
+	rm -f $(TARGET)
 
 re:	fclean all
 
 install:all
-	sudo cp $(NAME) /boot/
+	sudo mkdir -p /boot/efi/EFI/OS_S
+#	sudo cp $(TARGET) /boot/efi/EFI/OS_S/
 
 uninstall:
-	sudo rm -f /boot/$(NAME)
+#	sudo rm /boot/efi/EFI/OS_S/$(TARGET)

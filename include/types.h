@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2020
-** OS_S
-** File description:
-** types definition
-*/
 
 #ifndef _TYPES_H
 #define _TYPES_H

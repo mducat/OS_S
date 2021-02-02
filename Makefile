@@ -5,84 +5,76 @@
 ## Makefile
 ##
 
-SRC	=	src/kernel.c			\
-		src/hardware/segments.c		\
-		src/hardware/interrupts.c	\
-		src/memory/mem.c		\
-		src/memory/malloc.c 		\
-		src/screen/screen.c		\
-		src/utils/string.c 		\
-		src/lld/lld_db.c 		\
-		src/lld/lld_free.c 		\
-		src/lld/lld_init.c 		\
-		src/lld/lld_insert_node.c 	\
-		src/lld/lld_insert.c 		\
-		src/lld/lld_len_db.c 		\
-		src/lld/lld_len.c 		\
-		src/lld/lld_pop_node.c 		\
-		src/lld/lld_pop.c 		\
-		src/lld/lld_print_int.c 	\
-		src/lld/lld_print_str.c 	\
-		src/lld/lld_read.c 		\
-		src/lld/lld_sort.c 		\
-		src/lld/lld_write.c
+SRC			=		src/kernel.c
+OBJ			=		$(SRC:.c=.o)
 
-OBJ	=	$(SRC:.c=.o)
+# not needed for now
+ASM			=		
+OBJ_S		=		
 
-ASM	=	builder/pointer.s		\
-		src/hardware/int_handler.s
-OBJ_S	=	$(ASM:.s=.o)
+LINKER		=		builder/linker.ld
 
-LINKER	=	builder/linker.ld
+NAME		=		os_s_kernel
 
-NAME	=	os_s
+ISO_NAME	=		system.iso
+ISO_DIR		=		iso
+FAT			=		system.img
+BIOS		=		bootloader/OVMF.fd
 
-ISO_NAME=	system.iso
-ISO_DIR	=	iso
-
-TAB_NAME=	OS S v1.17.0
-GRUB_CFG=	$(ISO_DIR)/boot/grub/grub.cfg
-
-CFLAGS	=	-m32 -Wall -fno-stack-protector -nostdinc -ffreestanding -Iinclude
-ASFLAGS	=	--32
-LDFLAGS	=	-m elf_i386
-VMFLAGS	=	-m 512M -display sdl
+CFLAGS		=		-Wall -fno-stack-protector -nostdinc -ffreestanding -fpie -nostdlib
+LDFLAGS		=		-pie
 
 all:	$(NAME)
 
 $(NAME):$(OBJ) $(OBJ_S)
-	ld $(LDFLAGS) $(LINKER) -o $(NAME) $(OBJ_S) $(OBJ)
+	ld $(LDFLAGS) $(LINKER) -o $(NAME) $(OBJ) #$(OBJ_S)
 
 clean:
+	find . -name "*~" -delete -o -name "#*#" -delete
 	rm -f  $(OBJ)
 	rm -f  $(OBJ_S)
+	rm -f  $(FAT)
 	rm -f  $(ISO_NAME)
 	rm -rf $(ISO_DIR)
 
 fclean:	clean
+	$(MAKE) -C bootloader fclean
 	rm -f $(NAME)
-	$(MAKE) -C bootloader fclean --no-print-directory
 
 re:	fclean all
 
 vm:	iso
-	qemu-system-i386 $(VMFLAGS) -cdrom $(ISO_NAME)
+	qemu-system-x86_64 -bios $(BIOS) -cdrom $(ISO_NAME) -serial stdio
 
-debug:	iso
-	bochs -q
+monitor:	iso
+	qemu-system-x86_64 -bios $(BIOS) -cdrom $(ISO_NAME) -monitor stdio
 
-iso:	fclean $(NAME)
-	mkdir -p $(ISO_DIR)/boot/grub
-	$(MAKE) grub_cfg --no-print-directory
-	cp $(NAME) $(ISO_DIR)/boot/
-	grub2-mkrescue -o $(ISO_NAME) iso
+# this one is accessible through gdb with gdb -ex 'target remote localhost:1234'
+# and does not start CPU at startup
+debug: iso
+	qemu-system-x86_64 -bios $(BIOS) -cdrom $(ISO_NAME) -monitor stdio -S -s
 
-grub_cfg:
-	rm -f $(GRUB_CFG)
-	echo -e "menuentry \"$(TAB_NAME)\" {" >> $(GRUB_CFG)
-	echo    "    multiboot /boot/$(NAME)" >> $(GRUB_CFG)
-	echo    "}" 			      >> $(GRUB_CFG)
+iso:	dos
+	mkdir -p $(ISO_DIR)
+	mv $(FAT) $(ISO_DIR)
+	xorriso -as mkisofs -R -f -e $(FAT) -no-emul-boot -o $(ISO_NAME) $(ISO_DIR) 2> /dev/null
+
+dos:	all
+	$(MAKE) -C bootloader --no-print-directory
+	dd if=/dev/zero of=$(FAT) bs=1k count=1440 2> /dev/null
+	mformat -i $(FAT) -f 1440 ::
+	mmd -i $(FAT) ::/efi
+	mmd -i $(FAT) ::/efi/boot
+	mmd -i $(FAT) ::/efi/boot/OS_S
+	mcopy -i $(FAT) bootloader/shield.efi ::/efi/boot/bootx64.efi
+	mcopy -i $(FAT) $(NAME) ::/efi/boot/OS_S/$(NAME)
+	mattrib -i $(FAT) -a ::/efi/boot/OS_S/$(NAME)
 
 install:all
-	$(MAKE) -C bootloader install --no-print-directory
-	sudo cp $(NAME) /boot/
+	sudo mkdir -p /boot/efi/EFI/OS_S
+	$(MAKE) -C bootloader install
+	sudo cp $(NAME) /boot/efi/EFI/OS_S/
+
+uninstall:
+	$(MAKE) -C bootloader uninstall
+	sudo rm -f /boot/efi/EFI/OS_S/$(NAME)

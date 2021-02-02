@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2020
-** OS_S
-** File description:
-** Header for colors
-*/
 
 #ifndef OS_S_COLOR_H
 #define OS_S_COLOR_H

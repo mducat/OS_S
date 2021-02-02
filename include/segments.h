@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2020
-** OS_S
-** File description:
-** GDT header
-*/
 
 #ifndef _SEG_H
 #define _SEG_H

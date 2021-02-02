@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2020
-** OS_S
-** File description:
-** Screen writing functions
-*/
 
 #include "screen.h"
 #include "color.h"

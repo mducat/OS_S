@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2020
-** OS_S
-** File description:
-** Header for malloc functions
-*/
 
 #include "malloc.h"
 

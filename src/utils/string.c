@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2020
-** OS_S
-** File description:
-** All functions related with string
-*/
 
 int strlen(const char *str)
 {

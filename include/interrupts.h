@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2020
-** OS_S
-** File description:
-** interrupts
-*/
 
 #ifndef _INT_H
 #define _INT_H

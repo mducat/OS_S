@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2020
-** OS_S
-** File description:
-** Screen func prototypes
-*/
 
 #ifndef _SCREEN_H
 #define _SCREEN_H

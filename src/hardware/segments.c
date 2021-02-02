@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2020
-** OS_S
-** File description:
-** Global descriptor table loading
-*/
 
 #include "segments.h"
 #include "interrupts.h"
