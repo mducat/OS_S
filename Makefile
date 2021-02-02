@@ -14,14 +14,19 @@ OBJ_S		=
 
 LINKER		=		builder/linker.ld
 
-NAME		=		os_s_kernel
+NAME		=		OS_S_kernel
 
 ISO_NAME	=		system.iso
 ISO_DIR		=		iso
 FAT			=		system.img
 BIOS		=		bootloader/OVMF.fd
 
-CFLAGS		=		-Wall -fno-stack-protector -nostdinc -ffreestanding -fpie -nostdlib
+INC			= 		-Iinclude -Ibootloader/inc
+
+CFLAGS		=		$(INC) -Wall -Wextra 				\
+					-fno-stack-protector -nostdinc		\
+					-ffreestanding -fpie -nostdlib
+
 LDFLAGS		=		-pie
 
 all:	$(NAME)
@@ -50,7 +55,7 @@ monitor:	iso
 	qemu-system-x86_64 -bios $(BIOS) -cdrom $(ISO_NAME) -monitor stdio
 
 # this one is accessible through gdb with gdb -ex 'target remote localhost:1234'
-# and does not start CPU at startup
+# does not start CPU at startup
 debug: iso
 	qemu-system-x86_64 -bios $(BIOS) -cdrom $(ISO_NAME) -monitor stdio -S -s
 
@@ -66,7 +71,7 @@ dos:	all
 	mmd -i $(FAT) ::/efi
 	mmd -i $(FAT) ::/efi/boot
 	mmd -i $(FAT) ::/efi/boot/OS_S
-	mcopy -i $(FAT) bootloader/shield.efi ::/efi/boot/bootx64.efi
+	mcopy -i $(FAT) bootloader/bootx64.efi ::/efi/boot/bootx64.efi
 	mcopy -i $(FAT) $(NAME) ::/efi/boot/OS_S/$(NAME)
 	mattrib -i $(FAT) -a ::/efi/boot/OS_S/$(NAME)
 

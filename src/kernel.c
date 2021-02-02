@@ -7,15 +7,28 @@
 #include "interrupts.h"
 */
 
+#include <kboot.h>
+
 void freeze(void)
 {
     __asm__ __volatile__ ("hlt"); // "cli\n\r"
 }
 
-void k_start(void *data)
+void write_screen(char *str)
 {
-    
-    freeze();
+    char *screen = (void *) 0xb80000;//0x8000000;// VGA = 0xb8000;
+
+    for (int i = 0; str[i] != '\0'; i++){
+        screen[i] = str[i];
+    }
+}
+
+void k_start(boot_t *data)
+{
+    if (data->sig != 0x42)
+        freeze(); // kernel panic: Where was this booted from ??
+
+    freeze();     // prevent $pc from exiting kernel
 
     //setup_gdt();
     //init_interrupts();

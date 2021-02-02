@@ -6,8 +6,10 @@
 ##
 
 ARCH            = $(shell uname -m | sed s,i[3456789]86,ia32,)
-TARGET          = shield.efi
-OBJS			= efi.o
+TARGET          = bootx64.efi
+OBJS			= src/load.o	\
+				  src/files.o	\
+				  src/boot.o
 
 EFIINC          = lib/inc
 EFIINCS         = -I$(EFIINC) -I$(EFIINC)/$(ARCH) -I$(EFIINC)/protocol
