@@ -32,9 +32,21 @@ EFI_STATUS get_file_info(EFI_FILE *, EFI_FILE_INFO **);
 
 # endif
 
+typedef struct screen_s {
+    uint32_t version;
+    uint32_t format;
+
+    uint32_t x_len;
+    uint32_t y_len;
+    uint32_t pix_per_line; // with padding
+
+    uint32_t buf_size;
+    void *   p_loc;
+} screen_t;
 
 typedef struct boot_s {
-    uint8_t sig;
+    uint8_t  sig;
+    screen_t *screen;
 } boot_t;
 
 #endif

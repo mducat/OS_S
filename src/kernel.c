@@ -28,6 +28,26 @@ void k_start(boot_t *data)
     if (data->sig != 0x42)
         freeze(); // kernel panic: Where was this booted from ??
 
+    uint32_t x_len = data->screen->x_len;
+    uint32_t y_len = data->screen->y_len;
+    uint32_t ppl = data->screen->pix_per_line;
+
+    uint8_t *loc = data->screen->p_loc;
+    int cursor = x_len / 3 + (y_len / 3) * ppl;
+    
+    for (uint32_t i = y_len / 3; i < 2 * y_len / 3; i++) {
+        for (uint32_t j = x_len / 3; j < 2 * x_len / 3; j++) {
+            loc[cursor + 0] = 255;
+            loc[cursor + 1] = 255;
+            loc[cursor + 2] = 255;
+            loc[cursor + 3] =   0;
+
+            cursor += 4;
+        }
+
+        cursor += (ppl - x_len) + (2 * x_len / 3);
+    }
+    
     freeze();     // prevent $pc from exiting kernel
 
     //setup_gdt();
