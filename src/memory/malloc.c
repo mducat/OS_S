@@ -73,7 +73,7 @@ void mem_print(int x, int y, void *start, int size)
     str[1] = 0;
     int x2 = x;
     y--;
-    for (int i = 0; i < size/sizeof(char); i++){
+    for (unsigned long int i = 0; i < size/sizeof(char); i++){
         if (!(i % 8))
             y++, x = xx, x2 = x;
         if (!(i % 2))

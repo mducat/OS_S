@@ -89,7 +89,8 @@ EFI_STATUS start_kernel(EFI_HANDLE handle)
     CHK_STATUS (status, L"GOP getter failed\r\n");
     
     EFI_GRAPHICS_OUTPUT_MODE_INFORMATION *info;
-    UINTN SizeOfInfo, numModes, nativeMode;
+    UINTN SizeOfInfo;
+    /*UINTN numModes, nativeMode;
     
     status = uefi_call_wrapper(gop->QueryMode, 4, gop, gop->Mode==NULL?0:gop->Mode->Mode, &SizeOfInfo, &info);
     // this is needed to get the current video mode
@@ -102,9 +103,9 @@ EFI_STATUS start_kernel(EFI_HANDLE handle)
         numModes = gop->Mode->MaxMode;
     }
 
-    /*for (UINTN i = 0; i < numModes; i++) {
+    mfor (UINTN i = 0; i < numModes; i++) {
         status = uefi_call_wrapper(gop->QueryMode, 4, gop, i, &SizeOfInfo, &info);
-        Print(L"mode %03d width %d height %d format %x%s\r\n",
+        Print(L"mode %3d width %d height %d format %x %s\r\n",
                 i,
                 info->HorizontalResolution,
                 info->VerticalResolution,
@@ -113,7 +114,7 @@ EFI_STATUS start_kernel(EFI_HANDLE handle)
             );
     }*/
 
-    status = uefi_call_wrapper(gop->SetMode, 2, gop, 24);
+    status = uefi_call_wrapper(gop->SetMode, 2, gop, 22);
     CHK_STATUS (status, L"GOP set mode failed\r\n");
 
     status = uefi_call_wrapper(gop->QueryMode, 4, gop, gop->Mode->Mode, &SizeOfInfo, &info);
@@ -127,7 +128,7 @@ EFI_STATUS start_kernel(EFI_HANDLE handle)
     data->screen->pix_per_line = info->PixelsPerScanLine;
 
     data->screen->buf_size = gop->Mode->FrameBufferSize;
-    data->screen->p_loc = gop->Mode->FrameBufferBase;
+    data->screen->p_loc = (void *) gop->Mode->FrameBufferBase;
     
 
     exit_boot(handle);

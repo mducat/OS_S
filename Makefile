@@ -5,7 +5,33 @@
 ## Makefile
 ##
 
-SRC			=		src/kernel.c
+SRC			=		src/kernel.c				\
+												\
+					src/hardware/interrupts.c	\
+					src/hardware/segments.c		\
+												\
+					src/memory/malloc.c			\
+					src/memory/mem.c			\
+												\
+					src/screen/screen.c			\
+												\
+					src/utils/string.c			\
+												\
+					src/lld/lld_db.c			\
+					src/lld/lld_free.c			\
+					src/lld/lld_init.c			\
+					src/lld/lld_insert.c		\
+					src/lld/lld_insert_node.c	\
+					src/lld/lld_len.c			\
+					src/lld/lld_len_db.c		\
+					src/lld/lld_pop.c			\
+					src/lld/lld_pop_node.c		\
+					src/lld/lld_print_int.c		\
+					src/lld/lld_print_str.c		\
+					src/lld/lld_read.c			\
+					src/lld/lld_sort.c			\
+					src/lld/lld_write.c			\
+
 OBJ			=		$(SRC:.c=.o)
 
 # not needed for now

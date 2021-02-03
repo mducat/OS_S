@@ -1,11 +1,9 @@
 
-/*
-#include "screen.h"
-#include "kernel.h"
-#include "malloc.h"
-#include "segments.h"
-#include "interrupts.h"
-*/
+//#include "kernel.h"
+//#include "malloc.h"
+
+#include <segments.h>
+#include <interrupts.h>
 
 #include <kboot.h>
 
@@ -14,7 +12,7 @@ void freeze(void)
     __asm__ __volatile__ ("hlt"); // "cli\n\r"
 }
 
-void write_screen(char *str)
+void write_debug(char *str)
 {
     char *screen = (void *) 0xb80000;//0x8000000;// VGA = 0xb8000;
 
@@ -33,25 +31,28 @@ void k_start(boot_t *data)
     uint32_t ppl = data->screen->pix_per_line;
 
     uint8_t *loc = data->screen->p_loc;
-    int cursor = x_len / 3 + (y_len / 3) * ppl;
+
+    uint32_t x_s = x_len / 3;
+    uint32_t y_s = y_len / 3;
+    int cursor = (x_s + y_s * ppl) * 4;
     
-    for (uint32_t i = y_len / 3; i < 2 * y_len / 3; i++) {
-        for (uint32_t j = x_len / 3; j < 2 * x_len / 3; j++) {
-            loc[cursor + 0] = 255;
-            loc[cursor + 1] = 255;
-            loc[cursor + 2] = 255;
-            loc[cursor + 3] =   0;
+    for (uint32_t i = 0; i < y_s; i++) {
+        for (uint32_t j = 0; j < x_s; j++) {
+            loc[cursor + 0] = ( (j * 255) / x_s );
+            loc[cursor + 1] = ( ( (x_s - j) * 255) /  x_s);
+            loc[cursor + 2] = 120;
+            loc[cursor + 3] = 0;
 
             cursor += 4;
         }
 
-        cursor += (ppl - x_len) + (2 * x_len / 3);
+        cursor += ((ppl - x_len) + (2 * x_s)) * 4;
     }
     
     freeze();     // prevent $pc from exiting kernel
 
-    //setup_gdt();
-    //init_interrupts();
+    setup_gdt();
+    init_interrupts();
     //init_malloc((void *)0x100000, (void *)0x8000000);
     
     //change_mode(0x13);

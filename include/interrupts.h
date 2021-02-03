@@ -42,7 +42,7 @@ void deactivate_interrupts(void);
 #define KBD_STATUS (0x64)
 
 // from http://www.osdever.net/bkerndev/Docs/keyboard.htm
-static unsigned char keyboard_map[128] =
+static const unsigned char keyboard_map[128] =
 {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8',/* 9 */
     '9', '0', '-', '=', '\b',/* Backspace */

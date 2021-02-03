@@ -45,7 +45,7 @@ void load_gdt(uint8_t *gdt)
 {
     uint32_t ptr[2];
     ptr[0] = 65535 << 16;
-    ptr[1] = (uint32_t) gdt;
+    ptr[1] = ((uintptr_t) gdt) & 0xFFFFFFFF;
     asm volatile("lgdt (%0)"
                  : /* no output */
                  : "p" ((char *) ptr + 2)

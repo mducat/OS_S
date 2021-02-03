@@ -70,7 +70,7 @@ void remap_pic(void)
 
 void register_int_handler(uint8_t *idt, uint8_t irq, void (*handler)(), uint8_t type)
 {
-    uint32_t ptr = (uint32_t) handler;
+    uintptr_t ptr = (uintptr_t) handler;
     uint16_t loc = irq * 8;
     uint16_t kernel = get_kernel_code_location();
 
@@ -136,7 +136,7 @@ void load_idt(uint8_t* idt)
 {
     uint32_t ptr[2];
     ptr[0] = (IDT_LEN) << 16;
-    ptr[1] = (uint32_t) idt;
+    ptr[1] = ((uintptr_t) idt) & 0xFFFFFFFF;
     asm volatile("lidt (%0)"
                  : /* no output */
                  : "p" ((char *) ptr + 2)
@@ -185,18 +185,18 @@ void init_interrupts(void)
     str = my_putnbr_base(ret[3], "0123456789ABCDEF");
     mvprint(0, 3, str, 0x2);
 
-    while (1) {
-        /*short reg = get_requested_interrupts();
+/*    while (1) {
+        short reg = get_requested_interrupts();
         char *str = my_putnbr_base(reg, "01");
         mvprint(10, 0, str, 0x3);
         if (reg & 0x2) {
             irq1_handler();
             break;
-        }*/
+            }
         uint8_t a = inb(KBD_STATUS);
-        /*str = my_putnbr_base(a, "0123456789");
+        str = my_putnbr_base(a, "0123456789");
         write_screen(str, strlen(str));
-        write_screen(" ", 1);*/
+        write_screen(" ", 1);
         if (!(a & 1))
             continue;
         uint8_t input = inb(KBD_DATA);
@@ -205,7 +205,7 @@ void init_interrupts(void)
             continue;
         write_screen(&c, 1);
         //write_screen(" ", 1);
-    }
+    }*/
     // while (1)
     // asm("hlt");
 }
