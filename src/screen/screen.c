@@ -1,6 +1,6 @@
 
-#include "screen.h"
-#include "color.h"
+#include <screen.h>
+#include <color.h>
 
 void change_mode(char mode)
 {

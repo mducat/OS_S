@@ -187,6 +187,7 @@ EFI_STATUS load_kernel(EFI_HANDLE handle, EFI_PHYSICAL_ADDRESS *entry_point)
                                &hdr);
 
     CHK_STATUS (status, L"Kernel read failed\r\n");
+
     if (check_header(&hdr))
         return (EFI_LOAD_ERROR);
 

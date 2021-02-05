@@ -1,14 +1,16 @@
 
-#include "types.h"
-#include "interrupts.h"
-#include "segments.h"
+#include <interrupts.h>
+#include <segments.h>
 
-#include "screen.h"
-#include "malloc.h"
+#include <screen.h>
+#include <malloc.h>
+#include <kernel.h>
 
-void outb(uint8_t value, uint16_t port)
+// TODO refactor this ugly file
+
+void outb(uint16_t port, uint8_t value)
 {
-    asm volatile("outb %b0,%w1"
+    asm volatile("outb %0,%1"
                  :
                  : "a" (value), "Nd" (port)
                  :);
@@ -18,7 +20,7 @@ uint8_t inb(uint16_t port)
 {
     uint8_t ret;
 
-    asm volatile("inb %w1,%0"
+    asm volatile("inb %1,%0"
                  : "=a" (ret)
                  : "Nd" (port)
                  :);
@@ -45,6 +47,9 @@ uint16_t get_requested_interrupts(void)
     return (read_register(OCW3_IRR));
 }
 
+extern void write_port(unsigned short port, unsigned char data);
+
+
 void remap_pic(void)
 {
     // restart both PIC
@@ -64,15 +69,16 @@ void remap_pic(void)
     outb(SLAVE_DATA, ICW4_8086);
 
     // set new PIC mask
-    outb(MASTER_DATA, 0xFD);
-    outb(SLAVE_DATA, 0xFD);
+    outb(MASTER_DATA, 0xFD); // FD
+    outb(SLAVE_DATA, 0xEF); // EF
 }
 
-void register_int_handler(uint8_t *idt, uint8_t irq, void (*handler)(), uint8_t type)
+void register_int_handler(uint8_t *idt, uint8_t irq, void (*handler)(void), uint8_t type)
 {
     uintptr_t ptr = (uintptr_t) handler;
-    uint16_t loc = irq * 8;
-    uint16_t kernel = get_kernel_code_location();
+    uint16_t loc = irq * 16;
+    uint16_t kernel = get_kernel_code_location(); // CS reg val
+    uint32_t *l_pt = (uint32_t *) idt;
 
     idt[loc + 0] = (ptr >> 0) & 0xFF;
     idt[loc + 1] = (ptr >> 8) & 0xFF;
@@ -82,6 +88,10 @@ void register_int_handler(uint8_t *idt, uint8_t irq, void (*handler)(), uint8_t 
     idt[loc + 5] = type;
     idt[loc + 6] = (ptr >> 16) & 0xFF;
     idt[loc + 7] = (ptr >> 24) & 0xFF;
+
+    l_pt += 2;
+    l_pt[0] = (ptr >> 32) & 0xFFFFFFFF;
+    l_pt[1] = 0;
 }
 
 void end_of_interrupt(uint8_t irq)
@@ -89,19 +99,76 @@ void end_of_interrupt(uint8_t irq)
     if (irq > 8)
         outb(SLAVE_CMD, EOI);
     outb(MASTER_CMD, EOI);
-    asm ("iret");
 }
 
 void irq0_handler(void)
 {
-    write_screen("I0", 2);
-    end_of_interrupt(1);
+    //draw_debug();
+    //write_screen("I0", 2);
+    end_of_interrupt(0);
 }
 
 void irq1_handler(void)
 {
-    write_screen("I1", 2);
+    draw_debug();
+
+    char *test = (char *) 0x100042;
+    *test = (*test) + 1;
+
+    uint8_t a = inb(KBD_STATUS);
+    uint8_t input = inb(KBD_DATA);
+
+
+    char *test2 = (char *) 0x100043;
+    *test2 = a;
+
+    char *test3 = (char *) 0x100043;
+    *test3 = input;
+
+
+    char *loc = (char *) screen->p_loc;
+    for (int i = 0; i < 20; i++)
+        loc[(50 * screen->pix_per_line + input * 20 + i) * 4 + 2] = 255;
+    
     end_of_interrupt(1);
+}
+
+uint8_t m_buf[3] = {0};
+uint8_t m_off    =  0 ;
+
+uint64_t m_x = 0;
+uint64_t m_y = 0;
+
+void irq12_handler(void)
+{
+    uint8_t a = inb(0x60);
+
+    if (!(a & 0x8))
+        goto out;
+
+    m_buf[m_off++] = a;
+    m_off %= 3;
+
+    if (m_off) 
+        goto out;
+
+    int8_t s_x = ((m_buf[0] >> 4) & 0x1) == 0 ? -1 : 1;
+    int8_t s_y = ((m_buf[0] >> 5) & 0x1) == 0 ? -1 : 1;
+
+    char *loc = (char *) screen->p_loc;
+    loc[(m_y * screen->pix_per_line + s_x) * 4 + 2] = 0;
+
+    
+    for (int i = 0; i < 20; i++)
+        loc[(100 * screen->pix_per_line + 200 + i) * 4 + 2] = 255;
+
+    m_x += m_buf[1] * s_x;
+    m_y += m_buf[2] * s_y;
+    
+    loc[(m_y * screen->pix_per_line + s_x) * 4 + 2] = 255;
+
+    out:
+    end_of_interrupt(12);
 }
 
 void irq2_handler(void)
@@ -132,15 +199,29 @@ void deactivate_interrupts(void)
     asm volatile("cli");
 }
 
+void load_idt_as(uint8_t* idt);
+
 void load_idt(uint8_t* idt)
 {
-    uint32_t ptr[2];
+    /*uint32_t ptr[2];
     ptr[0] = (IDT_LEN) << 16;
     ptr[1] = ((uintptr_t) idt) & 0xFFFFFFFF;
     asm volatile("lidt (%0)"
-                 : /* no output */
-                 : "p" ((char *) ptr + 2)
+                 : 
+                 : "r" (((char *) ptr) + 2)
+                 :);*/
+
+    uint32_t ptr[4] = {0};
+    uintptr_t idt_loc = (uintptr_t) idt;
+
+    ptr[0] = (IDT_LEN) | (idt_loc & 0xFFFF) << 16;
+    ptr[1] = (idt_loc & 0xFFFF0000) >> 16;
+    asm volatile("lidt %0"
+                 : 
+                 : "m" (ptr)
                  :);
+    //load_idt_as(idt);
+    
     activate_interrupts();
 }
 
@@ -149,63 +230,55 @@ void int_ignore(void)
     return;
 }
 
+extern void irq1_caller(void);
+extern void irq12_caller(void);
+
+
+void init_mouse(void)
+{
+    
+    //outb(0x64, 0xAD);
+    //outb(0x64, 0xA7); // disable mouse + kbd
+
+    while (inb(0x60) & 0x1); // flush buffer
+
+    outb(0x64, 0xA8); // enable mouse
+
+    outb(0x64, 0x20); // read cur config
+    uint8_t cfg = inb(0x60);
+
+    cfg |= 1 << 1; // enable mouse port interrupt
+
+    outb(0x64, 0x60);
+    outb(0x60,  cfg); // set new config
+
+    outb(0x64, 0xD4);
+
+    outb(0x60, 0xF4); // enable packet send
+    while (inb(0x60) != 0xFA); /* Wait for ACK from mouse... */
+
+    // TODO Determine if mouse is plugged + perform hardware tests
+    
+    // outb(0x64, 0xAE); // enable kbd
+
+    m_x = screen->x_len / 2;
+    m_y = screen->y_len / 2;
+}
+
 void init_interrupts(void)
 {
     uint8_t *idt = (uint8_t *) 0x1000000;//[IDT_LEN];
 
-    for (uint8_t i = 0; i < 255; i++)
-        register_int_handler(idt, i, int_ignore, INT_GATE);
-    //register_int_handler(idt, 0x09, irq2_handler);
-    //register_int_handler(idt, 0x06, irq2_handler);
-    register_int_handler(idt, 0x08, irq3_handler, INT_GATE);
-    register_int_handler(idt, 0x0d, irq4_handler, INT_GATE);
-    //register_int_handler(idt, 0x21, irq0_handler, INT_GATE);
+    memset(idt, 0, IDT_LEN * 16);
+    //end_of_interrupt(1);
+    //for (uint8_t i = 0; i < 255; i++)
+    //    register_int_handler(idt, i, int_ignore, INT_GATE);
 
-    //char *str = my_putnbr_base(idt[256], "0123456789");
-    //mvprint(0, 2, str, 0x3);
-    mem_print(1, 1, &(idt[256]), 0x30);
-    //mem_print(1, 1, 0, 0x50);
+    register_int_handler(idt, 0x21, irq1_caller, INT_GATE);
+    register_int_handler(idt, 0x2c, irq12_caller, INT_GATE);
+
     remap_pic();
-    //load_idt(idt);
 
-    uint16_t ret[4];
-    ret[3] = 0x72;
-    ret[1] = 0x42;
-    asm("sidt %0"
-        : 
-        : "m" (ret)
-        :);
-
-    char *str = my_putnbr_base(ret[0], "0123456789ABCDEF");
-    mvprint(0, 0, str, 0x2);
-    str = my_putnbr_base(ret[1], "0123456789ABCDEF");
-    mvprint(0, 1, str, 0x2);
-    str = my_putnbr_base(ret[2], "0123456789ABCDEF");
-    mvprint(0, 2, str, 0x2);
-    str = my_putnbr_base(ret[3], "0123456789ABCDEF");
-    mvprint(0, 3, str, 0x2);
-
-/*    while (1) {
-        short reg = get_requested_interrupts();
-        char *str = my_putnbr_base(reg, "01");
-        mvprint(10, 0, str, 0x3);
-        if (reg & 0x2) {
-            irq1_handler();
-            break;
-            }
-        uint8_t a = inb(KBD_STATUS);
-        str = my_putnbr_base(a, "0123456789");
-        write_screen(str, strlen(str));
-        write_screen(" ", 1);
-        if (!(a & 1))
-            continue;
-        uint8_t input = inb(KBD_DATA);
-        char c = keyboard_map[input];
-        if (!c)
-            continue;
-        write_screen(&c, 1);
-        //write_screen(" ", 1);
-    }*/
-    // while (1)
-    // asm("hlt");
+    load_idt(idt);
+    init_mouse();
 }

@@ -5,6 +5,7 @@
 #include <segments.h>
 #include <interrupts.h>
 
+#include <screen.h>
 #include <kboot.h>
 
 void freeze(void)
@@ -21,16 +22,13 @@ void write_debug(char *str)
     }
 }
 
-void k_start(boot_t *data)
+void draw_debug(void)
 {
-    if (data->sig != 0x42)
-        freeze(); // kernel panic: Where was this booted from ??
+    uint32_t x_len = screen->x_len;
+    uint32_t y_len = screen->y_len;
+    uint32_t ppl = screen->pix_per_line;
 
-    uint32_t x_len = data->screen->x_len;
-    uint32_t y_len = data->screen->y_len;
-    uint32_t ppl = data->screen->pix_per_line;
-
-    uint8_t *loc = data->screen->p_loc;
+    uint8_t *loc = screen->p_loc;
 
     uint32_t x_s = x_len / 3;
     uint32_t y_s = y_len / 3;
@@ -48,11 +46,23 @@ void k_start(boot_t *data)
 
         cursor += ((ppl - x_len) + (2 * x_s)) * 4;
     }
-    
-    freeze();     // prevent $pc from exiting kernel
+}
 
-    setup_gdt();
+void k_start(boot_t *data)
+{
+    //__asm__ __volatile__("cli");
+    if (data->sig != 0x42)
+        freeze(); // kernel panic: Where was this booted from ??
+
+    screen = data->screen;
+
+    //draw_debug();
+    //setup_gdt();
     init_interrupts();
+
+    while (1);
+    //freeze();     // prevent $pc from exiting kernel
+
     //init_malloc((void *)0x100000, (void *)0x8000000);
     
     //change_mode(0x13);

@@ -43,23 +43,32 @@ uint8_t encode_access(seg_access_t info)
 
 void load_gdt(uint8_t *gdt)
 {
-    uint32_t ptr[2];
-    ptr[0] = 65535 << 16;
+/*  ptr[0] = 65535 << 16;
     ptr[1] = ((uintptr_t) gdt) & 0xFFFFFFFF;
     asm volatile("lgdt (%0)"
-                 : /* no output */
+                 :
                  : "p" ((char *) ptr + 2)
+                 :);*/
+    uintptr_t gdt_loc = (uintptr_t) gdt;
+    uint32_t ptr[4] = {0};
+  
+    ptr[0] = (65535) | (gdt_loc & 0xFFFF) << 16;
+    ptr[1] = (gdt_loc & 0xFFFF0000) >> 16;
+    asm volatile("lgdt %0"
+                 : 
+                 : "m" (ptr)
                  :);
+                 
 }
 
 uint16_t get_kernel_code_location(void)
 {
-    return (0x8); // TODO: get kernel code location dynamically
+    return (0x38); // TODO: get kernel code location dynamically
 }
 
 void setup_gdt(void)
 {
-    static uint8_t *gdt = (uint8_t *) 0x1000800;//[256];
+    static uint8_t *gdt = (uint8_t *) 0x1000;//[256];
     seg_access_t kcode_access = {
         .read_write = true,
         .direction = 0,

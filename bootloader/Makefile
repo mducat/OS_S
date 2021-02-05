@@ -7,6 +7,7 @@
 
 ARCH            = $(shell uname -m | sed s,i[3456789]86,ia32,)
 TARGET          = bootx64.efi
+INSTALLED		= OS_S
 OBJS			= src/load.o	\
 				  src/files.o	\
 				  src/boot.o
@@ -21,7 +22,7 @@ EFI_LDS         = lib/gnuefi/elf_$(ARCH)_efi.lds
 SELFINCS		= -Iinc
 
 CFLAGS          = $(EFIINCS)-fno-stack-protector -fpic \
-		  -fshort-wchar -mno-red-zone -Wall $(SELFINCS) -Wextra -g
+		  -fshort-wchar -mno-red-zone -Wall $(SELFINCS) -Wextra
 ifeq ($(ARCH),x86_64)
   CFLAGS += -DEFI_FUNCTION_WRAPPER
 endif
@@ -51,8 +52,8 @@ fclean:	clean
 re:	fclean all
 
 install:all
-	sudo mkdir -p /boot/efi/EFI/OS_S
-#	sudo cp $(TARGET) /boot/efi/EFI/OS_S/
+	sudo mkdir -p /boot/EFI/OS_S
+	sudo cp $(TARGET) /boot/EFI/OS_S/$(INSTALLED)
 
 uninstall:
-#	sudo rm /boot/efi/EFI/OS_S/$(TARGET)
+	sudo rm /boot/efi/OS_S/$(INSTALLED)

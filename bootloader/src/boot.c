@@ -78,7 +78,7 @@ EFI_STATUS start_kernel(EFI_HANDLE handle)
                                EfiLoaderData,
                                sizeof(screen_t),
                                (void **)&(data->screen));
-    Print(L"Allocated screen info buf at 0x%llx\r\n", data);
+    Print(L"Allocated screen info buf at 0x%llx\r\n", data->screen);
 
     
     
@@ -90,7 +90,9 @@ EFI_STATUS start_kernel(EFI_HANDLE handle)
     
     EFI_GRAPHICS_OUTPUT_MODE_INFORMATION *info;
     UINTN SizeOfInfo;
-    /*UINTN numModes, nativeMode;
+    UINTN numModes;
+
+    INTN chosen = -1;
     
     status = uefi_call_wrapper(gop->QueryMode, 4, gop, gop->Mode==NULL?0:gop->Mode->Mode, &SizeOfInfo, &info);
     // this is needed to get the current video mode
@@ -99,22 +101,26 @@ EFI_STATUS start_kernel(EFI_HANDLE handle)
     if(EFI_ERROR(status)) {
         Print(L"Unable to get native mode");
     } else {
-        nativeMode = gop->Mode->Mode;
         numModes = gop->Mode->MaxMode;
     }
 
-    mfor (UINTN i = 0; i < numModes; i++) {
+    for (UINTN i = 0; i < numModes; i++) {
         status = uefi_call_wrapper(gop->QueryMode, 4, gop, i, &SizeOfInfo, &info);
-        Print(L"mode %3d width %d height %d format %x %s\r\n",
+        /*Print(L"mode %3d width %d height %d format %x\r\n",
                 i,
                 info->HorizontalResolution,
                 info->VerticalResolution,
-                info->PixelFormat,
-                i == nativeMode ? "(current)" : ""
-            );
-    }*/
+                info->PixelFormat
+            );*/
+        CHK_STATUS (status, L"Failed to query mode info\r\n");
+        if (info->HorizontalResolution == 1920 && info->VerticalResolution == 1080)
+            chosen = i;
+    }
 
-    status = uefi_call_wrapper(gop->SetMode, 2, gop, 22);
+    if (chosen < 0)
+        chosen = numModes - 1;
+
+    status = uefi_call_wrapper(gop->SetMode, 2, gop, chosen);
     CHK_STATUS (status, L"GOP set mode failed\r\n");
 
     status = uefi_call_wrapper(gop->QueryMode, 4, gop, gop->Mode->Mode, &SizeOfInfo, &info);
@@ -130,7 +136,6 @@ EFI_STATUS start_kernel(EFI_HANDLE handle)
     data->screen->buf_size = gop->Mode->FrameBufferSize;
     data->screen->p_loc = (void *) gop->Mode->FrameBufferBase;
     
-
     exit_boot(handle);
     jump_kernel(kernel_entry_pt, data);
 
@@ -173,7 +178,7 @@ efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *system)
     status = start_kernel(handle);
 
     // if code gets up to here, the bootloader failed
-    CHK_STATUS (status, L"Error starting the kernel, got code : 0x%04llx\r\n", status);
+    CHK_STATUS (status, L"Error starting the kernel, got code : %E0x%04llx, %r%N\r\n", status, status);
 
     while (1) // DEBUG: if crash wait
         __asm__ __volatile__("hlt");

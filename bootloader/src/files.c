@@ -31,7 +31,7 @@ EFI_STATUS get_kernel(EFI_HANDLE handle, EFI_FILE **kernel_ptr)
 
     
     CHAR16 *loc = ((FILEPATH_DEVICE_PATH*)loaded->FilePath)->PathName;
-    CHAR16 *kernel_path = L"\\EFI\\BOOT\\OS_S\\OS_S_KERNEL";
+    CHAR16 *kernel_path = L"\\EFI\\OS_S\\OS_S_KERNEL";
     EFI_FILE *root;
     EFI_FILE *kernel_file;
 

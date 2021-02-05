@@ -8,12 +8,14 @@
 
 #  define CHK_STATUS(x, y, ...)                \
     if (EFI_ERROR(x)) {                        \
+        Print(L"%H");                          \
         Print(y, ## __VA_ARGS__);              \
         return (x);                            \
     }
 
 #  define TRIGGER(x, y, ...)                    \
     {                                           \
+        Print(L"%H");                           \
         Print(y, ## __VA_ARGS__);               \
         return (x);                             \
     }
@@ -38,7 +40,7 @@ typedef struct screen_s {
 
     uint32_t x_len;
     uint32_t y_len;
-    uint32_t pix_per_line; // with padding
+    uint32_t pix_per_line; // x_len with padding
 
     uint32_t buf_size;
     void *   p_loc;

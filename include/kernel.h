@@ -24,5 +24,6 @@
 ")
 
 void _stop(void);
+void draw_debug(void);
 
 #endif
