@@ -8,4 +8,7 @@ char *strchr(const char *s, int c);
 int strncmp(char const *str1, char const *str2, int nb);
 void strcat(char *dest, char const *src);
 
+int memset(void *str, char c, int size);
+int memcpy(void *dest, void *src);
+
 #endif

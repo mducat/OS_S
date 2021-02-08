@@ -2,30 +2,11 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
-#if defined __x86_64__ && !defined __ILP32__
-# define __WORDSIZE        64
-#else
-# define __WORDSIZE        32
-#endif
-
 typedef char                    int8_t;
 typedef short int               int16_t;
 
 typedef unsigned char           uint8_t;
 typedef unsigned short int      uint16_t;
-
-#if __WORDSIZE == 32
-
-typedef long int                int32_t;
-typedef long long int           int64_t;
-
-typedef unsigned long int       uint32_t;
-typedef unsigned long long int  uint64_t;
-
-typedef int                     intptr_t;
-typedef unsigned int            uintptr_t;
-
-#else
 
 typedef int                     int32_t;
 typedef long int                int64_t;
@@ -36,9 +17,6 @@ typedef unsigned long int       uint64_t;
 typedef long int                intptr_t;
 typedef unsigned long int       uintptr_t;
 
-#endif
-
-typedef long  intptr_t;
 typedef _Bool bool;
 typedef _Bool uint1_t;
 

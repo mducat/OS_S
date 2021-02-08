@@ -1,6 +1,7 @@
 
 #include <screen.h>
-#include <color.h>
+
+// outdated
 
 void change_mode(char mode)
 {
@@ -13,9 +14,9 @@ void change_mode(char mode)
 }
 
 //25 80 -> window size
-int mvprint(int x, int y, char *str, char color)
+int mvprint(int x, int y, char *str, char c)
 {
-    char *screen = OS_S_SCREEN;
+/*    char *screen = OS_S_SCREEN;
     int str_p = 0;
     int screen_p = (x + y * CONSOLE_WIDTH);
 
@@ -28,12 +29,13 @@ int mvprint(int x, int y, char *str, char color)
         screen[screen_p * 2] = str[str_p];
         screen[screen_p * 2 + 1] = color;
     }
-    return (screen_p);
+    return (screen_p);*/
+    return (int) (x + y + ((long) str) + c);
 }
 
-void write_screen(char *str, int size)
+int write_screen(char *st, int s)
 {
-    char *screen = OS_S_SCREEN;
+/*    char *screen = OS_S_SCREEN;
     int str_p = 0;
     static int screen_p = 0;
 
@@ -46,26 +48,27 @@ void write_screen(char *str, int size)
         screen_p = screen_p % (CONSOLE_WIDTH * CONSOLE_HEIGHT);
         screen[screen_p * 2] = str[str_p];
         screen[screen_p * 2 + 1] = OS_SCREEN_COLOR_WHITE;
-    }
+        }*/
+    return (int) (((long) st + s) & 0xFFFFFFFF); // for warnings
 }
-/*
-void write_screen(char *str)
+
+/*void write_screen(char *str)
 {
     static int cursor = 0;
     int x = cursor % CONSOLE_WIDTH;
     int y = cursor / CONSOLE_WIDTH;
 
     cursor = mvprint(x, y, str, OS_SCREEN_COLOR_WHITE);
-}
-*/
+    }*/
+
 void clear(void)
 {
-    char *screen = OS_S_SCREEN;
+/*    char *screen = OS_S_SCREEN;
     int x = 0;
     int y = 0;
     int screen_p = (x + y * CONSOLE_WIDTH);
 
     for (int i = 0; i < CONSOLE_HEIGHT; i++)
         for (int ii = 0; ii < CONSOLE_WIDTH; ii++, screen_p++)
-            screen[screen_p * 2] = 0, screen[screen_p * 2 + 1] = OS_SCREEN_COLOR_BLACK;
+        screen[screen_p * 2] = 0, screen[screen_p * 2 + 1] = OS_SCREEN_COLOR_BLACK;*/
 }

@@ -5,37 +5,43 @@
 ## Makefile
 ##
 
-OBJ			=		src/kernel.o				\
-												\
-					src/hardware/interrupts.o	\
-					src/hardware/segments.o		\
-												\
-					src/memory/malloc.o			\
-					src/memory/mem.o			\
-												\
-					src/screen/screen.o			\
-					src/screen/data.o			\
-												\
-					src/utils/string.o			\
-												\
-					src/lld/lld_db.o			\
-					src/lld/lld_free.o			\
-					src/lld/lld_init.o			\
-					src/lld/lld_insert.o		\
-					src/lld/lld_insert_node.o	\
-					src/lld/lld_len.o			\
-					src/lld/lld_len_db.o		\
-					src/lld/lld_pop.o			\
-					src/lld/lld_pop_node.o		\
-					src/lld/lld_print_int.o		\
-					src/lld/lld_print_str.o		\
-					src/lld/lld_read.o			\
-					src/lld/lld_sort.o			\
-					src/lld/lld_write.o			\
-												\
-												\
-												\
-					src/hardware/int_handler.o	\
+OBJ			=		src/kernel.o                \
+                                                \
+					src/hw/io.o                 \
+					src/hw/irq.o                \
+					src/hw/gdt.o                \
+                                                \
+					src/hw/dev/kbd.o            \
+					src/hw/dev/ps2.o            \
+					src/hw/dev/mouse.o          \
+					src/hw/dev/serial.o         \
+                                                \
+					src/memory/malloc.o         \
+					src/memory/mem.o            \
+                                                \
+					src/screen/screen.o         \
+					src/screen/data.o           \
+                                                \
+					src/utils/string.o          \
+                                                \
+					src/lld/lld_db.o            \
+					src/lld/lld_free.o          \
+					src/lld/lld_init.o          \
+					src/lld/lld_insert.o        \
+					src/lld/lld_insert_node.o   \
+					src/lld/lld_len.o           \
+					src/lld/lld_len_db.o        \
+					src/lld/lld_pop.o           \
+					src/lld/lld_pop_node.o      \
+					src/lld/lld_print_int.o     \
+					src/lld/lld_print_str.o     \
+					src/lld/lld_read.o          \
+					src/lld/lld_sort.o          \
+					src/lld/lld_write.o         \
+                                                \
+                                                \
+                                                \
+					src/hw/int_handler.o        \
 
 LINKER		=		builder/linker.ld
 
@@ -56,6 +62,7 @@ CFLAGS		=		$(INC) -Wall -Wextra 				\
 LDFLAGS		=		-pie
 
 VMFLAGS		=		-bios $(BIOS) -cdrom $(ISO_NAME)
+#-device virtio-mouse
 
 all:	$(NAME)
 	$(MAKE) -C bootloader --no-print-directory
@@ -81,18 +88,18 @@ vm:	iso
 	qemu-system-x86_64 $(VMFLAGS) -serial stdio
 
 monitor:	iso
-	qemu-system-x86_64 $(VMFLAGS) -monitor stdio
+	qemu-system-x86_64 $(VMFLAGS) -monitor stdio -serial file:out.dbg
 
 # this one is accessible through gdb with gdb -ex 'target remote localhost:1234'
 # does not start CPU at startup
 debug: 	CFLAGS += -g
 debug: 	iso
-	qemu-system-x86_64 $(VMFLAGS) -monitor stdio -S -s
+	qemu-system-x86_64 $(VMFLAGS) -monitor stdio -serial file:out.dbg -S -s
 
 iso:	img
 	mkdir -p $(ISO_DIR)
 	mv $(FAT) $(ISO_DIR)
-	xorriso -as mkisofs -R -f -e $(FAT) -no-emul-boot -o $(ISO_NAME) $(ISO_DIR) 2> /dev/null
+	xorriso -as mkisofs -R -f -e $(FAT) -no-emul-boot -o $(ISO_NAME) $(ISO_DIR) -volid "OS_S" 2> /dev/null
 
 img:	all
 	dd if=/dev/zero of=$(FAT) bs=1k count=1440 2> /dev/null
@@ -103,6 +110,7 @@ img:	all
 	mcopy -i $(FAT) bootloader/bootx64.efi ::/efi/boot/bootx64.efi
 	mcopy -i $(FAT) $(NAME) ::/efi/OS_S/$(NAME)
 	mattrib -i $(FAT) -a ::/efi/OS_S/$(NAME)
+	mlabel -i $(FAT) ::/:"OS_S"
 
 install:all
 	sudo mkdir -p /boot/EFI/OS_S

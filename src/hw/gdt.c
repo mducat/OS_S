@@ -1,6 +1,6 @@
 
-#include "segments.h"
-#include "interrupts.h"
+#include <gdt.h>
+#include <irq.h>
 
 int encode_entry(uint8_t *dest, gdt_entry_t source)
 {
@@ -66,7 +66,7 @@ uint16_t get_kernel_code_location(void)
     return (0x38); // TODO: get kernel code location dynamically
 }
 
-void setup_gdt(void)
+void setup_gdt(void) // TODO: rewrite x64 compliant version
 {
     static uint8_t *gdt = (uint8_t *) 0x1000;//[256];
     seg_access_t kcode_access = {

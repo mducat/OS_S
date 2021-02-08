@@ -11,7 +11,7 @@
 extern screen_t *screen;
 
 int mvprint(int x, int y, char *str, char color);
-void write_screen(char *str, int size);
+int write_screen(char *str, int size);
 void clear(void);
 void change_mode(char mode);
 
