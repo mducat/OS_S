@@ -1,9 +1,3 @@
-##
-## EPITECH PROJECT, 2020
-## SHIELD-OS
-## File description:
-## bootloader makefile
-##
 
 ARCH            = $(shell uname -m | sed s,i[3456789]86,ia32,)
 TARGET          = bootx64.efi

@@ -1,86 +1,29 @@
-##
-## EPITECH PROJECT, 2019
-## SHIELD_OS
-## File description:
-## Makefile
-##
 
-OBJ			=		src/kernel.o                \
-                                                \
-					src/hw/io.o                 \
-					src/hw/irq.o                \
-					src/hw/gdt.o                \
-                                                \
-					src/hw/dev/kbd.o            \
-					src/hw/dev/ps2.o            \
-					src/hw/dev/mouse.o          \
-					src/hw/dev/serial.o         \
-                                                \
-					src/memory/malloc.o         \
-					src/memory/mem.o            \
-                                                \
-					src/screen/screen.o         \
-					src/screen/data.o           \
-                                                \
-					src/utils/string.o          \
-                                                \
-					src/lld/lld_db.o            \
-					src/lld/lld_free.o          \
-					src/lld/lld_init.o          \
-					src/lld/lld_insert.o        \
-					src/lld/lld_insert_node.o   \
-					src/lld/lld_len.o           \
-					src/lld/lld_len_db.o        \
-					src/lld/lld_pop.o           \
-					src/lld/lld_pop_node.o      \
-					src/lld/lld_print_int.o     \
-					src/lld/lld_print_str.o     \
-					src/lld/lld_read.o          \
-					src/lld/lld_sort.o          \
-					src/lld/lld_write.o         \
-                                                \
-                                                \
-                                                \
-					src/hw/int_handler.o        \
-
-LINKER		=		builder/linker.ld
-
-NAME		=		OS_S_kernel
+KERNEL		=		OS_S_kernel
+BOOTLOADER	=		bootx64.efi
 
 ISO_NAME	=		system.iso
 ISO_DIR		=		iso
 FAT			=		system.img
 BIOS		=		bootloader/OVMF.fd
 
-INC			= 		-Iinclude -Ibootloader/inc
-
-CFLAGS		=		$(INC) -Wall -Wextra 				\
-					-fno-stack-protector -nostdinc		\
-					-ffreestanding -fpie -nostdlib		\
-					-mno-red-zone
-
-LDFLAGS		=		-pie
-
 VMFLAGS		=		-bios $(BIOS) -cdrom $(ISO_NAME)
 #-device virtio-mouse
 
-all:	$(NAME)
-	$(MAKE) -C bootloader --no-print-directory
-
-$(NAME):$(OBJ)
-	ld $(LINKER) $(LDFLAGS) -o $(NAME) $(OBJ)
+all:
+	$(MAKE) -C bootloader
+	$(MAKE) -C kernel
 
 clean:
-	find . -name "*~" -delete -o -name "#*#" -delete
-	rm -f  $(OBJ)
-	rm -f  $(OBJ_S)
+	$(MAKE) -C bootloader clean
+	$(MAKE) -C kernel     clean
 	rm -f  $(FAT)
 	rm -f  $(ISO_NAME)
 	rm -rf $(ISO_DIR)
 
-fclean:	clean
+fclean: clean
 	$(MAKE) -C bootloader fclean
-	rm -f $(NAME)
+	$(MAKE) -C kernel     fclean
 
 re:	fclean all
 
@@ -107,16 +50,15 @@ img:	all
 	mmd -i $(FAT) ::/efi
 	mmd -i $(FAT) ::/efi/boot
 	mmd -i $(FAT) ::/efi/OS_S
-	mcopy -i $(FAT) bootloader/bootx64.efi ::/efi/boot/bootx64.efi
-	mcopy -i $(FAT) $(NAME) ::/efi/OS_S/$(NAME)
-	mattrib -i $(FAT) -a ::/efi/OS_S/$(NAME)
+	mcopy -i $(FAT) bootloader/$(BOOTLOADER) ::/efi/boot/$(BOOTLOADER)
+	mcopy -i $(FAT) kernel/$(KERNEL) ::/efi/OS_S/$(KERNEL)
+	mattrib -i $(FAT) -a ::/efi/OS_S/$(KERNEL)
 	mlabel -i $(FAT) ::/:"OS_S"
 
-install:all
-	sudo mkdir -p /boot/EFI/OS_S
+install:
 	$(MAKE) -C bootloader install
-	sudo cp $(NAME) /boot/EFI/OS_S/
+	$(MAKE) -C kernel     install
 
 uninstall:
 	$(MAKE) -C bootloader uninstall
-	sudo rm -f /boot/EFI/OS_S/$(NAME)
+	$(MAKE) -C kernel     uninstall
