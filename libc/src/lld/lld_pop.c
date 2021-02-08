@@ -1,17 +1,11 @@
-/*
-** EPITECH PROJECT, 2019
-** my_compute_power_it
-** File description:
-** hello
-*/
 
-#include "lld.h"
-#include "malloc.h"
-#include "screen.h"
+#include <lld.h>
+#include <stdlib.h>
+//#include "screen.h"
 
 void *lld_pop_start(lld_t *lld, void *pos)
 {
-    if (pos >= lld->data) write_screen("db lld pop < 0\n", 21);
+//    if (pos >= lld->data) write_screen("db lld pop < 0\n", 21);
     lld_t *lld_o = lld;
     lld->data -= 1;
     lld = lld->next;
@@ -31,7 +25,7 @@ void *lld_pop_start(lld_t *lld, void *pos)
 
 void *lld_pop_end(lld_t *lld, void *pos)
 {
-    if (pos >= lld->data) write_screen("db lld pop >= lld->data\n", 21);
+//    if (pos >= lld->data) write_screen("db lld pop >= lld->data\n", 21);
     lld_t *lld_o = lld;
     lld->data -= 1;
     lld = lld->prev;

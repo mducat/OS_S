@@ -2,7 +2,7 @@
 #ifndef _SEG_H
 #define _SEG_H
 
-#include <types.h>
+#include <stdint.h>
 
 typedef struct {
     uint32_t base;

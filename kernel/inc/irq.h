@@ -2,7 +2,7 @@
 #ifndef _INT_H
 #define _INT_H
 
-#include <types.h>
+#include <stdint.h>
 
 #define IDT_LEN (2048)
 

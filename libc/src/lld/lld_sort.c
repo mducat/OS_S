@@ -1,13 +1,6 @@
-/*
-** EPITECH PROJECT, 2019
-** my_sort_list
-** File description:
-** really bad sort
-*/
 
-#include "malloc.h"
-#include "lld.h"
-
+#include <lld.h>
+#include <stdlib.h>
 
 void lld_sort(lld_t *list, int (*cmp)())
 {

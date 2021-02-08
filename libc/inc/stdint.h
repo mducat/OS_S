@@ -17,8 +17,9 @@ typedef unsigned long int       uint64_t;
 typedef long int                intptr_t;
 typedef unsigned long int       uintptr_t;
 
-typedef _Bool bool;
-typedef _Bool uint1_t;
+typedef _Bool    bool;
+typedef _Bool    uint1_t;
+typedef uint64_t size_t;
 
 
 #define true  (1)
