@@ -8,33 +8,24 @@ FAT			=		system.img
 BIOS		=		bootloader/OVMF.fd
 
 VMFLAGS		=		-bios $(BIOS) -cdrom $(ISO_NAME)
+#-device virtio-mouse
 
 all:
 	$(MAKE) -C bootloader
-	$(MAKE) -C libc
 	$(MAKE) -C kernel
 
 clean:
 	$(MAKE) -C bootloader clean
-	$(MAKE) -C libc       clean
 	$(MAKE) -C kernel     clean
-
 	rm -f  $(FAT)
 	rm -f  $(ISO_NAME)
 	rm -rf $(ISO_DIR)
 
 fclean: clean
 	$(MAKE) -C bootloader fclean
-	$(MAKE) -C libc       fclean
 	$(MAKE) -C kernel     fclean
 
 re:	fclean all
-
-
-##################
-#### VM RULES ####
-##################
-
 
 vm:	iso
 	qemu-system-x86_64 $(VMFLAGS) -serial stdio
@@ -44,16 +35,9 @@ monitor:	iso
 
 # this one is accessible through gdb with gdb -ex 'target remote localhost:1234'
 # does not start CPU at startup
-debug:
-	$(MAKE) -C kernel debug
-	$(MAKE) iso
+debug: 	CFLAGS += -g
+debug: 	iso
 	qemu-system-x86_64 $(VMFLAGS) -monitor stdio -serial file:out.dbg -S -s
-
-
-###################
-#### ISO BUILD ####
-###################
-
 
 iso:	img
 	mkdir -p $(ISO_DIR)
@@ -70,12 +54,6 @@ img:	all
 	mcopy -i $(FAT) kernel/$(KERNEL) ::/efi/OS_S/$(KERNEL)
 	mattrib -i $(FAT) -a ::/efi/OS_S/$(KERNEL)
 	mlabel -i $(FAT) ::/:"OS_S"
-
-
-#################
-#### INSTALL ####
-#################
-
 
 install:
 	$(MAKE) -C bootloader install

@@ -1,6 +1,12 @@
+/*
+** EPITECH PROJECT, 2019
+** my_compute_power_it
+** File description:
+** hello
+*/
 
-#include <lld.h>
-#include <stdlib.h>
+#include "lld.h"
+#include "malloc.h"
 
 lld_t *lld_init(void)
 {

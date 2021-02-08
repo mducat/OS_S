@@ -11,9 +11,27 @@ OBJ			=		src/kernel.o                \
 					src/hw/dev/serial.o         \
                                                 \
 					src/memory/malloc.o         \
+					src/memory/mem.o            \
                                                 \
 					src/screen/screen.o         \
 					src/screen/data.o           \
+                                                \
+					src/utils/string.o          \
+                                                \
+					src/lld/lld_db.o            \
+					src/lld/lld_free.o          \
+					src/lld/lld_init.o          \
+					src/lld/lld_insert.o        \
+					src/lld/lld_insert_node.o   \
+					src/lld/lld_len.o           \
+					src/lld/lld_len_db.o        \
+					src/lld/lld_pop.o           \
+					src/lld/lld_pop_node.o      \
+					src/lld/lld_print_int.o     \
+					src/lld/lld_print_str.o     \
+					src/lld/lld_read.o          \
+					src/lld/lld_sort.o          \
+					src/lld/lld_write.o         \
                                                 \
                                                 \
                                                 \
@@ -23,8 +41,7 @@ LINKER		=		builder/linker.ld
 
 NAME		=		OS_S_kernel
 
-INC			= 		-Iinc -I../bootloader/inc -I../libc/inc
-LIB			=		-L../libc -lc
+INC			= 		-Iinclude -I../bootloader/inc
 
 CFLAGS		=		$(INC) -Wall -Wextra 				\
 					-fno-stack-protector -nostdinc		\
@@ -36,10 +53,7 @@ LDFLAGS		=		-pie
 all:	$(NAME)
 
 $(NAME):$(OBJ)
-	ld $(LINKER) $(LDFLAGS) -o $(NAME) $(OBJ) $(LIB)
-
-debug:	CFLAGS += -g
-debug:	all
+	ld $(LINKER) $(LDFLAGS) -o $(NAME) $(OBJ)
 
 clean:
 	find . -name "*~" -delete -o -name "#*#" -delete

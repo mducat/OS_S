@@ -1,12 +1,17 @@
+/*
+** EPITECH PROJECT, 2019
+** my_compute_power_it
+** File description:
+** hello
+*/
 
-#include <lld.h>
-#include <stdlib.h>
-
-//#include "screen.h"
+#include "lld.h"
+#include "malloc.h"
+#include "screen.h"
 
 void *lld_write_start(lld_t *lld, void *pos, void *data)
 {
-    //if (pos >= lld->data) write_screen("db lld write < 0\n", 17);
+    if (pos >= lld->data) write_screen("db lld write < 0\n", 17);
     lld = lld->next;
     for (void *i = 0; pos > i; lld = lld->next, i++);
     void *data2 = lld->data;
@@ -16,7 +21,7 @@ void *lld_write_start(lld_t *lld, void *pos, void *data)
 
 void *lld_write_end(lld_t *lld, void *pos, void *data)
 {
-    //if (pos >= lld->data) write_screen("db lld write >= lld->data\n", 26);
+    if (pos >= lld->data) write_screen("db lld write >= lld->data\n", 26);
     lld_t *lld_o = lld;
     lld = lld->prev;
     for (void *i = lld_o->data-1; pos < i; lld = lld->prev, i--);
