@@ -4,11 +4,37 @@
 
 #include <sys/io.h>
 
-uint8_t m_buf[3] = {0};
+#include <dev/serial.h>
+
+uint8_t m_buf[4] = {0};
 uint8_t m_off    =  0 ;
 
 uint64_t m_x = 0;
 uint64_t m_y = 0;
+
+void draw_at(int x, int y, char val)
+{
+    char *loc = (char *) screen->p_loc;
+    uint32_t ppl = screen->pix_per_line;
+    uint32_t x_len = screen->x_len;
+
+    int cursor = (y * ppl + x) * 4;
+    uint32_t size = 30;
+
+    
+    for (uint32_t i = 0; i < size; i++) {
+        for (uint32_t j = 0; j < size; j++) {
+            loc[cursor + 0] = 0;
+            loc[cursor + 1] = 0;
+            loc[cursor + 2] = val;
+            loc[cursor + 3] = 0;
+
+            cursor += 4;
+        }
+
+        cursor += ((ppl - x_len) + (x_len - size)) * 4;
+    }
+}
 
 void irq12_handler(void)
 {
@@ -23,20 +49,29 @@ void irq12_handler(void)
     if (m_off) 
         goto out;
 
-    int8_t s_x = ((m_buf[0] >> 4) & 0x1) == 0 ? 1 : -1;
-    int8_t s_y = ((m_buf[0] >> 5) & 0x1) == 0 ? 1 : -1;
+    if (m_buf[0] & (1 << 8) || m_buf[0] & (1 << 7))
+        goto out; // overflow, skip
 
-    char *loc = (char *) screen->p_loc;
-    //loc[(m_y * screen->pix_per_line + s_x) * 4 + 2] = 0;
+    int32_t d_x = m_buf[1];
+    int32_t d_y = m_buf[2];
 
+    if (m_buf[0] & (1 << 4))
+        d_x |= 0xFFFFFF00;
     
-    for (int i = 0; i < 20; i++)
-        loc[(100 * screen->pix_per_line + 200 + i) * 4 + 2] = 255;
+    if (m_buf[0] & (1 << 5))
+        d_y |= 0xFFFFFF00;
 
-    m_x += m_buf[1] * s_x;
-    m_y += m_buf[2] * s_y;
+    my_put_nbr(d_x);
+    write_serial(' ');
+    my_put_nbr(d_y);
+    write_serial('\n');
+
+    //draw_at(m_x, m_y, 0);
+
+    m_x += d_x;
+    m_y -= d_y;
     
-    loc[(m_y * screen->pix_per_line + s_x) * 4 + 2] = 255;
+    draw_at(m_x, m_y, 255);
 
     out:
     end_of_interrupt(12);
@@ -46,4 +81,11 @@ void init_mouse()
 {
     m_x = screen->x_len / 2;
     m_y = screen->y_len / 2;
+
+    my_put_nbr(m_x);
+    write_serial('\n');
+    my_put_nbr(m_y);
+    write_serial('\n');
+    
+    draw_at(m_x, m_y, 255);
 }

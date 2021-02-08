@@ -135,6 +135,23 @@ void init_ps2()
     write_mouse(0xF4);
     ps2_ack();
 
+
+    // CONF PARAMETERS
+
+    write_mouse(0xF3); // set sample rate
+    ps2_ack();
+    write_mouse(80);
+    ps2_ack();
+
+    write_mouse(0xE8); // set resolution
+    ps2_ack();
+    write_mouse(0);
+    ps2_ack();
+
+    write_mouse(0xE7); // disable scaling
+    ps2_ack();
+
+    
     // configure software-side
     init_mouse();
 

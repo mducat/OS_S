@@ -29,14 +29,14 @@ int my_put_nbr(int nb)
 {
     int count = 100000000;
     int len = 0;
-    nb < 0 ? nb *= -1, write_screen("-", 1), len++, 1 : 0;
+    nb < 0 ? nb *= -1, write_serial('-'), len++, 1 : 0;
 
     while (nb / count == 0 && count > 1)
         count = count / 10;
 
     while (count != 0){
         char a = 48 + nb / count;
-        write_screen(&a, 1);
+        write_serial(a);
         len++;
         nb -= (nb/count) * count;
         count = count / 10;
