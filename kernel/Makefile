@@ -55,6 +55,9 @@ all:	$(NAME)
 $(NAME):$(OBJ)
 	ld $(LINKER) $(LDFLAGS) -o $(NAME) $(OBJ)
 
+debug:	CFLAGS += -g
+debug:	all
+
 clean:
 	find . -name "*~" -delete -o -name "#*#" -delete
 	rm -f  $(OBJ)
