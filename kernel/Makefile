@@ -17,6 +17,8 @@ OBJ			=		src/kernel.o                \
 					src/screen/data.o           \
                                                 \
 					src/utils/string.o          \
+												\
+					src/font/font.o				\
                                                 \
 					src/lld/lld_db.o            \
 					src/lld/lld_free.o          \
@@ -50,10 +52,15 @@ CFLAGS		=		$(INC) -Wall -Wextra 				\
 
 LDFLAGS		=		-pie
 
-all:	$(NAME)
+all: font $(NAME)
 
 $(NAME):$(OBJ)
 	ld $(LINKER) $(LDFLAGS) -o $(NAME) $(OBJ)
+
+font:
+	make -C ./src/font/
+	-./src/font/bdf2c -C ./src/font/font.h
+	-./src/font/bdf2c -b < ./src/font/u_vga16.bdf > ./src/font/font.c
 
 debug:	CFLAGS += -g
 debug:	all
@@ -64,6 +71,9 @@ clean:
 
 fclean:	clean
 	rm -f $(NAME)
+	rm -f ./src/font/font.c
+	rm -f ./src/font/font.h
+	rm -f ./src/font/bdf2c
 
 re:	fclean all
 
