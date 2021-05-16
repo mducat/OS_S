@@ -1,29 +1,21 @@
 
 #include <types.h>
 
-int memset(void *ptr, char c, int size)
+void *memset(void *dest, char c, size_t size)
 {
-    int i = 0;
-    uint8_t *str = (uint8_t *) ptr;
+    uint8_t *ptr = (uint8_t *) dest;
 
-    for (; str[i] && i < size; i++) {
-        str[i] = c;
-    }
-    return (0);
+    while (size--)
+        *ptr++ = c;
+    return dest;
 }
 
-int memcpy(void *ptr_d, void *ptr_s)
+void *memcpy(void *dest, const void *src, size_t n)
 {
-    //__try{ // Can't compile ?
-    uint8_t *dest = (uint8_t *) ptr_d;
-    uint8_t *src = (uint8_t *) ptr_s;
-    int x = 0;
+    uint64_t *p_dest = (uint64_t *) dest;
+    uint64_t *p_src  = (uint64_t *) src;
 
-    for (; src[x]; x++)
-        dest[x] = src[x];
-    dest[x] = 0;
-    return (0);
-    //}__except{
-    //    return (84);
-    //}
+    while ((n -= 8) >0)
+        *p_dest++ = *p_src++;
+    return dest;
 }

@@ -6,13 +6,22 @@
 
 #define CONSOLE_WIDTH   (80)
 #define CONSOLE_HEIGHT  (25)
-#define OS_S_SCREEN     ((void *)0xb8000)
 
-extern screen_t *screen;
+#define IS_PRINT(x)     (x >= ' ' && x <= '~')
 
-int mvprint(int x, int y, char *str, char color);
-int write_screen(char *str, int size);
-void clear(void);
-void change_mode(char mode);
+typedef struct display_s {
+    screen_t *screen;
+    void     *back;
+} disp_t;
+
+typedef struct vec_s {
+    uint64_t x;
+    uint64_t y;
+} vec_t;
+
+extern volatile disp_t *disp;
+
+int write_screen(const char *buf, size_t count);
+void refresh(void);
 
 #endif

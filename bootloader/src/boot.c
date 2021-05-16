@@ -10,12 +10,6 @@ void jump_kernel(EFI_PHYSICAL_ADDRESS address, boot_t *parameters)
     void (*kernel_main)(boot_t *) = (void(*)(boot_t *)) address;
 
     kernel_main(parameters);
-
-/*    __asm__ __volatile__ ("push %1\n\t"
-                            "call *%0"
-                            :
-                            : "r" (address), "r" (parameters)
-                            : );*/
 }
 
 EFI_STATUS exit_boot(EFI_HANDLE handle)

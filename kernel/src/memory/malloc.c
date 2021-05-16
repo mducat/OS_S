@@ -80,11 +80,11 @@ void mem_print(int x, int y, void *start, int size)
             x++;
         char c = c_start[i];
         str[0] = hexa[c & 0x0F];
-        mvprint(x, y, str, 0x07);
+        //mvprint(x, y, str, 0x07);
         str[0] = hexa[c >> 4 & 0x0F];
-        mvprint(x+1, y, str, 0x07);
+        //mvprint(x+1, y, str, 0x07);
         str[0] = c;
-        mvprint(x2+21, y, str, 0x09);
+        //mvprint(x2+21, y, str, 0x09);
         x2++;
         x += 2;
     }
@@ -115,10 +115,10 @@ void malloc_print2(void *p, int x, int y)
 {
     char *str = my_putnbr_base((long int)p, "0123456789ABCDEF");
     int j = 0;
-    for (; my_strlen(str) + j < 8; j++)
-        mvprint(x+j, y, "0", 0x07);
-    mvprint(x+j, y, str, 0x07);
-    mvprint(x+8, y, " ", 0x07);
+    //for (; my_strlen(str) + j < 8; j++)
+    //    mvprint(x+j, y, "0", 0x07);
+    //mvprint(x+j, y, str, 0x07);
+    //mvprint(x+8, y, " ", 0x07);
 }
 
 void malloc_print(int x, int y, void *p)
@@ -137,7 +137,7 @@ void malloc_print(int x, int y, void *p)
 void malloc_list(int x, int y)
 {
     mal_t *mov = (mal_t *)((char *)data + sizeof(struct malloc_data));
-    mvprint(x, y, "  adr      prev     next     size ", 0x07);
+    //mvprint(x, y, "  adr      prev     next     size ", 0x07);
     for (; mov != data->end; mov = mov->next){
         y++;
         malloc_print(x, y, mov);
@@ -187,7 +187,7 @@ void *malloc(int size)
             return (p);
         }
     }
-    mvprint(35, db_line, "fail", 0x09);
+    //mvprint(35, db_line, "fail", 0x09);
     return (0);
 }
 

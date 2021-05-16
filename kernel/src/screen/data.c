@@ -2,4 +2,5 @@
 #include <screen.h>
 
 // global definition
-screen_t *screen;
+volatile disp_t *disp;
+

@@ -1,74 +1,76 @@
 
+#include <string.h>
 #include <screen.h>
+#include <font.h>
 
-// outdated
-
-void change_mode(char mode)
+void print_char_at(vec_t pos, char c)
 {
-    asm volatile("movb %0,%%al\n\t"
-                 "movb %1,%%ah\n\t"
-                 "int $0x10"
-                 :
-                 :"r" (mode), "N" (0)
-                 :);
-}
+    const unsigned char *pix = font.Bitmap + (c - 31) * 16;
+    uint32_t color = 0x00FFFFFF;
 
-//25 80 -> window size
-int mvprint(int x, int y, char *str, char c)
-{
-/*    char *screen = OS_S_SCREEN;
-    int str_p = 0;
-    int screen_p = (x + y * CONSOLE_WIDTH);
+    uint32_t *screen = (uint32_t *) disp->back;
+    uint32_t ppl = disp->screen->pix_per_line;
 
-    for (; str[str_p]; screen_p++, str_p++){
-        if (str[str_p] == '\n'){
-            screen_p += CONSOLE_WIDTH;
-            screen_p -= screen_p % CONSOLE_WIDTH;
-            str_p += 1;
-        }
-        screen[screen_p * 2] = str[str_p];
-        screen[screen_p * 2 + 1] = color;
+    vec_t scr_p = {
+        .x = pos.x * ( 8 + 1) + 10,
+        .y = pos.y * (16 + 2) + 5,
+    };
+
+    screen += scr_p.y * ppl + scr_p.x;
+
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < 8; j++)
+            *screen++ = (pix[i] >> (7 - j)) & 1 ? color : 0;
+
+        screen += ppl - 8;
     }
-    return (screen_p);*/
-    return (int) (x + y + ((long) str) + c);
 }
 
-int write_screen(char *st, int s)
+vec_t move_cursor(vec_t pos)
 {
-/*    char *screen = OS_S_SCREEN;
-    int str_p = 0;
-    static int screen_p = 0;
+    pos.x += 1;
 
-    for (; str_p < size; screen_p++, str_p++){
-        if (str[str_p] == '\n'){
-            screen_p += CONSOLE_WIDTH;
-            screen_p -= screen_p % CONSOLE_WIDTH+1;
+    if (pos.x >= disp->screen->x_len / (8 + 2)) {
+        pos.x = 0;
+        pos.y += 1;
+    }
+    
+    return pos;
+}
+
+int write_screen(const char *buf, size_t count)
+{
+    static vec_t pos = {.x = 0, .y = 0};
+    int displayed = 0;
+
+    while (count--) {
+        char current = *buf++;
+
+        if (IS_PRINT(current)) {
+            print_char_at(pos, current);
+
+            displayed++;
+            pos = move_cursor(pos);
+
             continue;
         }
-        screen_p = screen_p % (CONSOLE_WIDTH * CONSOLE_HEIGHT);
-        screen[screen_p * 2] = str[str_p];
-        screen[screen_p * 2 + 1] = OS_SCREEN_COLOR_WHITE;
-        }*/
-    return (int) (((long) st + s) & 0xFFFFFFFF); // for warnings
+        
+        switch (current) {
+        case '\n':
+            pos.y += 1;
+            pos.x  = 0;
+            break;
+        }
+    }
+    return displayed;
 }
 
-/*void write_screen(char *str)
+void refresh(void)
 {
-    static int cursor = 0;
-    int x = cursor % CONSOLE_WIDTH;
-    int y = cursor / CONSOLE_WIDTH;
-
-    cursor = mvprint(x, y, str, OS_SCREEN_COLOR_WHITE);
-    }*/
+    memcpy(disp->screen->p_loc, disp->back, disp->screen->buf_size);
+}
 
 void clear(void)
 {
-/*    char *screen = OS_S_SCREEN;
-    int x = 0;
-    int y = 0;
-    int screen_p = (x + y * CONSOLE_WIDTH);
-
-    for (int i = 0; i < CONSOLE_HEIGHT; i++)
-        for (int ii = 0; ii < CONSOLE_WIDTH; ii++, screen_p++)
-        screen[screen_p * 2] = 0, screen[screen_p * 2 + 1] = OS_SCREEN_COLOR_BLACK;*/
+    memset(disp->back, 0, disp->screen->buf_size);
 }

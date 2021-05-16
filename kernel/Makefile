@@ -16,6 +16,8 @@ OBJ			=		src/kernel.o                \
 					src/screen/screen.o         \
 					src/screen/data.o           \
                                                 \
+					src/shell/shell.o           \
+                                                \
 					src/utils/string.o          \
 												\
 					src/font/font.o				\

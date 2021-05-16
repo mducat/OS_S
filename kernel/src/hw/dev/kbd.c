@@ -9,25 +9,26 @@
 
 void irq1_handler(void)
 {
-    draw_debug();
+    end_of_interrupt(1);
 
-    char *test = (char *) 0x100042;
-    *test = (*test) + 1;
+    uint8_t status = inb(KBD_STATUS);
+    static int next = 0;
 
-    uint8_t a = inb(KBD_STATUS);
+    if ((status & 1) == 0)
+        return;
+    
     uint8_t input = inb(KBD_DATA);
 
+    if (input == 0xF0) {
+        next = 1;
+        return;
+    }
 
-    char *test2 = (char *) 0x100043;
-    *test2 = a;
+    if (input > 0x80)
+        return;
 
-    char *test3 = (char *) 0x100043;
-    *test3 = input;
-
-
-    char *loc = (char *) screen->p_loc;
-    for (int i = 0; i < 20; i++)
-        loc[(50 * screen->pix_per_line + input * 20 + i) * 4 + 2] = 255;
-    
-    end_of_interrupt(1);
+    if (!next)
+        send_tty(input);
+    else
+        next = 0;
 }
