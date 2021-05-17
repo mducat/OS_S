@@ -12,9 +12,8 @@ void jump_kernel(EFI_PHYSICAL_ADDRESS address, boot_t *parameters)
     kernel_main(parameters);
 }
 
-EFI_STATUS exit_boot(EFI_HANDLE handle)
+EFI_STATUS exit_boot(EFI_HANDLE handle, EFI_MEMORY_DESCRIPTOR **mem_map)
 {
-    EFI_MEMORY_DESCRIPTOR *mem_map = NULL;
     EFI_STATUS status;
 
     UINTN map_size = 0;
@@ -23,7 +22,7 @@ EFI_STATUS exit_boot(EFI_HANDLE handle)
     UINT32 desc_ver;
 
     uefi_call_wrapper(BS->GetMemoryMap, 5,
-                      &map_size, mem_map,
+                      &map_size, NULL,
                       NULL, &desc_size, NULL);
 
     map_size += desc_size;
@@ -31,18 +30,15 @@ EFI_STATUS exit_boot(EFI_HANDLE handle)
     status = uefi_call_wrapper(BS->AllocatePool, 3,
                                EfiLoaderData,
                                map_size,
-                               (void **)&mem_map);
+                               mem_map);
     CHK_STATUS (status, L"mem_map AllocatePool fail\r\n");
     
     status = uefi_call_wrapper(BS->GetMemoryMap, 5,
-                               &map_size, mem_map,
+                               &map_size, *mem_map,
                                &map_key, &desc_size,
                                &desc_ver);
 
     CHK_STATUS (status, L"get mem_map failed\r\n");
-
-    //Print makes ExitBootServices fail ??
-    //Print(L"About to exit boot services!\r\n");
 
     status = uefi_call_wrapper(BS->ExitBootServices, 2, handle, map_key);
     CHK_STATUS (status, L"ExitBootServices failed\r\n");
@@ -129,8 +125,10 @@ EFI_STATUS start_kernel(EFI_HANDLE handle)
 
     data->screen->buf_size = gop->Mode->FrameBufferSize;
     data->screen->p_loc = (void *) gop->Mode->FrameBufferBase;
-    
-    exit_boot(handle);
+
+    data->mem_map = 0;
+    exit_boot(handle, (EFI_MEMORY_DESCRIPTOR **) &data->mem_map);
+
     jump_kernel(kernel_entry_pt, data);
 
     return (status);

@@ -38,10 +38,10 @@ vec_t move_cursor(vec_t pos)
     return pos;
 }
 
-int write_screen(const char *buf, size_t count)
+size_t write_screen(const char *buf, size_t count)
 {
     static vec_t pos = {.x = 0, .y = 0};
-    int displayed = 0;
+    size_t displayed = 0;
 
     while (count--) {
         char current = *buf++;
@@ -60,8 +60,15 @@ int write_screen(const char *buf, size_t count)
             pos.y += 1;
             pos.x  = 0;
             break;
+        case '\b':
+            pos.x = (pos.x == 0 ? 0 : pos.x - 1);
+            print_char_at(pos, ' ');
+
+            displayed++;
+            break;
         }
     }
+    
     return displayed;
 }
 

@@ -3,11 +3,13 @@
     .global irq1_caller
     .global irq2_caller
     .global irq12_caller
+    .global irq80_caller
 
     .extern irq0_handler
     .extern irq1_handler
     .extern irq2_handler
     .extern irq12_handler
+    .extern irq80_handler
 
     
 irq0_caller:    
@@ -24,4 +26,8 @@ irq2_caller:
 
 irq12_caller:    
     call    irq12_handler
+    iretq
+
+irq80_caller:    
+    call    irq80_handler
     iretq

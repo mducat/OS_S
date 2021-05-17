@@ -3,6 +3,7 @@
 #include <irq.h>
 #include <malloc.h>
 #include <string.h>
+#include <shell.h>
 
 #include <screen.h>
 #include <kboot.h>
@@ -26,9 +27,7 @@ void k_start(boot_t *data)
     memset(disp->back, 0, data->screen->buf_size);
 
     init_interrupts();
-
-    write_screen("test\nc'est super ca dis donc", 29);
-    refresh();
+    init_shell();
 
     asm volatile("hlt");
     // prevent $pc from exiting kernel

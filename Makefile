@@ -21,9 +21,13 @@ clean:
 	rm -f  $(ISO_NAME)
 	rm -rf $(ISO_DIR)
 
-fclean: clean
+fclean: 
 	$(MAKE) -C bootloader fclean
 	$(MAKE) -C kernel     fclean
+
+	rm -f  $(FAT)
+	rm -f  $(ISO_NAME)
+	rm -rf $(ISO_DIR)
 
 re:	fclean all
 

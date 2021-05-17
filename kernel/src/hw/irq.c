@@ -2,6 +2,9 @@
 #include <irq.h>
 #include <gdt.h>
 #include <string.h>
+#include <screen.h>
+
+#include <proc.h>
 
 #include <sys/io.h>
 
@@ -89,6 +92,19 @@ void irq2_handler(void) // cascade interrupt
     end_of_interrupt(2);
 }
 
+void irq80_handler(void)
+{
+    uint64_t num;
+    uint64_t par1;
+    uint64_t par2;
+
+    asm("" : "=a" (num),
+        "=b" (par1),
+        "=c" (par2));
+    end_of_interrupt(30);
+    syscall_handler(num, par1, par2);
+}
+
 void activate_interrupts(void)
 {
     asm volatile("sti");
@@ -127,6 +143,8 @@ void init_interrupts(void)
     register_int_handler(idt, 0x21, irq1_caller, INT_GATE);
     register_int_handler(idt, 0x22, irq2_caller, INT_GATE);
     register_int_handler(idt, 0x2c, irq12_caller, INT_GATE);
+    register_int_handler(idt, 0x2c, irq12_caller, INT_GATE);
+    register_int_handler(idt, 0x30, irq80_caller, INT_GATE);
 
     remap_pic();
 

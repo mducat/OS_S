@@ -2,7 +2,7 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
-#define GOODENOUGHT  ("\n\
+#define GOODENOUGH  ("\n\
                        @@&@&%(%%\n\
                      @@@@&(,    ..                                   .,(\n\
                     @@@@(,  .   /#(*                            / .,./\n\

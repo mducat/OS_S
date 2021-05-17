@@ -13,6 +13,8 @@ OBJ			=		src/kernel.o                \
 					src/memory/malloc.o         \
 					src/memory/mem.o            \
                                                 \
+					src/proc/syscalls.o         \
+                                                \
 					src/screen/screen.o         \
 					src/screen/data.o           \
                                                 \
@@ -45,7 +47,7 @@ LINKER		=		builder/linker.ld
 
 NAME		=		OS_S_kernel
 
-INC			= 		-Iinclude -I../bootloader/inc
+INC			= 		-Iinclude -I../bootloader/inc -Ifiles
 
 CFLAGS		=		$(INC) -Wall -Wextra 				\
 					-fno-stack-protector -nostdinc		\
@@ -54,7 +56,7 @@ CFLAGS		=		$(INC) -Wall -Wextra 				\
 
 LDFLAGS		=		-pie
 
-all: font $(NAME)
+all: font files $(NAME)
 
 $(NAME):$(OBJ)
 	ld $(LINKER) $(LDFLAGS) -o $(NAME) $(OBJ)
@@ -64,18 +66,23 @@ font:
 	-./src/font/bdf2c -C ./src/font/font.h
 	-./src/font/bdf2c -b < ./src/font/u_vga16.bdf > ./src/font/font.c
 
+files:
+	make -C files
+
 debug:	CFLAGS += -g
 debug:	all
 
 clean:
 	find . -name "*~" -delete -o -name "#*#" -delete
 	rm -f  $(OBJ)
+	make -C files clean
 
 fclean:	clean
 	rm -f $(NAME)
 	rm -f ./src/font/font.c
 	rm -f ./src/font/font.h
 	rm -f ./src/font/bdf2c
+	make -C files fclean
 
 re:	fclean all
 
@@ -85,3 +92,5 @@ install:all
 
 uninstall:
 	sudo rm -f /boot/EFI/OS_S/$(NAME)
+
+.PHONY: files

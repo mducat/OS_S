@@ -47,5 +47,6 @@ extern void irq0_caller(void);
 extern void irq1_caller(void);
 extern void irq2_caller(void);
 extern void irq12_caller(void);
+extern void irq80_caller(void);
 
 #endif

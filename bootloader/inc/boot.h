@@ -46,9 +46,19 @@ typedef struct screen_s {
     void *   p_loc;
 } screen_t;
 
+typedef struct mem_map_s {
+    uint32_t type;
+    uint32_t pad;
+    void *   v_start;
+    void *   p_start;
+    uint64_t n_pages;
+    uint64_t attr;
+} mmap_t;
+
 typedef struct boot_s {
     uint8_t  sig;
     screen_t *screen;
+    mmap_t *mem_map;
 } boot_t;
 
 #endif

@@ -24,11 +24,14 @@ void irq1_handler(void)
         return;
     }
 
-    if (input > 0x80)
+    if (input > 0x80) // -1
         return;
 
-    if (!next)
-        send_tty(input);
-    else
+    if (!next) {
+        char print = scan_code_set_2_fr[(uint8_t) input];
+
+        send_tty(print);
+    } else {
         next = 0;
+    } 
 }

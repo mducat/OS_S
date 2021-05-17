@@ -21,7 +21,7 @@ typedef struct vec_s {
 
 extern volatile disp_t *disp;
 
-int write_screen(const char *buf, size_t count);
+size_t write_screen(const char *buf, size_t count);
 void refresh(void);
 
 #endif
