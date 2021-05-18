@@ -38,7 +38,7 @@ for v in sys.argv[1:]:
             files[os.path.basename(v)] = fname
         continue
     
-    with open(v, 'rb') as f:
+    with open(v + '/' + v, 'rb') as f:
         data = f.read()
         data = [str(v) for v in data]
         fname = f'bin{bins}'

@@ -15,11 +15,7 @@ all:
 		$(MAKE) -C $$dir --no-print-directory ; \
 	done
 
-	prog=() ; \
-	for i in $(PROGRAMS) ; do \
-		prog+=($$i/$$i) ; \
-	done ; \
-	python $(MKHEADER) $$prog and $(PLAIN) > $(NAME)
+	python $(MKHEADER) $(PROGRAMS) and $(PLAIN) > $(NAME)
 
 clean:
 	$(MAKE) -C $(LIB) clean --no-print-directory
