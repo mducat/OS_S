@@ -1,7 +1,7 @@
 
 OBJ		=	src/main.o   \
 
-NAME	=	ls
+NAME	=	help
 
 INC		= 	-I../oss_lib/inc -I../../include
 

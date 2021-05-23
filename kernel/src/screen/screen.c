@@ -59,6 +59,8 @@ size_t write_screen(const char *buf, size_t count)
         case '\n':
             pos.y += 1;
             pos.x  = 0;
+
+            displayed++;
             break;
         case '\b':
             pos.x = (pos.x == 0 ? 0 : pos.x - 1);
@@ -72,9 +74,19 @@ size_t write_screen(const char *buf, size_t count)
     return displayed;
 }
 
+void *memcpy8(void *dest, const void *src, size_t n)
+{
+    uint64_t *p_dest = (uint64_t *) dest;
+    uint64_t *p_src  = (uint64_t *) src;
+
+    while ((n -= 8) >0)
+        *p_dest++ = *p_src++;
+    return dest;
+}
+
 void refresh(void)
 {
-    memcpy(disp->screen->p_loc, disp->back, disp->screen->buf_size);
+    memcpy8(disp->screen->p_loc, disp->back, disp->screen->buf_size);
 }
 
 void clear(void)

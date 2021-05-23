@@ -1,4 +1,5 @@
 
+#include <fs.h>
 #include <gdt.h>
 #include <irq.h>
 #include <malloc.h>
@@ -20,6 +21,7 @@ void k_start(boot_t *data)
         freeze(); // kernel panic: Where was this booted from ??
 
     init_malloc(MEM_START, MEM_END);
+    init_file_system();
 
     disp = malloc(sizeof(disp_t));
     disp->screen = data->screen;

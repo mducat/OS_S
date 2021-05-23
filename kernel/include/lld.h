@@ -1,5 +1,6 @@
 
 #ifndef _LLD_
+#define _LLD_
     typedef struct lld
     {
         void *data;

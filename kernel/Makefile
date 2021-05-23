@@ -1,5 +1,10 @@
 
 OBJ			=		src/kernel.o                \
+												\
+					src/font/font.o				\
+												\
+					src/fs/init.o				\
+					src/fs/read.o				\
                                                 \
 					src/hw/io.o                 \
 					src/hw/irq.o                \
@@ -21,8 +26,6 @@ OBJ			=		src/kernel.o                \
 					src/shell/shell.o           \
                                                 \
 					src/utils/string.o          \
-												\
-					src/font/font.o				\
                                                 \
 					src/lld/lld_db.o            \
 					src/lld/lld_free.o          \
@@ -41,7 +44,7 @@ OBJ			=		src/kernel.o                \
                                                 \
                                                 \
                                                 \
-					src/hw/int_handler.o        \
+					src/hw/int.o                \
 
 LINKER		=		builder/linker.ld
 

@@ -44,16 +44,14 @@ int strcmp(char const *str1, char const *str2)
     return (str1[i] - str2[i]);
 }
 
-int strncmp(char const *str1, char const *str2, int nb)
+int strncmp(char const *s, char const *t, int n)
 {
-    int i = 0;
-
-    while (str1[i] == str2[i] && str1[i] && str2[i]) {
-        if (i == nb)
-            break;
-        i++;
+    while (n-- && *s == *t) {
+          ++s;
+          ++t;
     }
-    return (str1[i] - str2[i]);
+    if (n >= 0) return *s - *t;
+    return 0;
 }
 
 void strcat(char *dest, char const *src)

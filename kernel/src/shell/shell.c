@@ -3,10 +3,11 @@
 #include <string.h>
 #include <malloc.h>
 #include <kernel.h>
-#include <files.h>
 
 #include <screen.h>
 #include <shell.h>
+#include <fs.h>
+#include <files_raw.h>
 
 int prompt(void)
 {
@@ -25,17 +26,27 @@ void init_shell(void)
 
 void flush_cmd(char *buf, size_t buf_len)
 {
-    if (!strcmp(buf, "help")) {
-        write_screen("No command yet.\n", 16);
+    file_t *file = open(buf);
+    void (*entry)(void) = 0;
+
+    if (!file) {
+        write_screen("No such file.\n", 14);
         return;
     }
-    if (!strcmp(buf, "test")) {
-        void (*ptr)(void) = (void(*)(void))bin0;
-        ptr();
-        return;
+
+    if (strncmp(file->content, OSS_HDR, OSS_HDR_LEN)) {
+        write_screen("This file is not executable.\n", 29);
+        goto out;
     }
-    write_screen(buf, buf_len);
-    write_screen("\n", 1);
+
+    char *test = f_raw[0];
+    entry = (void(*)(void)) (file->content + OSS_HDR_LEN);//( + OSS_HDR_LEN);
+    entry();
+
+out:
+    free(file->name);
+    free(file->content);
+    free(file);
 }
 
 int handle_char(char c)

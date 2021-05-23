@@ -1,7 +1,9 @@
 
-NAME		=	files.h
+NAME		=	files_raw.h
 
 PROGRAMS	=	ls	\
+				cat \
+				help \
 
 PLAIN		=   $(shell ls plain/*)
 

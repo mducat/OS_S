@@ -1,5 +1,7 @@
 
 OBJ		=	src/write.o  \
+			src/memory.o  \
+			src/fs.o  \
 
 NAME	=	liboss.a
 
