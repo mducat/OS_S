@@ -5,6 +5,8 @@
 ** parser
 */
 
+#include <oss.h>
+
 #include "my.h"
 
 int get_flag_index(char const *format, int i)

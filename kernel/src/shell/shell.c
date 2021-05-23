@@ -7,7 +7,6 @@
 #include <screen.h>
 #include <shell.h>
 #include <fs.h>
-#include <files_raw.h>
 
 int prompt(void)
 {
@@ -17,7 +16,7 @@ int prompt(void)
 void init_shell(void)
 {
     write_screen(GOODENOUGH, strlen(GOODENOUGH));
-    write_screen(shell_hdr, strlen(shell_hdr));
+    write_screen(SHELL_HDR, strlen(SHELL_HDR));
 
     prompt();
 
@@ -42,7 +41,6 @@ void flush_cmd(char *buf, size_t buf_len)
         goto out;
     }
 
-    char *test = f_raw[0];
     entry = (void(*)(void)) (file->content + OSS_HDR_LEN);//( + OSS_HDR_LEN);
     entry();
 

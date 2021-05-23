@@ -1,4 +1,6 @@
 
+#include <dev/serial.h>
+
 #include "malloc.h"
 
 //tempo pour les test de malloc
@@ -63,14 +65,16 @@ char *my_putnbr_base(unsigned long int nbr, char *base)
     to_print2[0] == 0 ? to_print2[0] = base[0] : 0;
     return (to_print2);
 }
+
 //print memory
 void mem_print(int x, int y, void *start, int size)
- {
-    char *c_start = (char *)start;
+{
+    (void)start;
+    //char *c_start = (char *)start;
     int xx = x-1;
-    char hexa[] = "0123456789ABCDEF";
-    static char str[2];
-    str[1] = 0;
+    //char hexa[] = "0123456789ABCDEF";
+    //static char str[2];
+    //str[1] = 0;
     int x2 = x;
     y--;
     for (unsigned long int i = 0; i < size/sizeof(char); i++){
@@ -78,12 +82,12 @@ void mem_print(int x, int y, void *start, int size)
             y++, x = xx, x2 = x;
         if (!(i % 2))
             x++;
-        char c = c_start[i];
-        str[0] = hexa[c & 0x0F];
+        //char c = c_start[i];
+        //str[0] = hexa[c & 0x0F];
         //mvprint(x, y, str, 0x07);
-        str[0] = hexa[c >> 4 & 0x0F];
+        //str[0] = hexa[c >> 4 & 0x0F];
         //mvprint(x+1, y, str, 0x07);
-        str[0] = c;
+        //str[0] = c;
         //mvprint(x2+21, y, str, 0x09);
         x2++;
         x += 2;
@@ -113,8 +117,11 @@ struct malloc_data *data;
 
 void malloc_print2(void *p, int x, int y)
 {
-    char *str = my_putnbr_base((long int)p, "0123456789ABCDEF");
-    int j = 0;
+    (void) p;
+    (void) x;
+    (void) y;
+    //char *str = my_putnbr_base((long int)p, "0123456789ABCDEF");
+    //int j = 0;
     //for (; my_strlen(str) + j < 8; j++)
     //    mvprint(x+j, y, "0", 0x07);
     //mvprint(x+j, y, str, 0x07);

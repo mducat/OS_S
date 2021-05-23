@@ -2,6 +2,7 @@
 #include <irq.h>
 #include <kernel.h>
 #include <screen.h>
+#include <shell.h>
 
 #include <dev/kbd.h>
 

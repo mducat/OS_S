@@ -5,6 +5,8 @@
 ** primary file
 */
 
+#include <oss.h>
+
 #include "my.h"
 
 void pf_putchar(char c, pf_conf_t *conf)
@@ -13,7 +15,7 @@ void pf_putchar(char c, pf_conf_t *conf)
     conf->char_printed += 1;
 }
 
-void pf_putstr(char const *s, pf_conf_t *conf)
+void pf_putstr(char *s, pf_conf_t *conf)
 {
     int len = my_strlen(s);
 
@@ -41,6 +43,7 @@ void print_arg(char const *format, int *i, va_list *ap, pf_conf_t *conf)
     switch (ty) {
     case 0:
         print_str(ap, conf);
+        break;
     case 1:
     case 2:
         print_nbr(ap, conf);

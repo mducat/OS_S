@@ -83,7 +83,7 @@ typedef struct conf{
 int my_printf(char const *, ...);
 
 void pf_putchar(char, pf_conf_t *);
-void pf_putstr(char const *, pf_conf_t *);
+void pf_putstr(char *, pf_conf_t *);
 void pf_put_nbr(long long int, pf_conf_t *);
 void handle_conf(char, pf_conf_t *, int, int);
 void post_conf(char, pf_conf_t *, int, int);

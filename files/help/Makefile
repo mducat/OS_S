@@ -3,9 +3,9 @@ OBJ		=	src/main.o   \
 
 NAME	=	help
 
-INC		= 	-I../oss_lib/inc -I../../include
+INC		= 	-I../../oss_lib/inc -I../../kernel/include
 
-LIBS	=	-L../oss_lib -loss
+LIBS	=	-L../../oss_lib -loss
 
 CFLAGS	=	$(INC) -Wall -Wextra 				\
 			-nostdinc -ffreestanding -nostdlib	\

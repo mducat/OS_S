@@ -28,7 +28,7 @@ void put_str_internal(char *s, int mode, int len, pf_conf_t *conf)
         return;
     }
     for (int i = 0; i < len; i++){
-        if (s[i] >= 32 && s[i] <= 127)
+        if (s[i] >= 32 && s[i] < 127)
             pf_putchar(s[i], conf);
         else
             print_np(s[i], conf);

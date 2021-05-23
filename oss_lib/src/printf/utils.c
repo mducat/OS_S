@@ -54,6 +54,7 @@ long long int get_unsigned(va_list *ap, pf_conf_t *conf)
     case 5:
         return (va_arg(*ap, size_t));
     }
+    return (0);
 }
 
 long long int get_signed(va_list *ap, pf_conf_t *conf)
@@ -73,6 +74,7 @@ long long int get_signed(va_list *ap, pf_conf_t *conf)
     case 5:
         return (va_arg(*ap, size_t));
     }
+    return (0);
 }
 
 long long int get_number(va_list *ap, pf_conf_t *conf, int is_signed)

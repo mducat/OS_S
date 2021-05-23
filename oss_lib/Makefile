@@ -19,7 +19,7 @@ OBJ		=	src/write.o  \
 
 NAME	=	liboss.a
 
-INC		= 	-Iinc -I../../include
+INC		= 	-Iinc -I../kernel/include
 
 CFLAGS	=	$(INC) -Wall -Wextra 				\
 			-ffreestanding -nostdinc -nostdlib	\

@@ -27,6 +27,7 @@ void print_char(va_list *ap, pf_conf_t *conf)
 
 void print_percent(va_list *ap, pf_conf_t *conf)
 {
+    (void) ap;
     pf_putchar('%', conf);
 }
 

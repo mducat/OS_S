@@ -65,7 +65,7 @@ int main(void)
     printf(":%15.10s:\n", "Hello, world!");
     printf(":%-15.10s:\n", "Hello, world!");
 
-    /*printf("%- +#5.2c\n", 'a');
+    printf("%- +#5.2c\n", 'a');
     printf("%-3.6b\n", 123456765);
 
     char *long_pointer[] = {"Hey"};

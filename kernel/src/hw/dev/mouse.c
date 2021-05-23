@@ -12,9 +12,9 @@ uint8_t m_off    =  0 ;
 uint64_t m_x = 0;
 uint64_t m_y = 0;
 
-void draw_at(int x, int y, char r, char g, char b)
+/*void draw_at(int x, int y, char r, char g, char b)
 {
-    /*char *loc = (char *) disp->screen->p_loc;
+    char *loc = (char *) disp->screen->p_loc;
     uint32_t ppl = disp->screen->pix_per_line;
     uint32_t x_len = disp->screen->x_len;
 
@@ -33,8 +33,8 @@ void draw_at(int x, int y, char r, char g, char b)
         }
 
         cursor += ((ppl - x_len) + (x_len - size)) * 4;
-    }*/
-}
+    }
+}*/
 
 void irq12_handler(void)
 {
@@ -66,7 +66,7 @@ void irq12_handler(void)
     my_put_nbr(d_y);
     write_serial('\n');*/
 
-    draw_at(m_x, m_y, 0, 0, 0);
+    /*draw_at(m_x, m_y, 0, 0, 0);
 
     m_x += d_x;
     m_y -= d_y;
@@ -78,7 +78,7 @@ void irq12_handler(void)
     else if (m_buf[0] & 4)
         draw_at(m_x, m_y, 255, 255, 255);
     else
-        draw_at(m_x, m_y, 255, 0, 0);
+        draw_at(m_x, m_y, 255, 0, 0);*/
 
     out:
     end_of_interrupt(12);
@@ -89,10 +89,10 @@ void init_mouse()
     m_x = disp->screen->x_len / 2;
     m_y = disp->screen->y_len / 2;
 
-    my_put_nbr(m_x);
-    write_serial('\n');
-    my_put_nbr(m_y);
-    write_serial('\n');
+    //my_put_nbr(m_x);
+    //write_serial('\n');
+    //my_put_nbr(m_y);
+    //write_serial('\n');
     
-    draw_at(m_x, m_y, 255, 0, 0);
+    //draw_at(m_x, m_y, 255, 0, 0);
 }

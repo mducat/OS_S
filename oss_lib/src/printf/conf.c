@@ -31,6 +31,7 @@ void handle_number(char type, pf_conf_t *conf, int nb)
 
 int handle_alt(char type, pf_conf_t *conf, int nb, int printing)
 {
+    (void) nb;
     if (!conf->flags[4])
         return (0);
     switch (type){
@@ -52,7 +53,7 @@ int handle_alt(char type, pf_conf_t *conf, int nb, int printing)
 
 void handle_conf(char type, pf_conf_t *conf, int size, int nb)
 {
-    int offset = (conf->flags[1] | conf->flags[2]) & nb > 0 | nb < 0;
+    int offset = ((conf->flags[1] | conf->flags[2]) & (nb > 0)) | (nb < 0);
     int padding = conf->width - size - offset;
     int zeros = 0;
 
@@ -75,7 +76,7 @@ void handle_conf(char type, pf_conf_t *conf, int size, int nb)
 void post_conf(char type, pf_conf_t *conf, int size, int nb)
 {
     char print = ' ';
-    int offset = (conf->flags[1] | conf->flags[2]) & nb > 0 | nb < 0;
+    int offset = ((conf->flags[1] | conf->flags[2]) & (nb > 0)) | (nb < 0);
     int padding = conf->width - size - offset;
 
     if (!conf->flags[0])
