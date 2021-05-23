@@ -1,7 +1,3 @@
-
-OBJ		=	src/write.o  \
-			src/memory.o  \
-			src/fs.o  \
 			src/printf/conf.o  \
 			src/printf/is_num.o  \
 			src/printf/my_printf.o  \
@@ -16,27 +12,3 @@ OBJ		=	src/write.o  \
 			src/printf/printers4.o  \
 			src/printf/put_double.o  \
 			src/printf/utils.o  \
-
-NAME	=	liboss.a
-
-INC		= 	-Iinc -I../../include
-
-CFLAGS	=	$(INC) -Wall -Wextra 				\
-			-ffreestanding -nostdinc -nostdlib	\
-			-D_OSS_SOURCE
-
-all: $(NAME)
-
-$(NAME):$(OBJ)
-	ar rcv $(NAME) $(OBJ)
-
-debug:	CFLAGS += -g
-debug:	fclean all
-
-clean:
-	rm -f  $(OBJ)
-
-fclean:	clean
-	rm -f $(NAME)
-
-re:	fclean all

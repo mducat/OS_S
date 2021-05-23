@@ -29,6 +29,9 @@ void flush_cmd(char *buf, size_t buf_len)
     file_t *file = open(buf);
     void (*entry)(void) = 0;
 
+    if (!buf_len)
+        return;
+    
     if (!file) {
         write_screen("No such file.\n", 14);
         return;

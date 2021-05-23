@@ -12,10 +12,7 @@ int main(void)
     while (name) {
         file_t *file = open(name);
 
-        write(file->name);
-        write(file->content);
-        write("\n");
-
+        printf("'%s': '''%s'''\n", file->name, file->content);
         close(file);
 
         free(name);

@@ -11,6 +11,8 @@ size_t write_raw(char *, size_t);
 size_t write(char *);
 void refresh(void);
 
+int printf(const char *format, ...);
+
 /* MEMORY */
 
 void *malloc(size_t n);
