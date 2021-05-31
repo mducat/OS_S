@@ -1,0 +1,79 @@
+rm -f a.out
+gcc main.c -I../../oss_lib/inc -I../../kernel/include -Wall -Wextra -nostdinc -ffreestanding -nostdlib -Wl,--oformat=binary 
+objdump -D -Mintel,x86-64 -b binary -m i386 a.out
+
+a.out:     format de fichier binary
+
+
+Déassemblage de la section .data :
+
+00000000 <.data>:
+       0:	04 00                	add    al,0x0
+       2:	00 00                	add    BYTE PTR [rax],al
+       4:	10 00                	adc    BYTE PTR [rax],al
+       6:	00 00                	add    BYTE PTR [rax],al
+       8:	05 00 00 00 47       	add    eax,0x47000000
+       d:	4e 55                	rex.WRX push rbp
+       f:	00 02                	add    BYTE PTR [rdx],al
+      11:	00 00                	add    BYTE PTR [rax],al
+      13:	c0 04 00 00          	rol    BYTE PTR [rax+rax*1],0x0
+      17:	00 03                	add    BYTE PTR [rbx],al
+	...
+     ffd:	00 00                	add    BYTE PTR [rax],al
+     fff:	00 f3                	add    bl,dh
+    1001:	0f 1e fa             	nop    edx
+    1004:	55                   	push   rbp
+    1005:	48 89 e5             	mov    rbp,rsp
+    1008:	89 f8                	mov    eax,edi
+    100a:	66 89 45 fc          	mov    WORD PTR [rbp-0x4],ax
+    100e:	90                   	nop
+    100f:	5d                   	pop    rbp
+    1010:	c3                   	ret    
+    1011:	f3 0f 1e fa          	endbr64 
+    1015:	55                   	push   rbp
+    1016:	48 89 e5             	mov    rbp,rsp
+    1019:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [rbp-0x4],0x0
+    1020:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+    1023:	05 de bc 9a 78       	add    eax,0x789abcde
+    1028:	89 45 f8             	mov    DWORD PTR [rbp-0x8],eax
+    102b:	90                   	nop
+    102c:	5d                   	pop    rbp
+    102d:	c3                   	ret    
+	...
+    1ffe:	00 00                	add    BYTE PTR [rax],al
+    2000:	14 00                	adc    al,0x0
+    2002:	00 00                	add    BYTE PTR [rax],al
+    2004:	00 00                	add    BYTE PTR [rax],al
+    2006:	00 00                	add    BYTE PTR [rax],al
+    2008:	01 7a 52             	add    DWORD PTR [rdx+0x52],edi
+    200b:	00 01                	add    BYTE PTR [rcx],al
+    200d:	78 10                	js     0x201f
+    200f:	01 1b                	add    DWORD PTR [rbx],ebx
+    2011:	0c 07                	or     al,0x7
+    2013:	08 90 01 00 00 1c    	or     BYTE PTR [rax+0x1c000001],dl
+    2019:	00 00                	add    BYTE PTR [rax],al
+    201b:	00 1c 00             	add    BYTE PTR [rax+rax*1],bl
+    201e:	00 00                	add    BYTE PTR [rax],al
+    2020:	e0 ef                	loopne 0x2011
+    2022:	ff                   	(bad)  
+    2023:	ff 11                	call   QWORD PTR [rcx]
+    2025:	00 00                	add    BYTE PTR [rax],al
+    2027:	00 00                	add    BYTE PTR [rax],al
+    2029:	45 0e                	rex.RB (bad) 
+    202b:	10 86 02 43 0d 06    	adc    BYTE PTR [rsi+0x60d4302],al
+    2031:	48 0c 07             	rex.W or al,0x7
+    2034:	08 00                	or     BYTE PTR [rax],al
+    2036:	00 00                	add    BYTE PTR [rax],al
+    2038:	1c 00                	sbb    al,0x0
+    203a:	00 00                	add    BYTE PTR [rax],al
+    203c:	3c 00                	cmp    al,0x0
+    203e:	00 00                	add    BYTE PTR [rax],al
+    2040:	d1 ef                	shr    edi,1
+    2042:	ff                   	(bad)  
+    2043:	ff 1d 00 00 00 00    	call   FWORD PTR [rip+0x0]        # 0x2049
+    2049:	45 0e                	rex.RB (bad) 
+    204b:	10 86 02 43 0d 06    	adc    BYTE PTR [rsi+0x60d4302],al
+    2051:	54                   	push   rsp
+    2052:	0c 07                	or     al,0x7
+    2054:	08 00                	or     BYTE PTR [rax],al
+	...
