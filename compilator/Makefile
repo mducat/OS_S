@@ -20,6 +20,28 @@ peak:
 	gcc main.c $(CFLAGS)
 	objdump -D -Mintel,x86-64 -b binary -m i386 a.out
 
+peak_compiler:
+	rm -f a.out
+	gcc -g compilator.c lld/*.c ucp/*.c
+	objdump -D -Mintel,x86-64 -b binary -m i386 a.out
+
+
+run:
+	rm -f a.out
+	gcc -g compilator.c lld/*.c ucp/*.c
+	./a.out
+
+gdb:
+	rm -f a.out
+	gcc -g compilator.c lld/*.c ucp/*.c
+	gdb ./a.out
+
+
+valgrind:
+	rm -f a.out
+	gcc -g compilator.c lld/*.c ucp/*.c
+	valgrind --leak-check=full --track-origins=yes ./a.out
+
 clean:
 	rm -f  $(OBJ)
 

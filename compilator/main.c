@@ -7,4 +7,6 @@ int main()
 {
     int a = 0;
     int b = a + 0x789ABCDE;
+    keep(a);
+    keep(a);
 }
