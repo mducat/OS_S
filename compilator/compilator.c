@@ -85,13 +85,10 @@
 #define CHAR_TO_LEFT_REGISTER(r) ((r) << 3)
 #define CHAR_TO_RIGHT_REGISTER(r) ((r) << 0)
 
-void print() {
-    printf("hello there\n");
-}
-
 typedef struct OpCode {
     int id;
     int size;
+    int tot_size;
     char c[0];
 } OpCode_t;
 
@@ -113,7 +110,7 @@ OpCode_t *OpCode_add_r_r(char Rdest, char Rsrc) {
     return op;
 }
 
-/*OpCode_t *OpCode_call_abs(char Rdest, int adrr) // do not use this{
+/*OpCode_t *OpCode_call_abs(int adrr) // do not use this{
     unsigned char thisOpcode[] = {
         0xe8, // call 
         RELATIVE_CALL_TO_4CHARS(code2+12, printHello, 5)
@@ -123,7 +120,7 @@ OpCode_t *OpCode_add_r_r(char Rdest, char Rsrc) {
 }*/
 
 
-OpCode_t *OpCode_call_relativ(char Rdest, int adrr) {
+OpCode_t *OpCode_call_relativ(int adrr) {
     unsigned char thisOpcode[] = {
         0xe8, // call 
         ADDRESS_TO_4CHARS(adrr-5)
@@ -131,20 +128,6 @@ OpCode_t *OpCode_call_relativ(char Rdest, int adrr) {
     OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
     return op;
 }
-
-
-//300:	b0 02                	mov    al,0x2
-//750:	b8 00 00 00 00       	mov    eax,0x0
-//920:	b0 5f                	mov    al,0x5f
-
-//1206:	49 89 d1             	mov    r9,rdx
-//120a:	48 89 e2             	mov    rdx,rsp
-
-//1271:	48 89 f0             	mov    rax,rsi
-//12b6:	48 89 e5             	mov    rbp,rsp
-
-//      48 b8, ADDRESS_TO_8CHARS((long int)printHello), // mov rax (printHello)
-
 
 // char registers[][10] = { 
 //     "eAX", //000
@@ -156,6 +139,40 @@ OpCode_t *OpCode_call_relativ(char Rdest, int adrr) {
 //     "eSI", //110
 //     "eDI", //111
 // };
+
+OpCode_t *OpCode_syscall() {
+    unsigned char thisOpcode[] = {
+        //0x48, 0x8b,
+        //CHAR_TO_LEFT_REGISTER(Rdest) | CHAR_TO_RIGHT_REGISTER(Rsrc), // mov r to r
+        //ADDRESS_TO_4CHARS(offset)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+
+OpCode_t *OpCode_mov_r_mem(char Rdest, char Radrr, int offset) {
+    unsigned char thisOpcode[] = {
+        0x48, 0x8b,
+        CHAR_TO_LEFT_REGISTER(Rdest) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+        ADDRESS_TO_4CHARS(offset)
+    };
+
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_mov_mem_r(char Rsrc, char Radrr, int offset) {
+    unsigned char thisOpcode[] = {
+        0x48 | OP_D, 0x8b,
+        CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+        ADDRESS_TO_4CHARS(offset)
+    };
+
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
 
 
 OpCode_t *OpCode_mov_r_r(char Rdest, char Rsrc) {
@@ -178,6 +195,18 @@ OpCode_t *OpCode_mov_r_li(char Rdest, long int val) {
     OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
     return op;
 }
+
+OpCode_t *OpCode_jmp_relativ(int val) {
+    unsigned char thisOpcode[] = {
+        0xe9, 
+        ADDRESS_TO_4CHARS(val)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+
+
 
 
 
@@ -252,6 +281,12 @@ void parseFile(char **file, FILE *dest) {
     printf("id of r41 %i\n", registerIdOf("r41"));
 }
 
+
+long int print() {
+    printf("hello there\n");
+    return 3210987; 
+}
+
 int main() {
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
@@ -267,7 +302,7 @@ int main() {
         0x48, 0xb8, ADDRESS_TO_8CHARS((long int)printHello), // mov rax (printHello)
         0xff, 0xd0, // call rax
         0xe8, RELATIVE_CALL_TO_4CHARS(code2+12, printHello, 5),
-
+        //0x48, 0xb8, ADDRESS_TO_8CHARS(123456789),
         0xc3 // ret
     };
     printf("code %p\n", code);
@@ -282,10 +317,11 @@ int main() {
         code2[i] = code[i];
 
     mprotect(code2, sizeof(code), PROT_EXEC);
-    void (*func)() = (void *)code2;
+    long int (*func)() = (void *)code2;
     //printf("%p %p %p\n", func, code2, &code2);
 
-    func();
+    long int ret = func();
+    printf("ret = %li\n", ret);
 
     printf("END\n");
     free(code2);
