@@ -31,6 +31,12 @@ run:
 	gcc -g compilator.c lld/*.c ucp/*.c
 	./a.out
 
+runO4:
+	rm -f a.out
+	gcc compilator.c lld/*.c ucp/*.c -O4
+	./a.out
+
+
 gdb:
 	rm -f a.out
 	gcc -g compilator.c lld/*.c ucp/*.c
@@ -38,9 +44,10 @@ gdb:
 
 
 valgrind:
+	clear
 	rm -f a.out
 	gcc -g compilator.c lld/*.c ucp/*.c
-	valgrind --leak-check=full --track-origins=yes ./a.out
+	valgrind --leak-check=full --track-origins=yes ./a.out | cat -e
 
 clean:
 	rm -f  $(OBJ)

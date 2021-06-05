@@ -52,3 +52,19 @@ int ucp(char *str, char *regex, ...)
     free(fonc);
     return (tot);
 }
+
+int ucp_ptrs(char *str, char *regex, int *(**foncs)(char *)) {
+    lld_t *lld_fonc = lld_init();
+    char *buf = strdup(str);
+    int fonc_p = 0;
+    for (int i = 0; regex[i]; i++)
+        if (regex[i] == '*')
+            lld_insert(lld_fonc, (u64)lld_fonc->data, foncs[fonc_p++]);
+    int (**fonc)(char *) = (void *)lld_lld_to_tab(lld_fonc);
+    lld_free(lld_fonc);
+            
+    int tot = ucp_recursiv(str, buf, regex, fonc);
+    free(buf);
+    free(fonc);
+    return (tot);
+}

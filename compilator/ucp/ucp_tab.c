@@ -74,6 +74,28 @@ char ***ucp_tab(char *str, char *regex, ...)
     return (tab);
 }
 
+char ***ucp_tab_ptr(char *str, char *regex, int *(**foncs)(char *))
+{
+    lld_t *lld_fonc = lld_init();
+    lld_insert(lld_fonc, 0, (void *)-1);
+    char *buf = strdup(str);
+    int p = 0;
+    for (int i = 0; regex[i]; i++)
+        if (regex[i] == '*')
+            lld_insert(lld_fonc, (u64)lld_fonc->data, foncs[p++]);
+    int (**fonc)(char *) = (void *)lld_lld_to_tab(lld_fonc);
+    lld_free(lld_fonc);
+    char *str2[3] = {str, buf, regex};
+    lld_t *lld = ucp_get_recursiv(str2, fonc);
+    char ***tab = (char ***)lld_lld_to_tab(lld);
+    lld_free(lld), free(buf), free(fonc);
+    for (int i = 0; tab[i]; i++)
+        for (int j = 0; tab[i][j]; j++)
+            tab[i][j] = (char *)((u64)tab[i][j] & ~IS_FLAG);
+    return (tab);
+}
+
+
 void ucp_free(char ***tab)
 {
     for (int i = 0; tab[i]; i++){
