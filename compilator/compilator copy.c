@@ -86,6 +86,23 @@
 #define CHAR_TO_LEFT_REGISTER(r) ((r) << 3)
 #define CHAR_TO_RIGHT_REGISTER(r) ((r) << 0)
 
+
+/*
+    442e:	48 c7 c2 ff ff ff ff 	mov    rdx,0xffffffffffffffff
+    
+    
+    4442:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
+    3fdd:	48 8b 05 fc 50 00 00 	mov    rax,QWORD PTR [rip+0x50fc]        # 0x90e0
+    
+    4004:	e8 41 e7 ff ff       	call   0x274a
+
+
+    3f84:	0f 85 8b 00 00 00    	jne    0x4015
+
+    3f6f:	e9 1c 01 00 00       	jmp    0x4090
+
+*/
+
 typedef struct OpCode {
     int adrr;
     int c_size;

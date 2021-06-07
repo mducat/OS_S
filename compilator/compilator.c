@@ -32,27 +32,39 @@
 #define RELATIVE_CALL_TO_2CHARS(addr, destAdrr, opcodesize) ADDRESS_TO_2CHARS(-(long int)(addr)-(long int)(opcodesize)+(long int)(destAdrr))
 #define RELATIVE_CALL_TO_1CHARS(addr, destAdrr, opcodesize) ADDRESS_TO_1CHARS(-(long int)(addr)-(long int)(opcodesize)+(long int)(destAdrr))
 
+//Booooa %4i Erreur, c'est pas si mal !   38
 
-#define GOODENOUGH  ("\n\
-                       ##&#&%(%%\n\
-                     ####&(,    ..                                   .,(\n\
-                    ####(,  .   /#(*                            / .,./\n\
-                    ####*/**,#/*./,  .                          . ,#\n\
-                     ####/(/%%/*/,  #,,                     .  .*/\n\
-                      &##&***,,.,(/&*,%######               ,*//(,\n\
-                        &%#%****,(#/&(&######### / ,        .*##.\n\
-                        .##/####&###### .*#######,    .     ,,*.\n\
-                      ######,* *.&##&##.,    #####%  . */  ./*(/*.\n\
-                     ,######,*  %* *,&&%%     ..###* .  ,  *(,*(%\n\
-,,                    ######   .     .*#&% .     *##/..*/,/*,(%,\n\
-&%#(%(%(*         .   #######   . ,   .(##%#     ./##%#(*/(,(\n\
-   #&#%(#(/,,,.(*/.,,/######%  . .      (%##% .     #\n\
-        &&&%#/#,.   ,,######%   .   ,   #&%###    .  #\n\
-       *#&%%##&* , * ,######.,     .   .(###%%#      (##\n\
-         .(&%/..../   ######,.    . ,    &##((##  .. ,,#%\n\
-        ,.     * (./ *######* . .       , ####(#(   . .,#\n\
-      ., , //*, (%/.*.######.* , . , . ,,#&####### , . .#*\n\
-")
+
+
+
+#define GOODENOUGH  "%s %3i Warning? c'est pas si mal!\n\n", "\n\
+                                     #@@&&&@/                                                       \n\
+                                   @@@@%%%/*   ,                                                    \n\
+                                 @@@@@&%(,       .@                                      .   .*#(   \n\
+                                @@@@@%/.       .#*(((                                  ,  .. *#     \n\
+                                 @@@%/*/,*..**,,(&*,  &                                 .  *%       \n\
+                                 @@@@&#//@**%(,(.  . . ,                           .    *((         \n\
+                                  @@@@@**/(#*,*,/,,,/%/*% *@                         .,//           \n\
+                                    @@@@/***,,..**(&***/@@@@@@@@@                  //(((/           \n\
+                                     @%&@@/****,,%#/(#(&@@@@@@@@@@@  . .,*         , #(@.           \n\
+                                      %@&,%@@#(((#@@@@@@.  (@@@@@@@@@   *  .       ,,/ (.,          \n\
+                                    @@@@@#*  .((%&@&&%/&(,    /@@@@@@@,   .*  &   * (*,*  .         \n\
+                                  @@@@@@@@ , *  .  &@&%%& ..    ,@@@@@@.,  (.,*  *//#**#@,          \n\
+                                 .@@@@@@@@@ ,/ &.    .#@&@%        %@@@@   ,,/., .*(,//&/           \n\
+       %                       .  ,@@@@@@@@ . ,    *. .*@&@%         @@@%...,.**/ (**%*             \n\
+      *%&&%%#((***                 @@@@@@@@  . ,  .   ../@%@%@   .  . &@@&##.,,(#*(#                \n\
+         @%%###(#%(/*,%  ,*.*..,. #@@@@@@@@,  .  . . , ..(#%&%@       ./@                           \n\
+             &#(#(/(/****/,.,/,*.  @@@@@@@@ ,  . , ,  .  ,@%@%#(/,      ,@                          \n\
+                 #&&&&&#(#.,/(%./.#@@@@@@@@*      .  . , .#@#@#@##, ..  ./@#                        \n\
+                 @@&%%%##@(&    . ,@@@@@@@@     .     , . (@@#@#@#( .  . .%@@                       \n\
+                  .&@%((, & .  * * @@@@@@@@    * ,         &#@(%(##  .,. . *@@                      \n\
+                   ,.  , ,*.    ,. @@@@@@@@       .  ,     ,%(###((#. .  ., .@@                     \n\
+                 . ...    (/,  /.(.@@@@@@@@*  , ,    .  . ,/#@##((&#&  ,   . @@                     \n\
+               /..&,.,(#.& /**( ,./@@@@@@@@.*  , *  . . ..,/@((#(##@#&  .,.   @                     \n\
+                                                                                                    \n\
+                               "
+
+//72
 
 #define GOODOSS  ("\n\
                                        ////****///////////////*///                                  \n\
@@ -95,7 +107,7 @@
                         *########/##%&&%///////****/(###*,,,.     **,.     #&&#|    |\\              \n\
                         .#######((#%%&&.            .#&#%%*,,*\\,,,     _-  *%%%/      ,/            \n\
                 ___ _ ,///(#####&%#%%&#   #(//((//*,... ..,*#&&@@@@&&&&%/   %%@@.     ./            \n\
-           ,//,              ,,#@@@@.\\                          ..,*,\\=-_   %@@#%* ,&(//=-/'*\\      \n\
+           ,//,              ,,#@@@@.\\                          ..,*,\\=-_   %@@#%*-,&(//=-/'*\\      \n\
         ,*         /%&&%*    ,#*#@&/  ,.    _--=##%&&&&#         &%(*,..,/(#&#@%#%            *     \n\
        /         .(///((//(@  *%%%(    .////     ..           .%((((//,.  .&.  .    .-=&       *    \n\
       /*          .(((////(//&         /               _\\*%&#/////.          .%(/#*/   /,      ()   \n\
@@ -106,10 +118,10 @@
                                                           ,(&*          ./                          \n\
                                                              *#% *%&%(/*                            \n\
                                                                                                     \n\
+                                              0 Warning                                             \n\
+                                    MEILLEUR PROGRAMMEUR FRANCAI                                    \n\
+                                                                                                    \n\
 ")
-
-
-
 
 char **strToWords(const char *str, char split) {
     lld_t *lld = lld_init();
@@ -169,14 +181,22 @@ OpCode_t *OpCode_init(int size, char *code) {
 
 typedef struct instruction {
     char **name;
-    //char *args; // 1 = r, 2 = adrr, 0 = end 
+    int c_size;
     OpCode_t *(*generate)(char **args);
 } instruction_t;
+
+char *generateInstructionChars[32] = {
+    "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"
+};
+
 
 instruction_t *generateInstruction(char *name, OpCode_t *(*func)(char **)) {
     instruction_t *inst = malloc(sizeof(instruction_t));
     inst->name = strToWords(name, ' ');
     inst->generate = func;
+    OpCode_t *op = func(generateInstructionChars);
+    inst->c_size = op->c_size;
+    free(op);
     return inst;
 }
 
@@ -191,7 +211,7 @@ OpCode_t *compile_ADD_r_r(char **strs) {
     return opcode;
 }
 
-OpCode_t *compile_JMP(char **strs) {
+OpCode_t *compile_JMP_relativ(char **strs) {
     int adrr = strtol(strs[1]+1, 0, 0);
     unsigned char thisOpcode[] = {
         0xe9, 
@@ -220,7 +240,7 @@ OpCode_t *OpCode_MOV_r_r(char **strs) {
     return op;
 }
 
-OpCode_t *OpCode_mov_r_mem(char **strs) {
+OpCode_t *OpCode_MOV_r_mem(char **strs) {
     int Rdest = strtol(strs[1]+1, 0, 0);
     int Radrr = strtol(strs[2]+1, 0, 0);
     int offset = strtol(strs[3]+1, 0, 0);
@@ -234,7 +254,7 @@ OpCode_t *OpCode_mov_r_mem(char **strs) {
     return op;
 }
 
-OpCode_t *OpCode_mov_mem_r(char **strs) {
+OpCode_t *OpCode_MOV_mem_r(char **strs) {
     int Rsrc = strtol(strs[1]+1, 0, 0);
     int Radrr = strtol(strs[2]+1, 0, 0);
     int offset = strtol(strs[3]+1, 0, 0);
@@ -248,21 +268,65 @@ OpCode_t *OpCode_mov_mem_r(char **strs) {
     return op;
 }
 
+OpCode_t *OpCode_MOV_r_li(char **strs) {
+    char Rdest = strtol(strs[1]+1, 0, 0);
+    long int val = strtol(strs[2]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x48, 
+        REG_MOD_four_byte_signed_displacement | CHAR_TO_LEFT_REGISTER(0b111) | CHAR_TO_RIGHT_REGISTER(Rdest), // mov r to r
+        ADDRESS_TO_8CHARS(val)
+    };
+
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_CALL(char **strs) {
+    int adrr = strtol(strs[1]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0xe8,
+        ADDRESS_TO_4CHARS(adrr)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_JE(char **strs) {
+    int adrr = strtol(strs[1]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x74,
+        ADDRESS_TO_1CHARS(adrr)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
 instruction_t **instructionsSet = 0;
 #define PUSHBACK(lld, data) lld_insert(lld, lld_len(lld), data)
 void generateInstructionsSet() {
     lld_t *lld = lld_init();
 
     PUSHBACK(lld, generateInstruction("add r r", &compile_ADD_r_r));
-    PUSHBACK(lld, generateInstruction("jmp 0", &compile_JMP));
+    PUSHBACK(lld, generateInstruction("jmp _", &compile_JMP_relativ));
     PUSHBACK(lld, generateInstruction("ret", &compile_RET));
     PUSHBACK(lld, generateInstruction("mov r r", &OpCode_MOV_r_r));
-    PUSHBACK(lld, generateInstruction("mov r r 0", &OpCode_mov_r_mem));
-    PUSHBACK(lld, generateInstruction("mov r r 0", &OpCode_mov_mem_r));
+    PUSHBACK(lld, generateInstruction("mov r r _", &OpCode_MOV_r_mem));
+    PUSHBACK(lld, generateInstruction("mov r r _", &OpCode_MOV_mem_r));
+    PUSHBACK(lld, generateInstruction("call _", &OpCode_CALL));
+    PUSHBACK(lld, generateInstruction("mov r _", &OpCode_MOV_r_li));
 
     instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
     lld_free(lld);
 }
+
+
+typedef struct balise {
+    int adrr;
+    char *name;
+} balise_t;
 
 void freeInstructionsSet() {
     for (int i = 0; instructionsSet[i]; i++) {
@@ -340,6 +404,9 @@ int main() {
     free(line);
     fclose(src);
 
+  
+
+
     // apply strToWords on each line and do aliases 
     int i = 0;
     printf("\n");
@@ -347,9 +414,12 @@ int main() {
         // rm double spaces
         rmDoubledCHar(mv->data, ' ');
         printf("%4i|  %s\n", i, (char *)mv->data);
+
         char **words = strToWords(mv->data, ' ');
-        // aply aliases
+        
+        // iter through words
         for (int i = 0; words[i]; i++) {
+            // apply aliases
             for (int j = 0; j < sizeof(aliases)/sizeof(*aliases); j += 2) {
                 if (!strcmp(words[i], aliases[j])) {
                     free(words[i]);
@@ -361,12 +431,16 @@ int main() {
         free(mv->data);
         mv->data = words;
     }
-    printf("##############\n");
 
-    lld_t *lld_opcodes = lld_init();
+    
+    
+    printf("############################\n");
+
+    lld_t *lld_balises = lld_init();
 
     // compile the code
     i = 0;
+    int current_adr = 0;
     for (lld_t *mv = file->next; mv; mv = mv->next, i++) {
         printf("%4i| ", i);
         char **words = mv->data;
@@ -387,16 +461,62 @@ int main() {
             next:
             (void)0;
         }
+        printf("\t\t");
+        // find balise
+        for (int i = 0; words[i]; i++) {
+            if (words[i][0] == '!') {
+                balise_t *balise = malloc(sizeof(balise_t));
+                balise->name = strdup(words[i]+1);
+                balise->adrr = current_adr;
+                lld_insert(lld_balises, lld_len(lld_balises), balise);
+                printf("\t'%s' found", balise->name);
+            }
+        }
+
         if (instruction == -1) {
-            printf(" <= !!!COMPILATION ERROR LINE INGORED!!!");
+            printf("\t<= C KOI SA?""?!");
             error_count++;
         } else {
-            // compile an instruction
+            current_adr += instructionsSet[instruction]->c_size;
+        }
+
+
+
+
+        // change instruction name to instruction id
+        free(words[0]);
+        words[0] = (void *)(long int)instruction;
+        printf("\n");
+    }
+
+
+        // replace balise with relative range
+
+
+    printf("############################\n");
+
+
+    // compile instructions
+    lld_t *lld_opcodes = lld_init();
+    i = 0;
+    for (lld_t *mv = file->next; mv; mv = mv->next, i++) {
+        printf("%4i| ", i);
+        char **words = mv->data;
+        if ((long int)words[0] != -1)
+            printf(" %s", instructionsSet[(long int)words[0]]->name[0]);
+        else 
+            printf(" UNKNOWN");
+        for (int i = 1; words[i]; i++) {
+            printf(" %s", words[i]);
+        }
+        printf("\n");
+        // compile an instruction
+        long int instruction = (long int)words[0];
+        if (instruction != -1){
             lld_insert(lld_opcodes, lld_len(lld_opcodes), 
                 instructionsSet[instruction]->generate(words)
             );
         }
-        printf("\n");
     }
 
     OpCode_t **opcodes = (OpCode_t **)lld_lld_to_tab(lld_opcodes);
@@ -426,7 +546,7 @@ int main() {
     printf("Compilation: DONE\n");
         printf("the programe has compiled with %i errors\n", error_count);
     if (error_count) {
-        printf("%s", GOODENOUGH);
+        printf(GOODENOUGH, error_count);
     } else {
         printf("%s", GOODOSS);
     }   
@@ -434,7 +554,7 @@ int main() {
     // free array
     for (lld_t *mv = file->next; mv; mv = mv->next, i++) {
         char **words = mv->data;
-        for (int j = 0; words[j] != 0; j++)
+        for (int j = 1; words[j] != 0; j++)
             free(words[j]);
         free(words);
     }
