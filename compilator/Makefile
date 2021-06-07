@@ -47,7 +47,7 @@ valgrind:
 	clear
 	rm -f a.out
 	gcc -g compilator.c lld/*.c ucp/*.c
-	valgrind --leak-check=full --track-origins=yes ./a.out | cat -e
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./a.out | cat -e
 
 clean:
 	rm -f  $(OBJ)

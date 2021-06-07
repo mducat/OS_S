@@ -108,13 +108,34 @@ OpCode_t *compileAdd(char **strs) {
     return opcode;
 }
 
+OpCode_t *compileJMP(char **strs) {
+    unsigned char thisOpcode[] = {
+        0xe9, 
+        ADDRESS_TO_4CHARS(atoi(strs[0]))
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
 instruction_t **instructionsSet = 0;
 #define PUSHBACK(lld, data) lld_insert(lld, lld_len(lld), data)
 void generateInstructionsSet() {
     lld_t *lld = lld_init();
+    
+
     PUSHBACK(lld, generateInstruction("add R R", &compileAdd));
+    PUSHBACK(lld, generateInstruction("jmp x", &compileJMP));
+
+
     instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
     lld_free(lld);
+}
+
+void freeInstructionsSet() {
+    for (int i = 0; instructionsSet[i]; i++) {
+        free(instructionsSet[i]);
+    }
+    free(instructionsSet);
 }
 
 void printInstructionsSet() {
@@ -152,7 +173,7 @@ char aliases[][32] = {
     "rdi", "r7",
     "add", "i0",
     "jmp", "i1",
-    0, 0,
+    "add", "i2",
 };
 
 int main() {
@@ -186,24 +207,22 @@ int main() {
         char **words = strToWords(mv->data, ' ');
         // aply aliases
         for (int i = 0; words[i]; i++) {
-            if ()
-
             for (int j = 0; j < sizeof(aliases)/sizeof(*aliases); j += 2) {
                 if (!strcmp(words[i], aliases[j])) {
                     free(words[i]);
                     words[i] = strdup(aliases[j+1]);
                     break;
                 }
-
             }
         }
         free(mv->data);
         mv->data = words;
     }
+    printf("##############\n");
 
     i = 0;
     for (lld_t *mv = file->next; mv; mv = mv->next, i++) {
-        printf("%4i| ", i, (char *)mv->data);
+        printf("%4i| ", i);
         char **words = mv->data;
         for (int i = 0; words[i]; i++) {
             printf(" %s", words[i]);
@@ -219,5 +238,7 @@ int main() {
         free(words);
     }
     lld_free(file);
+
+    freeInstructionsSet();
     return 0;
 }
