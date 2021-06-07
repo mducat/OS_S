@@ -30,6 +30,84 @@
 #define RELATIVE_CALL_TO_1CHARS(addr, destAdrr, opcodesize) ADDRESS_TO_1CHARS(-(long int)(addr)-(long int)(opcodesize)+(long int)(destAdrr))
 
 
+#define GOODENOUGH  ("\n\
+                       ##&#&%(%%\n\
+                     ####&(,    ..                                   .,(\n\
+                    ####(,  .   /#(*                            / .,./\n\
+                    ####*/**,#/*./,  .                          . ,#\n\
+                     ####/(/%%/*/,  #,,                     .  .*/\n\
+                      &##&***,,.,(/&*,%######               ,*//(,\n\
+                        &%#%****,(#/&(&######### / ,        .*##.\n\
+                        .##/####&###### .*#######,    .     ,,*.\n\
+                      ######,* *.&##&##.,    #####%  . */  ./*(/*.\n\
+                     ,######,*  %* *,&&%%     ..###* .  ,  *(,*(%\n\
+,,                    ######   .     .*#&% .     *##/..*/,/*,(%,\n\
+&%#(%(%(*         .   #######   . ,   .(##%#     ./##%#(*/(,(\n\
+   #&#%(#(/,,,.(*/.,,/######%  . .      (%##% .     #\n\
+        &&&%#/#,.   ,,######%   .   ,   #&%###    .  #\n\
+       *#&%%##&* , * ,######.,     .   .(###%%#      (##\n\
+         .(&%/..../   ######,.    . ,    &##((##  .. ,,#%\n\
+        ,.     * (./ *######* . .       , ####(#(   . .,#\n\
+      ., , //*, (%/.*.######.* , . , . ,,#&####### , . .#*\n\
+")
+
+#define GOODOSS  ("\n\
+                                       ////****///////////////*///                                  \n\
+                                  /////////////////////////////////////                             \n\
+                              //////////////////*///////////////*//////////.                        \n\
+                          ./////*///////////////////////////////*////////////**                     \n\
+                       .*///////*//////*#&&@@@@&&%//////////////*///////*////////.                  \n\
+                     *//////////*//////*****/((&@@&(///////////////////////////////*                \n\
+                   .////////////*///////,**/(%(#@@@(/////////////////////////////////*              \n\
+                  //////////////////////,*((*///&(%///////////////////////////////////*             \n\
+                ////////////////////*///**##///((//#&@&&&&&&&@//////////////////////////*           \n\
+               /////////////////*////////*//((((((/.%@@@&&&&&&&&//////////////////////////          \n\
+              //////////////////*//////////* .//#%,.,*&&&&&&&&&&%#*/////////////*//////////         \n\
+             *//////////////////*////////####. .###.,..,%&%%&&&%&%%%(*//////////////////////        \n\
+             ///////////////////*/////((##%##% ..(%(.....*%%%#&&&&&&%%%/////////////////////,       \n\
+            ,/////////////////////*/((###%%####./#%%,,....,#%%%&&%%&@@@&#///////////////////,       \n\
+            *///*//////////////////(#####%&%%%#%*#%&/,.....*%%%%%&&%@@@@&%///////////////////       \n\
+            ///////////////////////(((%##%&%%%##&%%%(,,.....%&@%&&%&&#@@&%%(/////////////////       \n\
+            */*/////////////////*///###%%#%&%@%#&&%&(,,,.....%%&@@&&&&/&@%#((/*/////////*////       \n\
+            ///////////////////////*(##(%@#&@&@%&@&&/,,,/....,/%@@@@@&@/(///*#///////////////       \n\
+            ////*///////////////////(##%#@@%&@@&&@&&(,,,*......*&@@@@@&//(((////*////////////       \n\
+             //////////////////##////&%%&&&&%@@%&@&&%/*****...#@@@@@@@@@@@%&#///////////////,       \n\
+             **//////////////////@&@((##%&@@@@@&@@%%&*,,,(#&@@@@@&@@@@@@@@&%&%//////////*///        \n\
+              //////////////////,,(###&&&&@@@@&@@@@@@@@@@@@&@@@@@&&@@@@@@@@%%%%////////////         \n\
+               /////////////////**/(((#&&&@@@@@@@@@@@@@@@@@@&&&@&&&&@@@@@@@@&%%#//////////          \n\
+                //////////////////////%%%/#%@&@@@@@@@@@@&@&&&&&&&&&&&&/((((#((/*/////////           \n\
+                  //////*///*////////&&///#%&@@@@@@@@@@&&&&@@@&&&&&&&&&/////////*//////             \n\
+                   *////////////*/////////#&@@@@@@&@@@&%*(@@@@&&&&&%%%&%//////////////              \n\
+                     ////////////////////#&@@@@@@@&&&#//////&&@@&&&&&&&&%///////////                \n\
+                       .////////*////////%@@@@&&@@&&////////*/&&@&&&&&&&&%///////*                  \n\
+                          */////*///////%@%%&&&@@&#/////////////%&&&&&&&&&(///*                     \n\
+                             *//////////#%%%&&@&&(///////////////#%&%&&&&&&#(                       \n\
+  /#########(    _=====_         ,/////%%%%&&&&&//*////////////////%%%%%&&&&%(                      \n\
+      .##########################((.((##%&&&&&#/////////////////////(%%%%&&&&%/                     \n\
+       (###############################%%&&&&/(///////////(////////////#&&&&&&(                     \n\
+        #############################%##&&&####((////////////////(///(((%&%&&&%*                    \n\
+            (##########################%&&###########((///////((/////(//(%%&&&%/                    \n\
+           /##########################%&&######(((//(///////(/(/*       .*&&&&%/                    \n\
+                      *##########/###%&&##############(((/.         .._-=,%%&%#/                    \n\
+                        *########/##%&&%///////****/(###*,,,.     **,.     #&&# \\-./(               \n\
+                        .#######((#%%&&.            .#&#%%*,,*\\,,,     _-  *%%%/      ,/            \n\
+                ___ _ ,///(#####&%#%%&#   #(//((//*,... ..,*#&&@@@@&&&&%/   %%@@.     ./            \n\
+           ,//,              ,,#@@@@.\\                          ..,*,\\=-_   %@@#%* ,&(//*.=-=*\\     \n\
+        ,*         /%&&%*    ,#*#@&/  ,.    _--=##%&&&&#         &%(*,..,/(#&#@%#%            *     \n\
+       /         .(///((//(@  *%%%(    .////     ..           .%((((//,.  .&.  .    .-=&       *    \n\
+      /*          .(((////(//&         /               _\\*%&#/////.          .%(/ *    /,      (    \n\
+       #/            *//((//(/         */,((##%%%%#((./       *//               .(      #       (   \n\
+        *%%                         ,%(          /*             .&.,%((%(          ,(   //       \\  \n\
+           /(&&(.             ,%&%(/            (%     #,          ,(    (&,          ,( #,%&%(//   \n\
+                 ...(((((.../                     (&&#. *#%           /    ((&.  ./&&#(.            \n\
+                                                          ,(&*          ./     ,,                   \n\
+                                                             *#% *%&%(/*                            \n\
+                                                                                                    \n\
+")
+
+
+
+
 char **strToWords(const char *str, char split) {
     lld_t *lld = lld_init();
     int p = -1;
@@ -88,7 +166,7 @@ OpCode_t *OpCode_init(int size, char *code) {
 
 typedef struct instruction {
     char **name;
-    char *args; // 1 = r, 2 = adrr, 0 = end 
+    //char *args; // 1 = r, 2 = adrr, 0 = end 
     OpCode_t *(*generate)(char **args);
 } instruction_t;
 
@@ -109,9 +187,18 @@ OpCode_t *compileAdd(char **strs) {
 }
 
 OpCode_t *compileJMP(char **strs) {
+    int adrr = strtol(strs[1]+1, 0, 0);
     unsigned char thisOpcode[] = {
         0xe9, 
-        ADDRESS_TO_4CHARS(atoi(strs[0]))
+        ADDRESS_TO_4CHARS(adrr)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *compileRET(char **strs) {
+    unsigned char thisOpcode[] = {
+        0xc3 
     };
     OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
     return op;
@@ -121,10 +208,11 @@ instruction_t **instructionsSet = 0;
 #define PUSHBACK(lld, data) lld_insert(lld, lld_len(lld), data)
 void generateInstructionsSet() {
     lld_t *lld = lld_init();
-    
 
-    PUSHBACK(lld, generateInstruction("add R R", &compileAdd));
-    PUSHBACK(lld, generateInstruction("jmp x", &compileJMP));
+
+    PUSHBACK(lld, generateInstruction("add r r", &compileAdd));
+    PUSHBACK(lld, generateInstruction("jmp 0", &compileJMP));
+    PUSHBACK(lld, generateInstruction("ret", &compileRET));
 
 
     instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
@@ -133,6 +221,9 @@ void generateInstructionsSet() {
 
 void freeInstructionsSet() {
     for (int i = 0; instructionsSet[i]; i++) {
+        for (int j = 0; instructionsSet[i]->name[j]; j++)
+            free(instructionsSet[i]->name[j]);
+        free(instructionsSet[i]->name);
         free(instructionsSet[i]);
     }
     free(instructionsSet);
@@ -150,7 +241,6 @@ void printInstructionsSet() {
     printf("---END SET---\n");
 }
 
-
 char registers[][3] = {
     "rax",
     "rcx",
@@ -164,22 +254,26 @@ char registers[][3] = {
 
 char aliases[][32] = {
     "rax", "r0",
-    "rcx", "r1",
-    "rdx", "r2",
-    "rbx", "r3",
-    "rsp", "r4",
-    "rbp", "r5",
-    "rsi", "r6",
-    "rdi", "r7",
-    "add", "i0",
-    "jmp", "i1",
-    "add", "i2",
+    // "rcx", "r1",
+    // "rdx", "r2",
+    // "rbx", "r3",
+    // "rsp", "r4",
+    // "rbp", "r5",
+    // "rsi", "r6",
+    // "rdi", "r7",
+    // "add", "i0",
+    // "jmp", "i1",
+    // "ret", "i2"
 };
 
 int main() {
+    //strtol(str, 0, 0)
+    
     // init instruction set
     generateInstructionsSet();
     printInstructionsSet();
+
+    int error_count = 0;
 
     FILE *src = fopen("main.coss", "r+");
     lld_t *file = lld_init();
@@ -198,6 +292,7 @@ int main() {
     free(line);
     fclose(src);
 
+    // apply strToWords on each line and do aliases 
     int i = 0;
     printf("\n");
     for (lld_t *mv = file->next; mv; mv = mv->next, i++) {
@@ -220,6 +315,7 @@ int main() {
     }
     printf("##############\n");
 
+    // compile the code
     i = 0;
     for (lld_t *mv = file->next; mv; mv = mv->next, i++) {
         printf("%4i| ", i);
@@ -227,8 +323,37 @@ int main() {
         for (int i = 0; words[i]; i++) {
             printf(" %s", words[i]);
         }
+        // found the matching instruction
+        int instruction = -1;
+        for (int i = 0; instructionsSet[i]; i++) {
+            if (!strcmp(words[0], instructionsSet[i]->name[0])) {
+                for (int j = 1; instructionsSet[i]->name[j]; j++){
+                    if (!words[j] || instructionsSet[i]->name[j][0] != words[j][0]) {
+                        goto next;
+                    }
+                }
+                instruction = i;
+            }
+            next:
+            (void)0;
+        }
+        if (instruction == -1) {
+            printf(" <= !!!COMPILATION ERROR LINE INGORED!!!");
+            error_count++;
+        } else {
+            //instructionsSet[i]->generate(words);
+        }
         printf("\n");
     }
+
+
+    printf("Compilation: DONE\n");
+        printf("the programe has compiled with %i errors\n", error_count);
+    if (error_count) {
+        printf("%s", GOODENOUGH);
+    } else {
+        printf("%s", GOODOSS);
+    }   
 
     // free array
     for (lld_t *mv = file->next; mv; mv = mv->next, i++) {
