@@ -37,7 +37,8 @@
 
 
 
-#define GOODENOUGH  "%s %3i Warning? c'est pas si mal!\n\n", "\n\
+#define GOODENOUGH  "\%s%3i Warning?                                            \n\
+                                          C'est pas si mal!                                         \n\n", "\n\
                                      #@@&&&@/                                                       \n\
                                    @@@@%%%/*   ,                                                    \n\
                                  @@@@@&%(,       .@                                      .   .*#(   \n\
@@ -62,7 +63,7 @@
                  . ...    (/,  /.(.@@@@@@@@*  , ,    .  . ,/#@##((&#&  ,   . @@                     \n\
                /..&,.,(#.& /**( ,./@@@@@@@@.*  , *  . . ..,/@((#(##@#&  .,.   @                     \n\
                                                                                                     \n\
-                               "
+                                            "
 
 //72
 
@@ -461,7 +462,6 @@ int main() {
             next:
             (void)0;
         }
-        printf("\t\t");
         // find balise
         for (int i = 0; words[i]; i++) {
             if (words[i][0] == '!') {
@@ -469,7 +469,7 @@ int main() {
                 balise->name = strdup(words[i]+1);
                 balise->adrr = current_adr;
                 lld_insert(lld_balises, lld_len(lld_balises), balise);
-                printf("\t'%s' found", balise->name);
+                //printf("\t'%s' found", balise->name);
             }
         }
 
@@ -479,9 +479,6 @@ int main() {
         } else {
             current_adr += instructionsSet[instruction]->c_size;
         }
-
-
-
 
         // change instruction name to instruction id
         free(words[0]);
