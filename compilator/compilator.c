@@ -11,6 +11,9 @@
 
 #include "my.h"
 
+#define OP_S 0b0000001 // set operand to 16/32 bit mod
+#define OP_D 0b0000010 // 0 = adding from reg to mem, 1 = adding from memory to reg 
+
 #define REG_MOD_Register_indirect               0b00000000
 #define REG_MOD_one_byte_signed_displacement    0b01000000
 #define REG_MOD_four_byte_signed_displacement   0b10000000
@@ -87,20 +90,20 @@
        (###############################%%&&&&/(///////////(////////////#&&&&&&(                     \n\
         #############################%##&&&####((////////////////(///(((%&%&&&%*                    \n\
             (##########################%&&###########((///////((/////(//(%%&&&%/                    \n\
-           /##########################%&&######(((//(///////(/(/*       .*&&&&%/                    \n\
-                      *##########/###%&&##############(((/.         .._-=,%%&%#/                    \n\
-                        *########/##%&&%///////****/(###*,,,.     **,.     #&&# \\-./(               \n\
+           /##########################%&&######(((//(///////(/(/*        /&&&&%/                    \n\
+                      *##########/###%&&##############(((/.         .._-#,%%&%#/#\\,,                \n\
+                        *########/##%&&%///////****/(###*,,,.     **,.     #&&#|    |\\              \n\
                         .#######((#%%&&.            .#&#%%*,,*\\,,,     _-  *%%%/      ,/            \n\
                 ___ _ ,///(#####&%#%%&#   #(//((//*,... ..,*#&&@@@@&&&&%/   %%@@.     ./            \n\
-           ,//,              ,,#@@@@.\\                          ..,*,\\=-_   %@@#%* ,&(//*.=-=*\\     \n\
+           ,//,              ,,#@@@@.\\                          ..,*,\\=-_   %@@#%* ,&(//=-/'*\\      \n\
         ,*         /%&&%*    ,#*#@&/  ,.    _--=##%&&&&#         &%(*,..,/(#&#@%#%            *     \n\
        /         .(///((//(@  *%%%(    .////     ..           .%((((//,.  .&.  .    .-=&       *    \n\
-      /*          .(((////(//&         /               _\\*%&#/////.          .%(/ *    /,      (    \n\
-       #/            *//((//(/         */,((##%%%%#((./       *//               .(      #       (   \n\
-        *%%                         ,%(          /*             .&.,%((%(          ,(   //       \\  \n\
-           /(&&(.             ,%&%(/            (%     #,          ,(    (&,          ,( #,%&%(//   \n\
-                 ...(((((.../                     (&&#. *#%           /    ((&.  ./&&#(.            \n\
-                                                          ,(&*          ./     ,,                   \n\
+      /*          .(((////(//&         /               _\\*%&#/////.          .%(/#*/   /,      ()   \n\
+       #/            *//((//(/         */,((##%%%%#((./       *//               .(      #     -//   \n\
+        *%%                         ,%(          /*             .&.,%((%(        \\,(    # _-//      \n\
+           /(&&(.             ,%&%(/            (%     #,          ,(    (&,     //     \\#/         \n\
+                 ...(((((.../                     (&&#. *#%           /    ((&._#/                  \n\
+                                                          ,(&*          ./                          \n\
                                                              *#% *%&%(/*                            \n\
                                                                                                     \n\
 ")
@@ -177,16 +180,18 @@ instruction_t *generateInstruction(char *name, OpCode_t *(*func)(char **)) {
     return inst;
 }
 
-OpCode_t *compileAdd(char **strs) {
+OpCode_t *compile_ADD_r_r(char **strs) {
+    int r1 = strtol(strs[1]+1, 0, 0);
+    int r2 = strtol(strs[2]+1, 0, 0);
     unsigned char thisOpcode[] = {
-        0x01, // add
-        REG_MOD_Register_indirect | CHAR_TO_LEFT_REGISTER(0) | CHAR_TO_RIGHT_REGISTER(0)
+        0x3, // add
+        0xc0 | CHAR_TO_LEFT_REGISTER(r1) | CHAR_TO_RIGHT_REGISTER(r2)
     };
     OpCode_t *opcode = OpCode_init(sizeof(thisOpcode), thisOpcode);
     return opcode;
 }
 
-OpCode_t *compileJMP(char **strs) {
+OpCode_t *compile_JMP(char **strs) {
     int adrr = strtol(strs[1]+1, 0, 0);
     unsigned char thisOpcode[] = {
         0xe9, 
@@ -196,9 +201,48 @@ OpCode_t *compileJMP(char **strs) {
     return op;
 }
 
-OpCode_t *compileRET(char **strs) {
+OpCode_t *compile_RET(char **strs) {
     unsigned char thisOpcode[] = {
         0xc3 
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_MOV_r_r(char **strs) {
+    int r2 = strtol(strs[1]+1, 0, 0);
+    int r1 = strtol(strs[2]+1, 0, 0);
+    unsigned char thisOpcode[] = {
+        0x48, 0x89, // mov r to r
+        0xc0 | CHAR_TO_LEFT_REGISTER(r1) | CHAR_TO_RIGHT_REGISTER(r2)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_mov_r_mem(char **strs) {
+    int Rdest = strtol(strs[1]+1, 0, 0);
+    int Radrr = strtol(strs[2]+1, 0, 0);
+    int offset = strtol(strs[3]+1, 0, 0);
+    
+    unsigned char thisOpcode[] = {
+        0x48, 0x8b,
+        CHAR_TO_LEFT_REGISTER(Rdest) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+        ADDRESS_TO_4CHARS(offset)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_mov_mem_r(char **strs) {
+    int Rsrc = strtol(strs[1]+1, 0, 0);
+    int Radrr = strtol(strs[2]+1, 0, 0);
+    int offset = strtol(strs[3]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x48 | OP_D, 0x8b,
+        CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+        ADDRESS_TO_4CHARS(offset)
     };
     OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
     return op;
@@ -209,11 +253,12 @@ instruction_t **instructionsSet = 0;
 void generateInstructionsSet() {
     lld_t *lld = lld_init();
 
-
-    PUSHBACK(lld, generateInstruction("add r r", &compileAdd));
-    PUSHBACK(lld, generateInstruction("jmp 0", &compileJMP));
-    PUSHBACK(lld, generateInstruction("ret", &compileRET));
-
+    PUSHBACK(lld, generateInstruction("add r r", &compile_ADD_r_r));
+    PUSHBACK(lld, generateInstruction("jmp 0", &compile_JMP));
+    PUSHBACK(lld, generateInstruction("ret", &compile_RET));
+    PUSHBACK(lld, generateInstruction("mov r r", &OpCode_MOV_r_r));
+    PUSHBACK(lld, generateInstruction("mov r r 0", &OpCode_mov_r_mem));
+    PUSHBACK(lld, generateInstruction("mov r r 0", &OpCode_mov_mem_r));
 
     instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
     lld_free(lld);
@@ -254,19 +299,22 @@ char registers[][3] = {
 
 char aliases[][32] = {
     "rax", "r0",
-    // "rcx", "r1",
-    // "rdx", "r2",
-    // "rbx", "r3",
-    // "rsp", "r4",
-    // "rbp", "r5",
-    // "rsi", "r6",
-    // "rdi", "r7",
+    "rcx", "r1",
+    "rdx", "r2",
+    "rbx", "r3",
+    "rsp", "r4",
+    "rbp", "r5",
+    "rsi", "r6",
+    "rdi", "r7",
     // "add", "i0",
     // "jmp", "i1",
     // "ret", "i2"
 };
 
 int main() {
+    setbuf(stdout, NULL);
+    setbuf(stderr, NULL);
+
     //strtol(str, 0, 0)
     
     // init instruction set
@@ -315,6 +363,8 @@ int main() {
     }
     printf("##############\n");
 
+    lld_t *lld_opcodes = lld_init();
+
     // compile the code
     i = 0;
     for (lld_t *mv = file->next; mv; mv = mv->next, i++) {
@@ -341,11 +391,37 @@ int main() {
             printf(" <= !!!COMPILATION ERROR LINE INGORED!!!");
             error_count++;
         } else {
-            //instructionsSet[i]->generate(words);
+            // compile an instruction
+            lld_insert(lld_opcodes, lld_len(lld_opcodes), 
+                instructionsSet[instruction]->generate(words)
+            );
         }
         printf("\n");
     }
 
+    OpCode_t **opcodes = (OpCode_t **)lld_lld_to_tab(lld_opcodes);
+
+    lld_free(lld_opcodes);
+
+    uint prog_size = 0;
+    for (int i = 0; opcodes[i]; i++) {
+        prog_size += opcodes[i]->c_size;
+    }
+
+    printf("programe lengh = %i\n", prog_size);
+
+    // puts the opcodes togethers
+    char *binary = malloc(prog_size);
+    uint p = 0;
+    for (int i = 0; opcodes[i]; i++) {
+        memcpy(binary+p, opcodes[i]->c, opcodes[i]->c_size);
+        p += opcodes[i]->c_size;
+    }
+
+    // free opcode array
+    for (int i = 0; opcodes[i]; i++)
+        free(opcodes[i]);
+    free(opcodes);
 
     printf("Compilation: DONE\n");
         printf("the programe has compiled with %i errors\n", error_count);
@@ -363,6 +439,17 @@ int main() {
         free(words);
     }
     lld_free(file);
+
+    FILE *dest = fopen("main.oss", "wb");
+    fwrite(binary, prog_size, 1, dest);
+    fclose(dest);
+
+
+    int (*func)(int) = (void *)binary;
+    int ret = func(123);
+    printf("%i\n", ret);
+
+    free(binary);
 
     freeInstructionsSet();
     return 0;

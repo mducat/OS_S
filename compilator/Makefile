@@ -48,6 +48,8 @@ valgrind:
 	rm -f a.out
 	gcc -g compilator.c lld/*.c ucp/*.c
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./a.out | cat -e
+	####################################################################################################
+	objdump -D -Mintel,x86-64 -b binary -m i386 main.oss
 
 clean:
 	rm -f  $(OBJ)

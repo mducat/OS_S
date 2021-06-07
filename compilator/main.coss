@@ -1,2 +1,4 @@
+mov rax rdi
+mov rax rax 0x10
 add rax rax
 ret
