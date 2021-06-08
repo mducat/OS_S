@@ -225,7 +225,7 @@ OpCode_t *compile_ADD_r_r(char **strs) {
     int r1 = strtol(strs[1]+1, 0, 0);
     int r2 = strtol(strs[2]+1, 0, 0);
     unsigned char thisOpcode[] = {
-        0x3, // add
+        0x48, 0x3, // add
         0xc0 | CHAR_TO_LEFT_REGISTER(r1) | CHAR_TO_RIGHT_REGISTER(r2)
     };
     OpCode_t *opcode = OpCode_init(sizeof(thisOpcode), thisOpcode);
@@ -433,7 +433,7 @@ OpCode_t *OpCode_PUSH_i(char **strs) {
     int li1 = strtol(strs[1]+1, 0, 0);
 
     unsigned char thisOpcode[] = {
-        0x68,
+        0x40, 0x68,
         ADDRESS_TO_4CHARS(li1)
     };
     OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
@@ -468,18 +468,30 @@ OpCode_t *OpCode_INT(char **strs) {
     return op;
 }
 
-// 
-// 82d2:	51                   	push   rcx
-// 82c0:	53                   	push   rbx
-// 862b:	54                   	push   rsp
 
+OpCode_t *OpCode_IMUL_r_r(char **strs) {
+    int r1 = strtol(strs[1]+1, 0, 0);
+    int r2 = strtol(strs[2]+1, 0, 0);
+    unsigned char thisOpcode[] = {
+        0x48, 0x0f, 0xaf,
+        REG_MOD_register_displacement | CHAR_TO_LEFT_REGISTER(r1) | CHAR_TO_RIGHT_REGISTER(r2), // mov r to r
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
 
+OpCode_t *OpCode_IDIV_r(char **strs) {
+    int r1 = strtol(strs[1]+1, 0, 0);
+    unsigned char thisOpcode[] = {
+        0x48, 0xf7,
+        REG_MOD_register_displacement | CHAR_TO_LEFT_REGISTER(0b111) | CHAR_TO_RIGHT_REGISTER(r1), // mov r to r
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
 
-// 8a27:	56                   	push   rsi
-// 8440:	57                   	push   rdi
-
-// 8a38:	68 01 10 d4 07       	push   0x7d41001
-
+//25:   69 6c c0 70 75 74 63    imul   ebp,DWORD PTR [rax+rax*8+0x70],0xc1637475
+//25:   69 6c 00 70 75 74 63    imul   ebp,DWORD PTR [rax+rax*1+0x70],0xc1637475
 
 instruction_t **instructionsSet = 0;
 #define PUSHBACK(lld, data) lld_insert(lld, lld_len(lld), data)
@@ -507,6 +519,8 @@ void generateInstructionsSet() {
     PUSHBACK(lld, generateInstruction("pop r", &OpCode_POP_r));
     PUSHBACK(lld, generateInstruction("syscall", &OpCode_SYSCALL));
     PUSHBACK(lld, generateInstruction("int _", &OpCode_INT));
+    PUSHBACK(lld, generateInstruction("imul r r", &OpCode_IMUL_r_r));
+    PUSHBACK(lld, generateInstruction("idiv r", &OpCode_IDIV_r));
 
     instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
     lld_free(lld);
@@ -823,11 +837,13 @@ int main() {
 
 
     char *str = "hello OSS\n";
+    write(1, "hi\n", 3);
+    printf("%p %s\n", str, str);
 
     int (*func)(char *) = (void *)binary;
     char *ret = func(str);
-    printf("%p %s\n", str, str);
     printf("%p %s\n", ret, str);
+
 
 
     free(binary);

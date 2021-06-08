@@ -29,7 +29,7 @@ peak_compiler:
 run:
 	rm -f a.out
 	gcc -g compilator.c lld/*.c ucp/*.c
-	./a.out
+	-./a.out
 	####################################################################################################
 	-objdump -D -Mintel,x86-64 -b binary -m i386 main.oss
 

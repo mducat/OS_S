@@ -4,5 +4,8 @@ mov rdx _10
 mov rbx _1
 mov rax _4
 int _0x80
+imul rax rcx
+idiv rax
+add rax rax
 pop rax
 ret
