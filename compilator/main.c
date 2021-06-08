@@ -3,10 +3,15 @@ void keep(short int a)
     (void)a;
 }
 
+void hello(int n){
+    int hel = 0x123456;
+    if (n)
+        hello(--n);
+    (void)hel;
+}       
+
 int main()
 {
-    int a = 0;
-    int b = a + 0x789ABCDE;
-    keep(a);
-    keep(a);
+    hello(156);
+    return 0;
 }

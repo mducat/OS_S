@@ -419,6 +419,50 @@ OpCode_t *OpCode_JB_i(char **strs) {
     return op;
 }
 
+OpCode_t *OpCode_PUSH_r(char **strs) {
+    int r1 = strtol(strs[1]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x50 + r1
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_PUSH_i(char **strs) {
+    int li1 = strtol(strs[1]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x68,
+        ADDRESS_TO_4CHARS(li1)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_POP_r(char **strs) {
+    int r1 = strtol(strs[1]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x58 + r1
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+// 
+// 82d2:	51                   	push   rcx
+// 82c0:	53                   	push   rbx
+// 862b:	54                   	push   rsp
+
+
+
+// 8a27:	56                   	push   rsi
+// 8440:	57                   	push   rdi
+
+// 8a38:	68 01 10 d4 07       	push   0x7d41001
+
+
 instruction_t **instructionsSet = 0;
 #define PUSHBACK(lld, data) lld_insert(lld, lld_len(lld), data)
 void generateInstructionsSet() {
@@ -440,6 +484,9 @@ void generateInstructionsSet() {
     PUSHBACK(lld, generateInstruction("jbe _", &OpCode_JBE_i));
     PUSHBACK(lld, generateInstruction("jg _", &OpCode_JG_i));
     PUSHBACK(lld, generateInstruction("jb _", &OpCode_JB_i));
+    PUSHBACK(lld, generateInstruction("push r", &OpCode_PUSH_r));
+    PUSHBACK(lld, generateInstruction("push _", &OpCode_PUSH_i));
+    PUSHBACK(lld, generateInstruction("pop r", &OpCode_POP_r));
 
     instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
     lld_free(lld);

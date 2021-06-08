@@ -10,3 +10,8 @@ jge _:here
 jbe _:here
 jg _:here
 jb _:here    
+push rax
+push rbx
+push _0x12345
+pop rax
+pop rbx
