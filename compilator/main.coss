@@ -1,4 +1,4 @@
-mov rax _6543210
+mov rax _0x12
 jmp _:here
-movssd rax _123456
+mov rax _0x24 
 ret !here

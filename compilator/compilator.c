@@ -124,6 +124,26 @@
                                                                                                     \n\
 ")
 
+char *my_putnbr_base(unsigned long int nbr, char *base)
+{
+    int len = strlen(base);
+    int i;
+    static char to_print[65];
+    static char to_print2[65];
+    //nbr < 0 ? nbr *= -1 : 0;
+    for (int y = 0; y < 65; to_print[y] = 0, to_print2[y] = 0, y++);
+    for (len = 0; base[len]; len++);
+    for (i = 0; nbr != 0; i++){
+        to_print[i] = base[nbr%len];
+        nbr /= len;
+    }
+    int a = 0;
+    for (i = i-1; i >= 0; i--, a++)
+        to_print2[a] = to_print[i];
+    to_print2[0] == 0 ? to_print2[0] = base[0] : 0;
+    return (to_print2);
+}
+
 char **strToWords(const char *str, char split) {
     lld_t *lld = lld_init();
     int p = -1;
@@ -242,27 +262,30 @@ OpCode_t *OpCode_MOV_r_r(char **strs) {
 }
 
 OpCode_t *OpCode_MOV_r_mem(char **strs) {
-    int Rdest = strtol(strs[1]+1, 0, 0);
+    int Rsrc = strtol(strs[1]+1, 0, 0);
     int Radrr = strtol(strs[2]+1, 0, 0);
     int offset = strtol(strs[3]+1, 0, 0);
     
     unsigned char thisOpcode[] = {
-        0x48, 0x8b,
-        CHAR_TO_LEFT_REGISTER(Rdest) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+        0x48, 0x89 |OP_D,
+        REG_MOD_four_byte_signed_displacement | CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
         ADDRESS_TO_4CHARS(offset)
     };
     OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
     return op;
 }
 
+// 3ef0:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
+// 3ef4:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
+
 OpCode_t *OpCode_MOV_mem_r(char **strs) {
-    int Rsrc = strtol(strs[1]+1, 0, 0);
-    int Radrr = strtol(strs[2]+1, 0, 0);
-    int offset = strtol(strs[3]+1, 0, 0);
+    int Radrr = strtol(strs[1]+1, 0, 0);
+    int offset = strtol(strs[2]+1, 0, 0);
+    int Rsrc = strtol(strs[3]+1, 0, 0);
 
     unsigned char thisOpcode[] = {
-        0x48 | OP_D, 0x8b,
-        CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+        0x48, 0x89,
+        REG_MOD_four_byte_signed_displacement | CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
         ADDRESS_TO_4CHARS(offset)
     };
     OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
@@ -315,7 +338,7 @@ void generateInstructionsSet() {
     PUSHBACK(lld, generateInstruction("ret", &compile_RET));
     PUSHBACK(lld, generateInstruction("mov r r", &OpCode_MOV_r_r));
     PUSHBACK(lld, generateInstruction("mov r r _", &OpCode_MOV_r_mem));
-    PUSHBACK(lld, generateInstruction("mov r r _", &OpCode_MOV_mem_r));
+    PUSHBACK(lld, generateInstruction("mov r _ r", &OpCode_MOV_mem_r));
     PUSHBACK(lld, generateInstruction("call _", &OpCode_CALL));
     PUSHBACK(lld, generateInstruction("mov r _", &OpCode_MOV_r_li));
 
@@ -326,6 +349,7 @@ void generateInstructionsSet() {
 
 typedef struct balise {
     int adrr;
+    int line;
     char *name;
 } balise_t;
 
@@ -409,12 +433,12 @@ int main() {
 
 
     // apply strToWords on each line and do aliases 
-    int i = 0;
+    int line_count = 0;
     printf("\n");
-    for (lld_t *mv = file->next; mv; mv = mv->next, i++) {
+    for (lld_t *mv = file->next; mv; mv = mv->next, line_count++) {
         // rm double spaces
         rmDoubledCHar(mv->data, ' ');
-        printf("%4i|  %s\n", i, (char *)mv->data);
+        printf("%4i|  %s\n", line_count, (char *)mv->data);
 
         char **words = strToWords(mv->data, ' ');
         
@@ -432,45 +456,56 @@ int main() {
         free(mv->data);
         mv->data = words;
     }
-
-    
     
     printf("############################\n");
 
     lld_t *lld_balises = lld_init();
 
     // compile the code
-    i = 0;
+    line_count = 0;
     int current_adr = 0;
-    for (lld_t *mv = file->next; mv; mv = mv->next, i++) {
-        printf("%4i| ", i);
+    for (lld_t *mv = file->next; mv; mv = mv->next, line_count++) {
+        printf("%4i| ", line_count);
         char **words = mv->data;
-        for (int i = 0; words[i]; i++) {
-            printf(" %s", words[i]);
-        }
-        // found the matching instruction
-        int instruction = -1;
-        for (int i = 0; instructionsSet[i]; i++) {
-            if (!strcmp(words[0], instructionsSet[i]->name[0])) {
-                for (int j = 1; instructionsSet[i]->name[j]; j++){
-                    if (!words[j] || instructionsSet[i]->name[j][0] != words[j][0]) {
-                        goto next;
-                    }
-                }
-                instruction = i;
-            }
-            next:
-            (void)0;
-        }
-        // find balise
+
+        // find balises
         for (int i = 0; words[i]; i++) {
             if (words[i][0] == '!') {
                 balise_t *balise = malloc(sizeof(balise_t));
                 balise->name = strdup(words[i]+1);
                 balise->adrr = current_adr;
+                balise->line = line_count;
                 lld_insert(lld_balises, lld_len(lld_balises), balise);
-                //printf("\t'%s' found", balise->name);
+                printf("\t'%s'", balise->name);
+                //remove balise
+                free(words[i]);
+                for (int j = i; words[j]; j++) {
+                    words[j] = words[j+1];
+                }
             }
+            // print line without balises
+            if (words[i])
+                printf(" %s", words[i]);
+        }
+
+        // found the matching instruction
+        int instruction = -1;
+        for (int i = 0; instructionsSet[i]; i++) {
+            if (!strcmp(words[0], instructionsSet[i]->name[0])) {
+                int j = 1;
+                for (; instructionsSet[i]->name[j]; j++){
+                    if (!words[j] || instructionsSet[i]->name[j][0] != words[j][0]) {
+                        goto next;
+                    }
+                }
+                if (instructionsSet[i]->name[j] == words[j]){
+                    instruction = i;
+                } else {
+                    goto next;
+                }
+            }
+            next:
+            (void)0;
         }
 
         if (instruction == -1) {
@@ -489,15 +524,19 @@ int main() {
 
         // replace balise with relative range
 
+    balise_t **balises = (balise_t **)lld_lld_to_tab(lld_balises);
+    lld_free(lld_balises);
+
 
     printf("############################\n");
 
 
     // compile instructions
     lld_t *lld_opcodes = lld_init();
-    i = 0;
-    for (lld_t *mv = file->next; mv; mv = mv->next, i++) {
-        printf("%4i| ", i);
+    line_count = 0;
+    current_adr = 0;
+    for (lld_t *mv = file->next; mv; mv = mv->next, line_count++) {
+        printf("%4i| ", line_count);
         char **words = mv->data;
         if ((long int)words[0] != -1)
             printf(" %s", instructionsSet[(long int)words[0]]->name[0]);
@@ -509,12 +548,51 @@ int main() {
         printf("\n");
         // compile an instruction
         long int instruction = (long int)words[0];
+
         if (instruction != -1){
+            current_adr += instructionsSet[instruction]->c_size;
+            // reaplace by balise values
+            for (int i = 1; words[i]; i++) {
+                if (words[i][1] == ':'){
+                    for (int j = 0; balises[j]; j++) {
+                        if (!strcmp(words[i]+2, balises[j]->name)) {
+                            // replace balise
+                            char *old = words[i];
+                            words[i] = malloc(64);
+                            words[i][0] = old[0];
+                            memcpy(words[i]+1, "0x", 2);
+                            char *base = my_putnbr_base(balises[j]->adrr-current_adr, "0123456789ABCDEF");
+                            memcpy(words[i]+3, base, strlen(base)+1);
+                            free(old);
+                            goto instend;
+                        }
+                    }
+                    printf("BALISE !%s NOT FOUND\n", words[i]+2);
+                }
+                instend:
+                (void)0;
+            }
             lld_insert(lld_opcodes, lld_len(lld_opcodes), 
                 instructionsSet[instruction]->generate(words)
             );
         }
     }
+    printf("############################\n");
+
+    line_count = 0;
+    for (lld_t *mv = file->next; mv; mv = mv->next, line_count++) {
+        printf("%4i| ", line_count);
+        char **words = mv->data;
+        if ((long int)words[0] != -1)
+            printf(" %s", instructionsSet[(long int)words[0]]->name[0]);
+        else 
+            printf(" UNKNOWN");
+        for (int i = 1; words[i]; i++) {
+            printf(" %s", words[i]);
+        }
+        printf("\n");
+    }
+
 
     OpCode_t **opcodes = (OpCode_t **)lld_lld_to_tab(lld_opcodes);
 
@@ -549,13 +627,21 @@ int main() {
     }   
 
     // free array
-    for (lld_t *mv = file->next; mv; mv = mv->next, i++) {
+    line_count = 0;
+    for (lld_t *mv = file->next; mv; mv = mv->next, line_count++) {
         char **words = mv->data;
         for (int j = 1; words[j] != 0; j++)
             free(words[j]);
         free(words);
     }
     lld_free(file);
+
+    //free balises
+    for (int i = 0; balises[i] != 0; i++) {
+        free(balises[i]->name);
+        free(balises[i]);
+    }
+    free(balises);
 
     FILE *dest = fopen("main.oss", "wb");
     fwrite(binary, prog_size, 1, dest);

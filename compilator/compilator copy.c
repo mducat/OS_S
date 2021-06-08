@@ -101,6 +101,9 @@
 
     3f6f:	e9 1c 01 00 00       	jmp    0x4090
 
+
+    3edb:	74 05                	je     0x3ee2
+
 */
 
 typedef struct OpCode {
