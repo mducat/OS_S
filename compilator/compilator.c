@@ -328,6 +328,97 @@ OpCode_t *OpCode_JE(char **strs) {
     return op;
 }
 
+OpCode_t *OpCode_CMP_r_r(char **strs) {
+    int r1 = strtol(strs[1]+1, 0, 0);
+    int r2 = strtol(strs[2]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x48, 0x3b,
+        REG_MOD_register_displacement | CHAR_TO_LEFT_REGISTER(r1) | CHAR_TO_RIGHT_REGISTER(r2), // mov r to r
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+/*OpCode_t *OpCode_CMP_r_li(char **strs) {
+    int r1 = strtol(strs[1]+1, 0, 0);
+    long int nb = strtol(strs[2]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x48, 0x83,
+        REG_MOD_register_displacement | CHAR_TO_LEFT_REGISTER(7) | CHAR_TO_RIGHT_REGISTER(r1), // mov r to r
+        ADDRESS_TO_8CHARS(nb)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}*/
+
+OpCode_t *OpCode_JE_i(char **strs) {
+    int nb = strtol(strs[1]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x0f, 0x84,
+        ADDRESS_TO_4CHARS(nb)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_JNE_i(char **strs) {
+    int nb = strtol(strs[1]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x0f, 0x85,
+        ADDRESS_TO_4CHARS(nb)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_JBE_i(char **strs) {
+    int nb = strtol(strs[1]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x0f, 0x86,
+        ADDRESS_TO_4CHARS(nb)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_JGE_i(char **strs) {
+    int nb = strtol(strs[1]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x0f, 0x8d,
+        ADDRESS_TO_4CHARS(nb)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_JG_i(char **strs) {
+    int nb = strtol(strs[1]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x0f, 0x8f,
+        ADDRESS_TO_4CHARS(nb)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_JB_i(char **strs) {
+    int nb = strtol(strs[1]+1, 0, 0);
+
+    unsigned char thisOpcode[] = {
+        0x0f, 0x82,
+        ADDRESS_TO_4CHARS(nb)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
 instruction_t **instructionsSet = 0;
 #define PUSHBACK(lld, data) lld_insert(lld, lld_len(lld), data)
 void generateInstructionsSet() {
@@ -341,6 +432,14 @@ void generateInstructionsSet() {
     PUSHBACK(lld, generateInstruction("mov r _ r", &OpCode_MOV_mem_r));
     PUSHBACK(lld, generateInstruction("call _", &OpCode_CALL));
     PUSHBACK(lld, generateInstruction("mov r _", &OpCode_MOV_r_li));
+    PUSHBACK(lld, generateInstruction("cmp r r", &OpCode_CMP_r_r));
+    //PUSHBACK(lld, generateInstruction("cmp r _", &OpCode_CMP_r_li));
+    PUSHBACK(lld, generateInstruction("je _", &OpCode_JE_i));
+    PUSHBACK(lld, generateInstruction("jne _", &OpCode_JNE_i));
+    PUSHBACK(lld, generateInstruction("jge _", &OpCode_JGE_i));
+    PUSHBACK(lld, generateInstruction("jbe _", &OpCode_JBE_i));
+    PUSHBACK(lld, generateInstruction("jg _", &OpCode_JG_i));
+    PUSHBACK(lld, generateInstruction("jb _", &OpCode_JB_i));
 
     instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
     lld_free(lld);
