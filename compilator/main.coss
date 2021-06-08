@@ -1,17 +1,8 @@
-mov rax _0x12
-cmp rax rbx
-je _:here
-jmp _:here
-mov rax _0x24 
-ret !here
-je _:here
-jne _:here
-jge _:here
-jbe _:here
-jg _:here
-jb _:here    
-push rax
-push rbx
-push _0x12345
+push rdi
+mov rcx rdi
+mov rdx _10
+mov rbx _1
+mov rax _4
+int _0x80
 pop rax
-pop rbx
+ret

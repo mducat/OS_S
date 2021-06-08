@@ -30,6 +30,8 @@ run:
 	rm -f a.out
 	gcc -g compilator.c lld/*.c ucp/*.c
 	./a.out
+	####################################################################################################
+	-objdump -D -Mintel,x86-64 -b binary -m i386 main.oss
 
 runO4:
 	rm -f a.out

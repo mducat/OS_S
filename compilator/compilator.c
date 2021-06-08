@@ -255,7 +255,7 @@ OpCode_t *OpCode_MOV_r_r(char **strs) {
     int r1 = strtol(strs[2]+1, 0, 0);
     unsigned char thisOpcode[] = {
         0x48, 0x89, // mov r to r
-        0xc0 | CHAR_TO_LEFT_REGISTER(r1) | CHAR_TO_RIGHT_REGISTER(r2)
+        REG_MOD_register_displacement | CHAR_TO_LEFT_REGISTER(r1) | CHAR_TO_RIGHT_REGISTER(r2)
     };
     OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
     return op;
@@ -450,6 +450,24 @@ OpCode_t *OpCode_POP_r(char **strs) {
     return op;
 }
 
+OpCode_t *OpCode_SYSCALL(char **strs) {
+    unsigned char thisOpcode[] = {
+        0x0f, 0x05
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
+OpCode_t *OpCode_INT(char **strs) {
+    char code = strtol(strs[1]+1, 0, 0);
+    unsigned char thisOpcode[] = {
+        0xcd, 
+        ADDRESS_TO_1CHARS(code)
+    };
+    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return op;
+}
+
 // 
 // 82d2:	51                   	push   rcx
 // 82c0:	53                   	push   rbx
@@ -487,11 +505,12 @@ void generateInstructionsSet() {
     PUSHBACK(lld, generateInstruction("push r", &OpCode_PUSH_r));
     PUSHBACK(lld, generateInstruction("push _", &OpCode_PUSH_i));
     PUSHBACK(lld, generateInstruction("pop r", &OpCode_POP_r));
+    PUSHBACK(lld, generateInstruction("syscall", &OpCode_SYSCALL));
+    PUSHBACK(lld, generateInstruction("int _", &OpCode_INT));
 
     instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
     lld_free(lld);
 }
-
 
 typedef struct balise {
     int adrr;
@@ -752,7 +771,16 @@ int main() {
     printf("programe lengh = %i\n", prog_size);
 
     // puts the opcodes togethers
-    char *binary = malloc(prog_size);
+    //char *binary = malloc(prog_size);
+    int pagesize = sysconf(_SC_PAGE_SIZE);
+    void *binary = 0;
+    if (posix_memalign(&binary, pagesize, pagesize*4)) {
+        perror("posix_memalign ");
+    }
+    if (mprotect(binary-(uint)binary%pagesize, (prog_size/pagesize+2)*(pagesize), PROT_EXEC | PROT_READ | PROT_WRITE)) {
+        perror("mprotect ");
+    }
+
     uint p = 0;
     for (int i = 0; opcodes[i]; i++) {
         memcpy(binary+p, opcodes[i]->c, opcodes[i]->c_size);
@@ -794,9 +822,13 @@ int main() {
     fclose(dest);
 
 
-    int (*func)(int) = (void *)binary;
-    int ret = func(123);
-    printf("%i\n", ret);
+    char *str = "hello OSS\n";
+
+    int (*func)(char *) = (void *)binary;
+    char *ret = func(str);
+    printf("%p %s\n", str, str);
+    printf("%p %s\n", ret, str);
+
 
     free(binary);
 
