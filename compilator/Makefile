@@ -1,6 +1,8 @@
 
 OBJ		=	src/main.c   \
 
+OBJ_COMPILATOR = compilator.c instructions.c utils.c
+
 NAME	=	ls
 
 INC		= 	-I../../oss_lib/inc -I../../kernel/include
@@ -22,33 +24,33 @@ peak:
 
 peak_compiler:
 	rm -f a.out
-	gcc -g compilator.c lld/*.c ucp/*.c
+	gcc -g  $(OBJ_COMPILATOR) lld/*.c ucp/*.c
 	objdump -D -Mintel,x86-64 -b binary -m i386 a.out
 
 
 run:
 	rm -f a.out
-	gcc -g compilator.c lld/*.c ucp/*.c
+	gcc -g $(OBJ_COMPILATOR) lld/*.c ucp/*.c
 	-./a.out
 	####################################################################################################
 	-objdump -D -Mintel,x86-64 -b binary -m i386 main.oss
 
 runO4:
 	rm -f a.out
-	gcc compilator.c lld/*.c ucp/*.c -O4
+	gcc $(OBJ_COMPILATOR) lld/*.c ucp/*.c -O4
 	./a.out
 
 
 gdb:
 	rm -f a.out
-	gcc -g compilator.c lld/*.c ucp/*.c
+	gcc -g $(OBJ_COMPILATOR) lld/*.c ucp/*.c
 	gdb ./a.out
 
 
 valgrind:
 	clear
 	rm -f a.out
-	gcc -g compilator.c lld/*.c ucp/*.c
+	gcc -g $(OBJ_COMPILATOR) lld/*.c ucp/*.c
 	-valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./a.out | cat -e
 	####################################################################################################
 	-objdump -D -Mintel,x86-64 -b binary -m i386 main.oss
