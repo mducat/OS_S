@@ -41,6 +41,7 @@ OBJ			=		src/kernel.o                \
 					src/lld/lld_read.o          \
 					src/lld/lld_sort.o          \
 					src/lld/lld_write.o         \
+					src/lld/lld_lld_to_tab.o    \
                                                 \
                                                 \
                                                 \

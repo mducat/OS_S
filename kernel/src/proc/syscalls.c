@@ -1,11 +1,14 @@
 
+#include <dev/kbd.h>
+
 #include <screen.h>
 #include <malloc.h>
 #include <fs.h>
 
-void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2)
+void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
 {
     size_t n;
+    int res;
     void *ptr;
 
     switch (num) {
@@ -28,17 +31,30 @@ void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2)
     case 4:
         ptr = (void *) opendir((char *) par1);
         asm volatile("" : : "a" (ptr));
-        
+
         break;
     case 5:
         ptr = (void *) readdir((dir_t *) par1);
         asm volatile("" : : "a" (ptr));
-        
+
         break;
     case 6:
         ptr = (void *) open((char *) par1);
         asm volatile("" : : "a" (ptr));
-        
+
+        break;
+    case 7:
+        remove_file((char *) par1);
+
+        break;
+    case 8:
+        write_file((char *) par1, (char *) par2, (size_t) par3);
+
+        break;
+    case 9:
+        res = read();
+        asm volatile("" : : "a" (res));
+
         break;
     }
 }

@@ -8,6 +8,32 @@
 
 #include <sys/io.h>
 
+int read(void)
+{
+    static int next = 0;
+
+wait:
+    while ((inb(KBD_STATUS) & 1) == 0);
+
+    uint8_t input = inb(KBD_DATA);
+
+    if (input == 0xF0) {
+        next = 1;
+        goto wait;
+    }
+
+    if (input > 0x80) // -1
+        goto wait;
+
+    if (next) {
+        next = 0;
+        goto wait;
+    }
+
+    char print = scan_code_set_2_fr[(uint8_t) input];
+    return (int) print;
+}
+
 void irq1_handler(void)
 {
     end_of_interrupt(1);
@@ -32,6 +58,7 @@ void irq1_handler(void)
         char print = scan_code_set_2_fr[(uint8_t) input];
 
         send_tty(print);
+
     } else {
         next = 0;
     } 

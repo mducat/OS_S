@@ -14,4 +14,6 @@ void strcat(char *dest, char const *src);
 void *memset(void *str, char c, size_t size);
 void *memcpy(void *dest, void *src, size_t n);
 
+char **strToWords(char *str, char split);
+
 #endif

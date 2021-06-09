@@ -23,5 +23,6 @@ extern volatile disp_t *disp;
 
 size_t write_screen(const char *buf, size_t count);
 void refresh(void);
+void clear(void);
 
 #endif

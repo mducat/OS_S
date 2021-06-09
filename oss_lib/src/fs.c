@@ -54,3 +54,23 @@ void closedir(dir_t *dir)
     free(dir->name);
     free(dir);
 }
+
+void remove_file(char *name)
+{
+    int num = 7;
+
+    asm volatile("int $0x30" :
+                 : "a" (num),
+                   "b" (name));
+}
+
+void write_file(char *name, char *content, size_t len)
+{
+    int num = 8;
+
+    asm volatile("int $0x30" :
+                 : "a" (num),
+                   "b" (name),
+                   "c" (content),
+                   "d" (len));
+}

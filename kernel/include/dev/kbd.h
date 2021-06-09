@@ -5,6 +5,8 @@
 #define KBD_DATA (0x60)
 #define KBD_STATUS (0x64)
 
+int read(void);
+
 static const unsigned char scan_code_set_2[] =
 {
     0,     /* 0x00 - undef */

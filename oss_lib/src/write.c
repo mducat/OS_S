@@ -39,3 +39,15 @@ void refresh(void)
     asm volatile("int $0x30" :
                  : "a" (num));
 }
+
+int read(void)
+{
+    int num = 9;
+    int res = 0;
+
+    asm volatile("int $0x30" :
+                 : "a" (num));
+
+    asm("" : "=a" (res));
+    return res;
+}

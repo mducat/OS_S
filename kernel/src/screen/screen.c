@@ -56,6 +56,12 @@ size_t write_screen(const char *buf, size_t count)
         }
         
         switch (current) {
+        case 3:
+            //clear();
+
+            pos.y = 0;
+            pos.x = 0;
+            break;
         case '\n':
             pos.y += 1;
             pos.x  = 0;

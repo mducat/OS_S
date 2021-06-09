@@ -11,6 +11,8 @@ size_t write_raw(char *, size_t);
 size_t write(char *);
 void refresh(void);
 
+int read(void);
+
 int printf(const char *format, ...);
 
 /* MEMORY */
@@ -29,5 +31,8 @@ char *readdir(dir_t *dir);
 
 file_t *open(char *path);
 void close(file_t *file);
+
+void remove_file(char *name);
+void write_file(char *name, char *content, size_t len);
 
 #endif

@@ -15,6 +15,8 @@ int prompt(void)
 
 void init_shell(void)
 {
+    send_tty(3); // END OF TEXT
+
     write_screen(GOODENOUGH, strlen(GOODENOUGH));
     write_screen(SHELL_HDR, strlen(SHELL_HDR));
 
@@ -23,13 +25,33 @@ void init_shell(void)
     refresh();
 }
 
+void reinit_shell(void)
+{
+    clear();
+    send_tty(3); // END OF TEXT
+
+    write_screen(GOODENOUGH, strlen(GOODENOUGH));
+    write_screen(SHELL_HDR, strlen(SHELL_HDR));
+
+    refresh();
+}
+
 void flush_cmd(char *buf, size_t buf_len)
 {
-    file_t *file = open(buf);
-    void (*entry)(void) = 0;
+    void (*entry)(int, char **) = 0;
+    char **av = strToWords(buf, ' ');
+    file_t *file = open(av[0]);
+    int ac = 0;
+
+    while (av[++ac]);
 
     if (!buf_len)
         return;
+
+    if (!strcmp(av[0], "clear")) {
+        reinit_shell();
+        return;
+    }
     
     if (!file) {
         write_screen("No such file.\n", 14);
@@ -41,8 +63,8 @@ void flush_cmd(char *buf, size_t buf_len)
         goto out;
     }
 
-    entry = (void(*)(void)) (file->content + OSS_HDR_LEN);//( + OSS_HDR_LEN);
-    entry();
+    entry = (void(*)(int, char**)) (file->content + OSS_HDR_LEN);
+    entry(ac, av);
 
 out:
     free(file->name);
@@ -80,6 +102,9 @@ int handle_char(char c)
     switch (c) {
     case '\n':
         flush_cmd(buf, cursor);
+
+        [[fallthrough]];
+    case 3:
         memset(buf, 0, buf_len);
 
         cursor = 0;

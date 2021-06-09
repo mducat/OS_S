@@ -97,12 +97,14 @@ void irq80_handler(void)
     uint64_t num;
     uint64_t par1;
     uint64_t par2;
+    uint64_t par3;
 
     asm("" : "=a" (num),
         "=b" (par1),
-        "=c" (par2));
+        "=c" (par2),
+        "=d" (par3));
     end_of_interrupt(30);
-    syscall_handler(num, par1, par2);
+    syscall_handler(num, par1, par2, par3);
 }
 
 void activate_interrupts(void)

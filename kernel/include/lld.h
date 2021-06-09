@@ -22,4 +22,5 @@
     void *lld_read(lld_t *lld, int poss);
     void lld_sort(lld_t *list, int (*cmp)());
     void *lld_write(lld_t *lld, int poss, void *data);
+    void **lld_lld_to_tab(lld_t *lld);
 #endif

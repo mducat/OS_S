@@ -1,24 +1,30 @@
 
 #include <oss.h>
-#include <lld.h>
 
-int main(void)
+int main(int ac, char **av)
 {
-    dir_t *dir = opendir("/");
-    char *name = readdir(dir);
+    int data = read();
 
-    write("folder '/':\n");
+    printf("received char : '%c'\n", data);
 
-    while (name) {
-        file_t *file = open(name);
-
-        printf("'%s': '''%s'''\n", file->name, file->content);
-        close(file);
-
-        free(name);
-        name = readdir(dir);
+    if (ac < 2) {
+        printf("%s [filenames ...]\n", av[0]);
+        goto out;
     }
-    closedir(dir);
+
+    for (int i = 1; i < ac; i++) {
+        file_t *file = open(av[i]);
+
+        if (!file) {
+            printf("%s: %s: File not found.\n", av[0], av[i]);
+            continue;
+        }
+
+        write_raw(file->content, file->size);
+        close(file);
+    }
+
+out:
     refresh();
     return 0;
 }

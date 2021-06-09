@@ -32,6 +32,9 @@ char *readdir(dir_t *dir);
 file_t *open(char *path);
 void close(file_t *file);
 
+void write_file(char *name, char *content, size_t len);
+void remove_file(char *name);
+
 #endif
 
 #endif
