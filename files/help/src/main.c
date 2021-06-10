@@ -9,7 +9,25 @@ int main(void)
     write("cat: concatenates files into display.\n");
     write("ls: list files.\n");
 
-    int a[] = {12, -412, 4321, -5678, 012, 0xFF, 0};
+    rect_t *rect_test = malloc(sizeof(rect_t));
+
+    rect_test->x = 50;
+    rect_test->y = 50;
+    rect_test->dx = 50;
+    rect_test->dy = 50;
+
+    draw_rect(rect_test, RGBA_TO_COLOR(255, 0, 0, 0));
+
+    circle_t *circle_test = malloc(sizeof(circle_t));
+
+    circle_test->x = 200;
+    circle_test->y = 50;
+    circle_test->d = 50;
+
+    draw_circle(circle_test, RGBA_TO_COLOR(255, 200, 50, 0));
+    refresh();
+
+    /*int a[] = {12, -412, 4321, -5678, 012, 0xFF, 0};
     char *strings[] = {"Hey", "Test !", "oijgeoj", "a", "re !", "azezf", 0};
     printf("% d, %+d, % +d, %+d\n", 5, 6, 7, 8);
     printf("%z\n", 123456);
@@ -34,7 +52,7 @@ int main(void)
     printf("|%10.6s|\n", strings[5]);
     
     printf("|%-10.6s|\n%n", strings[6], &last_printfinted);
-    printf("last : %d\n", last_printfinted);
+    printf("last : %d\n", last_printfinted);*/
 
     /*printf("%20llu\n", -5);
     printf("%# hx, %x, %# X\n", 123, 123, 123);
@@ -71,7 +89,5 @@ int main(void)
     char *long_pointer[] = {"Hey"};
     printf("%%p = %p, %%#llx = %#llx\n", long_pointer, long_pointer);*/
 
-    
-    refresh();
     return 0;
 }

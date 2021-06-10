@@ -60,7 +60,10 @@ CFLAGS		=		$(INC) -Wall -Wextra 				\
 
 LDFLAGS		=		-pie
 
-all: font $(NAME)
+all: font update_files $(NAME)
+
+update_files:
+	rm -f src/fs/init.o
 
 $(NAME):$(OBJ)
 	ld $(LINKER) $(LDFLAGS) -o $(NAME) $(OBJ)

@@ -56,5 +56,13 @@ void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
         asm volatile("" : : "a" (res));
 
         break;
+    case 10:
+        draw_rect((rect_t *) par1, (uint32_t) par2);
+
+        break;
+    case 11:
+        draw_circle((circle_t *) par1, (uint32_t) par2);
+
+        break;
     }
 }

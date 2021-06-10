@@ -15,6 +15,13 @@ int read(void);
 
 int printf(const char *format, ...);
 
+#define _OSS_LIB
+
+#include <screen.h>
+
+void draw_circle(circle_t *circle, uint32_t color);
+void draw_rect(rect_t *rect, uint32_t color);
+
 /* MEMORY */
 
 void *malloc(size_t n);

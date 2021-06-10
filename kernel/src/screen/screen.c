@@ -80,6 +80,52 @@ size_t write_screen(const char *buf, size_t count)
     return displayed;
 }
 
+void draw_rect(rect_t *rect, uint32_t color)
+{
+    uint32_t *screen = (uint32_t *) disp->back;
+    uint32_t ppl = disp->screen->pix_per_line;
+
+    screen += rect->y * ppl + rect->x;
+
+    for (uint64_t i = 0; i < rect->dy; i++) {
+        for (uint64_t j = 0; j < rect->dx; j++)
+            *screen++ = color;
+
+        screen += ppl - rect->dx;
+    }
+}
+
+void draw_circle(circle_t *circle, uint32_t color)
+{
+    uint32_t *screen = (uint32_t *) disp->back;
+    uint32_t ppl = disp->screen->pix_per_line;
+
+    vec_t scr_p = {
+        .x = circle->x - circle->d / 2,
+        .y = circle->y - circle->d / 2,
+    };
+
+    vec_t scr_m = {
+        .x = circle->x + circle->d / 2,
+        .y = circle->y + circle->d / 2,
+    };
+
+    uint64_t d = 2 * circle->d / 2;
+    int p = -circle->d / 2;
+    int k = -circle->d / 2;
+    int dsq = (int) (circle->d / 2) * (circle->d / 2);
+
+    screen += scr_p.y * ppl + scr_p.x;
+
+    for (uint64_t i = scr_p.y; i < scr_m.y; i++, p++) {
+        for (uint64_t j = scr_p.x; j < scr_m.x; j++, k++)
+            *screen++ = (p * p + k * k) < dsq ? color : 0;
+
+        screen += ppl - d;
+        k = -circle->d / 2;
+    }
+}
+
 void *memcpy8(void *dest, const void *src, size_t n)
 {
     uint64_t *p_dest = (uint64_t *) dest;
@@ -90,6 +136,15 @@ void *memcpy8(void *dest, const void *src, size_t n)
     return dest;
 }
 
+void *memset8(void *dest, int val, size_t n)
+{
+    uint64_t *p_dest = (uint64_t *) dest;
+
+    while ((n -= 8) >0)
+        *p_dest++ = val;
+    return dest;
+}
+
 void refresh(void)
 {
     memcpy8(disp->screen->p_loc, disp->back, disp->screen->buf_size);
@@ -97,5 +152,5 @@ void refresh(void)
 
 void clear(void)
 {
-    memset(disp->back, 0, disp->screen->buf_size);
+    memset8(disp->back, 0, disp->screen->buf_size);
 }
