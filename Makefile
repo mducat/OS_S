@@ -55,7 +55,11 @@ monitor:	iso
 # this one is accessible through gdb with gdb -ex 'target remote localhost:1234'
 # does not start CPU at startup
 debug:
-	$(MAKE) -C kernel debug
+	$(MAKE) -C oss_lib    debug
+	$(MAKE) -C files      
+
+	$(MAKE) -C bootloader 
+	$(MAKE) -C kernel     debug
 	$(MAKE) iso
 	qemu-system-x86_64 $(VMFLAGS) -monitor stdio -serial file:out.dbg -S -s
 
