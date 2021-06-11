@@ -14,7 +14,7 @@ void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
     switch (num) {
     case 0:
         n = write_screen((char *) par1, (size_t) par2);
-        asm volatile("" : : "a" (n));
+        //asm volatile("" : : "a" (n));
 
         break;
     case 1:

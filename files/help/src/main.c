@@ -9,7 +9,7 @@ int main(void)
     write("cat: concatenates files into display.\n");
     write("ls: list files.\n");
 
-    rect_t *rect_test = malloc(sizeof(rect_t));
+    /*rect_t *rect_test = malloc(sizeof(rect_t));
 
     rect_test->x = 50;
     rect_test->y = 50;
@@ -24,7 +24,7 @@ int main(void)
     circle_test->y = 50;
     circle_test->d = 50;
 
-    draw_circle(circle_test, RGBA_TO_COLOR(255, 200, 50, 0));
+    draw_circle(circle_test, RGBA_TO_COLOR(255, 200, 50, 0));*/
     refresh();
 
     /*int a[] = {12, -412, 4321, -5678, 012, 0xFF, 0};
