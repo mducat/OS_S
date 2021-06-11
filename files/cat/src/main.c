@@ -16,8 +16,8 @@ int main(int ac, char **av)
         file_t *file = open(av[i]);
 
         if (!file) {
-            printf("\e255,0,0,2;\e255,0,0,1;%s: \e255,255,0,1;%s:"
-                   " \e255,255,255,0;\e100,0,0,1;File not found.\n" RESET_COLOR,
+            printf(LINE_BR_RED FRONT_BR_RED "%s: " FRONT_BR_YELLOW "%s: "
+                   BACK_WHITE FRONT_RED "File not found.\n" RESET_COLOR,
                    av[0], av[i]);
             continue;
         }
