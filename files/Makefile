@@ -4,6 +4,7 @@ NAME		=	files_raw.h
 PROGRAMS	=	ls	\
 				cat \
 				help \
+				aoss \
 
 PLAIN		=   $(shell ls plain/*)
 
