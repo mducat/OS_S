@@ -18,7 +18,7 @@ int printf(const char *format, ...);
 /* COLOR */
 
 #define RESET_BACK_CLR  "\e0,0,0,0;"
-#define RESET_FRONT_CLR "\e0,255,255,1;"
+#define RESET_FRONT_CLR "\e255,255,255,1;"
 #define RESET_LINE_CLR  "\e0,0,0,2;"
 
 #define RESET_COLOR  RESET_BACK_CLR RESET_FRONT_CLR RESET_LINE_CLR
