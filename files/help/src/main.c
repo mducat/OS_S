@@ -4,7 +4,7 @@
 
 int main(void)
 {
-    write("OSS terminal. commands:\n");
+    write("\vOSS terminal. commands:\n");
     write("help: display this message.\n");
     write("cat: concatenates files into display.\n");
     write("ls: list files.\n");

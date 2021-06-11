@@ -34,6 +34,12 @@ typedef struct circle_s {
         void     *back;
     } disp_t;
 
+    typedef struct display_state_s {
+        uint32_t front_color;
+        uint32_t back_color;
+        uint32_t line_color;
+    } disp_state_t;
+
     extern volatile disp_t *disp;
 
     size_t write_screen(const char *buf, size_t count);
