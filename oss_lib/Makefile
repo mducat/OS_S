@@ -17,6 +17,20 @@ OBJ		=	src/write.o  \
 			src/printf/printers4.o  \
 			src/printf/put_double.o  \
 			src/printf/utils.o  \
+			src/lld/lld_db.o  \
+			src/lld/lld_free.o  \
+			src/lld/lld_init.o  \
+			src/lld/lld_insert_node.o  \
+			src/lld/lld_insert.o  \
+			src/lld/lld_len_db.o  \
+			src/lld/lld_len.o  \
+			src/lld/lld_lld_to_tab.o  \
+			src/lld/lld_pop_node.o  \
+			src/lld/lld_pop.o  \
+			src/lld/lld_read.o  \
+			src/lld/lld_sort.o  \
+			src/lld/lld_write.o  \
+			src/utils.o  \
 
 NAME	=	liboss.a
 

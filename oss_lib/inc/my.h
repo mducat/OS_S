@@ -39,6 +39,14 @@ char **my_str_to_word_array(char const *);
 int my_show_word_array(char * const *);
 int is_num(char);
 
+long strtol(const char *nptr, char **endptr, register int base);
+char *strdup(const char *str);
+int strcmp(const char *str1, const char *str2);
+char *my_putnbr_base_str(unsigned long int nbr, char *base);
+char **strToWords(const char *str, char split);
+void memcpy(char *dest, const char *src, int size);
+int strlen(const char *str);
+
 //backend functions
 
 int abs_rec(int);
