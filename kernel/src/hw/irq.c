@@ -94,29 +94,10 @@ void irq2_handler(void) // cascade interrupt
 
 void irq80_handler(void)
 {
-    /*uint64_t num;
-    uint64_t par1;
-    uint64_t par2;
-    uint64_t par3;
-
-    asm("" : "=a" (num),
-        "=b" (par1),
-        "=c" (par2),
-        "=d" (par3));*/
-    uint64_t *ptr1 = 0x123456;
-    uint64_t *ptr2 = 0x123466;
-    uint64_t *ptr3 = 0x123476;
-    uint64_t *ptr4 = 0x123486;
-
-    uint64_t num;
-    uint64_t par1;
-    uint64_t par2;
-    uint64_t par3;
-
-    num = *ptr1;
-    par1 = *ptr2;
-    par2 = *ptr3;
-    par3 = *ptr4;
+    uint64_t num  = *((uint64_t *) 0x1234560);
+    uint64_t par1 = *((uint64_t *) 0x1234660);
+    uint64_t par2 = *((uint64_t *) 0x1234760);
+    uint64_t par3 = *((uint64_t *) 0x1234860);
 
     end_of_interrupt(30);
     syscall_handler(num, par1, par2, par3);

@@ -8,13 +8,13 @@
 void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
 {
     size_t n;
-    int res;
     void *ptr;
+    int res;
 
     switch (num) {
     case 0:
         n = write_screen((char *) par1, (size_t) par2);
-        //asm volatile("" : : "a" (n));
+        *((uint64_t *) 0x1234560) = (uint64_t) n;
 
         break;
     case 1:
@@ -22,7 +22,7 @@ void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
         break;
     case 2:
         ptr = malloc((size_t) par1);
-        asm volatile("" : : "a" (ptr));
+        *((uint64_t *) 0x1234560) = (uint64_t) ptr;
 
         break;
     case 3:
@@ -30,17 +30,17 @@ void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
         break;
     case 4:
         ptr = (void *) opendir((char *) par1);
-        asm volatile("" : : "a" (ptr));
+        *((uint64_t *) 0x1234560) = (uint64_t) ptr;
 
         break;
     case 5:
         ptr = (void *) readdir((dir_t *) par1);
-        asm volatile("" : : "a" (ptr));
+        *((uint64_t *) 0x1234560) = (uint64_t) ptr;
 
         break;
     case 6:
         ptr = (void *) open((char *) par1);
-        asm volatile("" : : "a" (ptr));
+        *((uint64_t *) 0x1234560) = (uint64_t) ptr;
 
         break;
     case 7:
@@ -53,7 +53,7 @@ void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
         break;
     case 9:
         res = read();
-        asm volatile("" : : "a" (res));
+        *((uint64_t *) 0x1234560) = (uint64_t) res;
 
         break;
     case 10:

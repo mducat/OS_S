@@ -101,4 +101,26 @@ void close(file_t *file);
 void remove_file(char *name);
 void write_file(char *name, char *content, size_t len);
 
+#ifdef _OSS_SOURCE
+
+#define LOAD1(a) \
+    *((uint64_t *) 0x1234560) = (uint64_t) a;
+
+#define LOAD2(a, b) \
+    *((uint64_t *) 0x1234560) = (uint64_t) a; \
+    *((uint64_t *) 0x1234660) = (uint64_t) b;
+
+#define LOAD3(a, b, c) \
+    *((uint64_t *) 0x1234560) = (uint64_t) a; \
+    *((uint64_t *) 0x1234660) = (uint64_t) b; \
+    *((uint64_t *) 0x1234760) = (uint64_t) c;
+
+#define LOAD4(a, b, c, d)                     \
+    *((uint64_t *) 0x1234560) = (uint64_t) a; \
+    *((uint64_t *) 0x1234660) = (uint64_t) b; \
+    *((uint64_t *) 0x1234760) = (uint64_t) c; \
+    *((uint64_t *) 0x1234860) = (uint64_t) d;
+
+#endif
+
 #endif

@@ -8,11 +8,10 @@ dir_t *opendir(char *name)
     int num = 4;
     dir_t *dir = 0;
 
-    asm volatile("int $0x30" :
-                 : "a" (num),
-                   "b" (name));
+    LOAD2(num, name)
+    asm volatile("int $0x30");
 
-    asm("" : "=a" (dir));
+    dir = (dir_t *) *((uint64_t *) 0x1234560);
     return dir;
 }
 
@@ -21,11 +20,10 @@ char *readdir(dir_t *dir)
     int num = 5;
     char *name = 0;
 
-    asm volatile("int $0x30" :
-                 : "a" (num),
-                   "b" (dir));
+    LOAD2(num, dir)
+    asm volatile("int $0x30");
 
-    asm("" : "=a" (name));
+    name = (char *) *((uint64_t *) 0x1234560);
     return name;
 }
 
@@ -34,11 +32,10 @@ file_t *open(char *path)
     int num = 6;
     file_t *file = 0;
 
-    asm volatile("int $0x30" :
-                 : "a" (num),
-                   "b" (path));
+    LOAD2(num, path)
+    asm volatile("int $0x30");
 
-    asm("" : "=a" (file));
+    file = (file_t *) *((uint64_t *) 0x1234560);
     return file;
 }
 
@@ -59,18 +56,14 @@ void remove_file(char *name)
 {
     int num = 7;
 
-    asm volatile("int $0x30" :
-                 : "a" (num),
-                   "b" (name));
+    LOAD2(num, name)
+    asm volatile("int $0x30");
 }
 
 void write_file(char *name, char *content, size_t len)
 {
     int num = 8;
 
-    asm volatile("int $0x30" :
-                 : "a" (num),
-                   "b" (name),
-                   "c" (content),
-                   "d" (len));
+    LOAD4(num, name, content, len)
+    asm volatile("int $0x30");
 }

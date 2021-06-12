@@ -6,19 +6,10 @@ size_t write_raw(char *str, size_t size)
     int num = 0;
     size_t n = 0;
 
-    /*asm volatile("int $0x30" :
-                 : "a" (num),
-                   "b" (str),
-                   "c" (size));
+    LOAD3(num, str, size)
+    asm volatile ("int $0x30");
 
-    asm("" : "=a" (n));*/
-    uint64_t *ptr1 = 0x123456;
-    uint64_t *ptr2 = 0x123466;
-    uint64_t *ptr3 = 0x123476;
-
-    *ptr1 = num;
-    *ptr2 = str;
-    *ptr3 = size;
+    n = (size_t) *((uint64_t *) 0x1234560);
     return n;
 }
 
@@ -29,20 +20,11 @@ size_t write(char *str)
     size_t n = 0;
 
     while (str[size++]);
-    uint64_t *ptr1 = 0x123456;
-    uint64_t *ptr2 = 0x123466;
-    uint64_t *ptr3 = 0x123476;
 
-    *ptr1 = num;
-    *ptr2 = str;
-    *ptr3 = size;
+    LOAD3(num, str, size)
+    asm volatile ("int $0x30");
 
-    /*asm volatile("int $0x30" :
-                 : "a" (num),
-                   "b" (str),
-                   "c" (size));
-
-                   asm("" : "=a" (n));*/
+    n = (size_t) *((uint64_t *) 0x1234560);
     return n;
 }
 
@@ -50,8 +32,8 @@ void refresh(void)
 {
     int num = 1;
 
-    asm volatile("int $0x30" :
-                 : "a" (num));
+    LOAD1(num)
+    asm volatile("int $0x30");
 }
 
 int read(void)
@@ -59,9 +41,8 @@ int read(void)
     int num = 9;
     int res = 0;
 
-    asm volatile("int $0x30" :
-                 : "a" (num));
+    LOAD2(num, res)
+    asm volatile("int $0x30");
 
-    asm("" : "=a" (res));
     return res;
 }
