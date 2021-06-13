@@ -3,9 +3,9 @@
 
 int main(int ac, char **av)
 {
-    int data = read();
+    /*int data = read();
 
-    printf("received char : '%c'\n", data);
+      printf("received char : '%c'\n", data);*/
 
     if (ac < 2) {
         printf("%s [filenames ...]\n", av[0]);

@@ -11,9 +11,28 @@ size_t write_raw(char *, size_t);
 size_t write(char *);
 void refresh(void);
 
+int printf(const char *format, ...);
+
+/* KBD */
+
 int read(void);
 
-int printf(const char *format, ...);
+#define IS_LEFT_CTRL(x)  (x & 0x0200)
+#define IS_LEFT_ALT(x)   (x & 0x0400)
+#define IS_LEFT_SHIFT(x) (x & 0x0800)
+#define IS_ESCAPE(x)     (x & 0x1000)
+
+#define IS_CURSOR_DOWN(x)  (x & 0x02000)
+#define IS_CURSOR_UP(x)    (x & 0x04000)
+#define IS_CURSOR_LEFT(x)  (x & 0x08000)
+#define IS_CURSOR_RIGHT(x) (x & 0x10000)
+
+#define IS_CURSOR(x) (IS_CURSOR_DOWN(x) || \
+        IS_CURSOR_UP(x)                 || \
+        IS_CURSOR_LEFT(x)               || \
+        IS_CURSOR_RIGHT(x))
+
+#define GET_CHR(x)  (x & 0xFF)
 
 /* COLORS */
 

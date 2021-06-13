@@ -10,7 +10,7 @@ LIBS	=	-L../../oss_lib -loss
 
 CFLAGS	=	$(INC) -Wall -Wextra 				\
 			-nostdinc -ffreestanding -nostdlib	\
-			-Wl,--oformat=binary 
+			-Wl,--oformat=binary -Wl,"-emain"
 
 all: $(NAME)
 

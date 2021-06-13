@@ -10,7 +10,9 @@
 
 int read(void)
 {
-    static int next = 0;
+    static char next = 0;
+    static char extra = 0;
+    static int flags = 0;
 
 wait:
     while ((inb(KBD_STATUS) & 1) == 0);
@@ -22,15 +24,102 @@ wait:
         goto wait;
     }
 
-    if (input > 0x80) // -1
-        goto wait;
-
-    if (next) {
-        next = 0;
+    if (input == 0xE0) {
+        extra = 1;
         goto wait;
     }
 
-    char print = scan_code_set_2_fr[(uint8_t) input];
+
+    if (extra && !next && input != 0xE0 && input != 0xF0) {
+
+        switch (input) {
+        case 0x6B:
+            flags |= CUR_LEFT;
+            break;
+        case 0x72:
+            flags |= CUR_DOWN;
+            break;
+        case 0x74:
+            flags |= CUR_RIGHT;
+            break;
+        case 0x75:
+            flags |= CUR_UP;
+            break;
+        default: break;
+        }
+
+        extra = 0;
+
+    } else {
+
+        switch (input) {
+        case 0x11:
+            flags |= LEFT_ALT;
+            break;
+        case 0x12:
+            flags |= LEFT_SHIFT;
+            break;
+        case 0x14:
+            flags |= LEFT_CTRL;
+            break;
+        case 0x76:
+            flags |= ESCAPE;
+            break;
+        default: break;
+        }
+        
+    }
+
+    if (next && input != 0xF0) {
+        next = 0;
+
+        if (extra && input != 0xE0) {
+
+            switch (input) {
+            case 0x6B:
+                flags &= ~CUR_LEFT;
+                break;
+            case 0x72:
+                flags &= ~CUR_DOWN;
+                break;
+            case 0x74:
+                flags &= ~CUR_RIGHT;
+                break;
+            case 0x75:
+                flags &= ~CUR_UP;
+                break;
+            default: break;
+            }
+
+            extra = 0;
+            
+        } else {
+
+            switch (input) {
+            case 0x11:
+                flags &= ~LEFT_ALT;
+                break;
+            case 0x12:
+                flags &= ~LEFT_SHIFT;
+                break;
+            case 0x14:
+                flags &= ~LEFT_CTRL;
+                break;
+            case 0x76:
+                flags &= ~ESCAPE;
+                break;
+            default: break;
+            }
+            
+        }
+
+        goto wait;
+    }
+
+
+    int print = scan_code_set_2_fr[(uint8_t) input];
+
+    print |= flags;
     return (int) print;
 }
 

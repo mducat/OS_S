@@ -8,82 +8,14 @@
 
 typedef unsigned int uint;
 
-void rmDoubledCHar(char *str, char c) {
-    int p = 0;
-    int i = 0;
-    while (str[p] == c)
-        p++;
-    for (; str[p]; p++) {
-        if (str[p] == c && str[p+1] == c)
-            continue;
-        str[i++] = str[p];
-    }
-    i--;
-    while (str[i] == c) 
-        str[i--] = 0;
-    str[i+1] = 0;
-}
-
 instruction_t **instructionsSet = 0;
 #define PUSHBACK(lld, data) lld_insert(lld, lld_len(lld), data)
-void generateInstructionsSet() {
-    lld_t *lld = lld_init();
-
-    PUSHBACK(lld, generateInstruction("add r r", &OpCode_ADD_r_r));
-    PUSHBACK(lld, generateInstruction("jmp _", &OpCode_JMP_relativ));
-    PUSHBACK(lld, generateInstruction("ret", &OpCode_RET));
-    PUSHBACK(lld, generateInstruction("mov r r", &OpCode_MOV_r_r));
-    PUSHBACK(lld, generateInstruction("mov r r _", &OpCode_MOV_r_mem));
-    PUSHBACK(lld, generateInstruction("mov r _ r", &OpCode_MOV_mem_r));
-    PUSHBACK(lld, generateInstruction("call _", &OpCode_CALL));
-    PUSHBACK(lld, generateInstruction("mov r _", &OpCode_MOV_r_li));
-    PUSHBACK(lld, generateInstruction("cmp r r", &OpCode_CMP_r_r));
-    //PUSHBACK(lld, generateInstruction("cmp r _", &OpCode_CMP_r_li));
-    PUSHBACK(lld, generateInstruction("je _", &OpCode_JE_i));
-    PUSHBACK(lld, generateInstruction("jne _", &OpCode_JNE_i));
-    PUSHBACK(lld, generateInstruction("jge _", &OpCode_JGE_i));
-    PUSHBACK(lld, generateInstruction("jbe _", &OpCode_JBE_i));
-    PUSHBACK(lld, generateInstruction("jg _", &OpCode_JG_i));
-    PUSHBACK(lld, generateInstruction("jb _", &OpCode_JB_i));
-    PUSHBACK(lld, generateInstruction("push r", &OpCode_PUSH_r));
-    PUSHBACK(lld, generateInstruction("push _", &OpCode_PUSH_i));
-    PUSHBACK(lld, generateInstruction("pop r", &OpCode_POP_r));
-    PUSHBACK(lld, generateInstruction("syscall", &OpCode_SYSCALL));
-    PUSHBACK(lld, generateInstruction("int _", &OpCode_INT));
-    PUSHBACK(lld, generateInstruction("imul r r", &OpCode_IMUL_r_r));
-    PUSHBACK(lld, generateInstruction("idiv r", &OpCode_IDIV_r));
-
-    instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
-    lld_free(lld);
-}
 
 typedef struct balise {
     int adrr;
     int line;
     char *name;
 } balise_t;
-
-void freeInstructionsSet() {
-    for (int i = 0; instructionsSet[i]; i++) {
-        for (int j = 0; instructionsSet[i]->name[j]; j++)
-            free(instructionsSet[i]->name[j]);
-        free(instructionsSet[i]->name);
-        free(instructionsSet[i]);
-    }
-    free(instructionsSet);
-}
-
-void printInstructionsSet() {
-    printf("-----SET-----\n");
-    for (int i = 0; instructionsSet[i]; i++) {
-        printf("%4i| ", i);
-        for (int j = 0; instructionsSet[i]->name[j]; j++) {
-            printf(" %s", instructionsSet[i]->name[j]);
-        }
-        printf("\n");
-    }
-    printf("---END SET---\n");
-}
 
 char registers[][3] = {
     "rax",
@@ -382,4 +314,73 @@ int main() {
     free(binary);
     freeInstructionsSet();
     return 0;
+}
+
+void rmDoubledCHar(char *str, char c) {
+    int p = 0;
+    int i = 0;
+    while (str[p] == c)
+        p++;
+    for (; str[p]; p++) {
+        if (str[p] == c && str[p+1] == c)
+            continue;
+        str[i++] = str[p];
+    }
+    i--;
+    while (str[i] == c) 
+        str[i--] = 0;
+    str[i+1] = 0;
+}
+
+void generateInstructionsSet() {
+    lld_t *lld = lld_init();
+
+    PUSHBACK(lld, generateInstruction("add r r", &OpCode_ADD_r_r));
+    PUSHBACK(lld, generateInstruction("jmp _", &OpCode_JMP_relativ));
+    PUSHBACK(lld, generateInstruction("ret", &OpCode_RET));
+    PUSHBACK(lld, generateInstruction("mov r r", &OpCode_MOV_r_r));
+    PUSHBACK(lld, generateInstruction("mov r r _", &OpCode_MOV_r_mem));
+    PUSHBACK(lld, generateInstruction("mov r _ r", &OpCode_MOV_mem_r));
+    PUSHBACK(lld, generateInstruction("call _", &OpCode_CALL));
+    PUSHBACK(lld, generateInstruction("mov r _", &OpCode_MOV_r_li));
+    PUSHBACK(lld, generateInstruction("cmp r r", &OpCode_CMP_r_r));
+    //PUSHBACK(lld, generateInstruction("cmp r _", &OpCode_CMP_r_li));
+    PUSHBACK(lld, generateInstruction("je _", &OpCode_JE_i));
+    PUSHBACK(lld, generateInstruction("jne _", &OpCode_JNE_i));
+    PUSHBACK(lld, generateInstruction("jge _", &OpCode_JGE_i));
+    PUSHBACK(lld, generateInstruction("jbe _", &OpCode_JBE_i));
+    PUSHBACK(lld, generateInstruction("jg _", &OpCode_JG_i));
+    PUSHBACK(lld, generateInstruction("jb _", &OpCode_JB_i));
+    PUSHBACK(lld, generateInstruction("push r", &OpCode_PUSH_r));
+    PUSHBACK(lld, generateInstruction("push _", &OpCode_PUSH_i));
+    PUSHBACK(lld, generateInstruction("pop r", &OpCode_POP_r));
+    PUSHBACK(lld, generateInstruction("syscall", &OpCode_SYSCALL));
+    PUSHBACK(lld, generateInstruction("int _", &OpCode_INT));
+    PUSHBACK(lld, generateInstruction("imul r r", &OpCode_IMUL_r_r));
+    PUSHBACK(lld, generateInstruction("idiv r", &OpCode_IDIV_r));
+
+    instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
+    lld_free(lld);
+}
+
+void freeInstructionsSet() {
+    for (int i = 0; instructionsSet[i]; i++) {
+        for (int j = 0; instructionsSet[i]->name[j]; j++)
+            free(instructionsSet[i]->name[j]);
+        free(instructionsSet[i]->name);
+        free(instructionsSet[i]);
+    }
+    free(instructionsSet);
+}
+
+void printInstructionsSet() {
+    printf("-----SET-----\n");
+    for (int i = 0; instructionsSet[i]; i++) {
+        printf("%4i| ", i);
+        for (int j = 0; instructionsSet[i]->name[j]; j++) {
+            printf(" %s", instructionsSet[i]->name[j]);
+        }
+        printf("\n");
+    }
+    printf("---END SET---\n");
 }

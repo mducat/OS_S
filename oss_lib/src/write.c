@@ -43,6 +43,7 @@ int read(void)
 
     LOAD2(num, res)
     asm volatile("int $0x30");
+    res = (size_t) *((uint64_t *) 0x1234560);
 
     return res;
 }

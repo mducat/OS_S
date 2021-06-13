@@ -8,8 +8,9 @@ int main(void)
     write("help: display this message.\n");
     write("cat: concatenates files into display.\n");
     write("ls: list files.\n");
+    refresh();
 
-    /*rect_t *rect_test = malloc(sizeof(rect_t));
+    rect_t *rect_test = malloc(sizeof(rect_t));
 
     rect_test->x = 50;
     rect_test->y = 50;
@@ -24,8 +25,32 @@ int main(void)
     circle_test->y = 50;
     circle_test->d = 50;
 
-    draw_circle(circle_test, RGBA_TO_COLOR(255, 200, 50, 0));*/
+    draw_circle(circle_test, RGBA_TO_COLOR(255, 200, 50, 0));
+
     refresh();
+
+    free(rect_test);
+    free(circle_test);
+
+    int r = read();
+
+    while (GET_CHR(r) != 'a') {
+        printf("chr: '%c', is_ctrl: %d, is_alt: %d, "
+               "is_shift: %d, is_escape: %d, "
+               "is_down: %d, is_up: %d, "
+               "is_left: %d, is_right: %d\n",
+               GET_CHR(r), IS_LEFT_CTRL(r) ? 1 : 0,
+               IS_LEFT_ALT(r) ? 1 : 0,
+               IS_LEFT_SHIFT(r) ? 1 : 0,
+               IS_ESCAPE(r) ? 1 : 0,
+               IS_CURSOR_DOWN(r) ? 1 : 0,
+               IS_CURSOR_UP(r) ? 1 : 0,
+               IS_CURSOR_LEFT(r) ? 1 : 0,
+               IS_CURSOR_RIGHT(r) ? 1 : 0);
+
+        refresh();
+        r = read();
+    }
 
     /*int a[] = {12, -412, 4321, -5678, 012, 0xFF, 0};
     char *strings[] = {"Hey", "Test !", "oijgeoj", "a", "re !", "azezf", 0};
