@@ -12,6 +12,8 @@ CFLAGS	=	$(INC) -Wall -Wextra 				\
 			-nostdinc -ffreestanding -nostdlib	\
 			-Wl,--oformat=binary -Wl,"-emain"
 
+CC		=	x86_64-elf-gcc
+
 all: $(NAME)
 
 $(NAME):$(OBJ)

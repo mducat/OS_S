@@ -40,10 +40,13 @@ CFLAGS	=	$(INC) -Wall -Wextra 				\
 			-ffreestanding -nostdinc -nostdlib	\
 			-D_OSS_SOURCE
 
+CC		=	x86_64-elf-gcc
+AR		=	x86_64-elf-ar
+
 all: $(NAME)
 
 $(NAME):$(OBJ)
-	ar rcv $(NAME) $(OBJ)
+	$(AR) rcv $(NAME) $(OBJ)
 
 debug:	CFLAGS += -g
 debug:	fclean all
