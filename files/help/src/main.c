@@ -11,7 +11,7 @@ int main(void)
     refresh();
 
     rect_t *rect_test = malloc(sizeof(rect_t));
-
+ 
     rect_test->x = 50;
     rect_test->y = 50;
     rect_test->dx = 50;

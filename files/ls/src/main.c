@@ -9,16 +9,20 @@ int main(void)
     dir_t *dir = opendir("/");
     char *name = readdir(dir);
 
+    char f_msg[] = " files in folder '/':\n"; 
+    char f_sep[] = " - "; 
+    char f_end[] = "\n"; 
+
     write_nbr(dir->size);
-    write(" files in folder '/':\n");
+    printf(f_msg);
 
     while (name) {
         file_t *file = open(name);
 
         write_nbr(file->size);
-        write(" - ");
+        write(f_sep);
         write(file->name);
-        write("\n");
+        write(f_end);
 
         close(file);
 

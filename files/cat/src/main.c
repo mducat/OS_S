@@ -7,6 +7,7 @@ int main(int ac, char **av)
 
       printf("received char : '%c'\n", data);*/
 
+    printf("salut\n");
     if (ac < 2) {
         printf("%s [filenames ...]\n", av[0]);
         goto out;
