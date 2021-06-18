@@ -6,18 +6,15 @@
 #include <lld.h>
 #include <my.h>
 
-
-void generateInstructionsSet();
-void printInstructionsSet();
-void freeInstructionsSet();
+instruction_t **generateInstructionsSet();
+void printInstructionsSet(instruction_t **instructionsSet);
+void freeInstructionsSet(instruction_t **instructionsSet);
 void rmDoubledCHar(char *str, char c);
 
 typedef unsigned int uint;
 
-instruction_t **instructionsSet = 0;
 #define PUSHBACK(lld, data) lld_insert(lld, lld_len(lld), data)
 
-#define printf(str, ...) {char buf[] = str; printf(buf __VA_OPT__(,) __VA_ARGS__);}
 
 typedef struct balise {
     int adrr;
@@ -25,38 +22,20 @@ typedef struct balise {
     char *name;
 } balise_t;
 
-char registers[][3] = {
-    "rax",
-    "rcx",
-    "rdx",
-    "rbx",
-    "rsp",
-    "rbp",
-    "rsi",
-    "rdi"
-};
-
-char aliases[][32] = {
-    "rax", "r0",
-    "rcx", "r1",
-    "rdx", "r2",
-    "rbx", "r3",
-    "rsp", "r4",
-    "rbp", "r5",
-    "rsi", "r6",
-    "rdi", "r7",
-    // "add", "i0",
-    // "jmp", "i1",
-    // "ret", "i2"
-};
 
 int main(int ac, char **av) {
+    // aliase + 4*i
+    instruction_t **instructionsSet = 0;
+    char aliases[] = "rax\0r0\0\0rcx\0r1\0\0rdx\0r2\0\0rbx\0r3\0\0rsp\0r4\0\0rbp\0r5\0\0rsi\0r6\0\0rdi\0r7\0\0";
+
+    char str[] = "dqsdqsdqs";
+
+    // init instruction set
+    instructionsSet = generateInstructionsSet();
+    // printInstructionsSet(instructionsSet);
+
     if (ac != 2)
         return 1;
-    // init instruction set
-    generateInstructionsSet();
-    printInstructionsSet();
-
     int error_count = 0;
 
     //FILE *src = fopen("main.coss", "r+");
@@ -65,7 +44,12 @@ int main(int ac, char **av) {
     file_t *src = open(av[1]);
     lld_t *file = lld_init();
     char *line = 0;
-    char **file_split = strToWords(src->content, '\n');
+    refresh();
+    char *fileBuf = malloc(src->size+1);
+    memcpy(fileBuf, src->content, src->size);
+    fileBuf[src->size] = 0;
+    char **file_split = strToWords(fileBuf, '\n');
+    close(src);
     /*size_t line_len = 0;
     int line_len2 = 0;
     while ((line_len2 = getline(&line, &line_len, src)) > 0){
@@ -77,13 +61,14 @@ int main(int ac, char **av) {
         line = 0;
     }*/
     for (int i = 0; file_split[i]; i++) {
-
+        lld_insert(file, lld_len(file), file_split[i]);
     }
-    
+    free(file_split);
+
     free(line);
     //fclose(src);
 
-  
+
 
 
     // apply strToWords on each line and do aliases 
@@ -92,17 +77,17 @@ int main(int ac, char **av) {
     for (lld_t *mv = file->next; mv; mv = mv->next, line_count++) {
         // rm double spaces
         rmDoubledCHar(mv->data, ' ');
-        printf("%4i|  %s\n", line_count, (char *)mv->data);
 
+        printf("%4i|  %s\n", line_count, (char *)mv->data);
         char **words = strToWords(mv->data, ' ');
-        
+
         // iter through words
         for (int i = 0; words[i]; i++) {
             // apply aliases
-            for (uint j = 0; j < sizeof(aliases)/sizeof(*aliases); j += 2) {
-                if (!strcmp(words[i], aliases[j])) {
+            for (uint j = 0; j < sizeof(aliases)/4; j += 2) {
+                if (!strcmp(words[i], aliases+4*j)) {
                     free(words[i]);
-                    words[i] = strdup(aliases[j+1]);
+                    words[i] = strdup(aliases+4*j);
                     break;
                 }
             }
@@ -229,7 +214,7 @@ int main(int ac, char **av) {
                 (void)0;
             }
             lld_insert(lld_opcodes, lld_len(lld_opcodes), 
-                instructionsSet[instruction]->generate(words)
+                OpCode_funcs(instructionsSet[instruction]->func_id, words)
             );
         }
     }
@@ -288,9 +273,11 @@ int main(int ac, char **av) {
     printf("Compilation: DONE\n");
     printf("the programe has compiled with %i errors\n", error_count);
     if (error_count) {
-        printf(GOODENOUGH1, GOODENOUGH2, error_count);
+        char str[] = GOODENOUGH2;
+        printf(GOODENOUGH1, str, error_count);
     } else {
-        printf("%s", GOODOSS);
+        char str[] = GOODOSS;
+        printf("%s", str);
     }   
 
     // free array
@@ -313,8 +300,9 @@ int main(int ac, char **av) {
     //FILE *dest = fopen("main.oss", "wb");
     char destName[] = "main.oss";
     file_t *dest = open(destName);
-    write_file(dest->name, binary, prog_size);
+    write_file(dest->name, (char *)binary, prog_size);
 
+    close(dest);
     //fwrite(binary, prog_size, 1, dest);
     
     //fclose(dest);
@@ -324,7 +312,7 @@ int main(int ac, char **av) {
     //printf("%p %s\n", ret, ret);
 
     free(binary);
-    freeInstructionsSet();
+    freeInstructionsSet(instructionsSet);
     return 0;
 }
 
@@ -344,108 +332,83 @@ void rmDoubledCHar(char *str, char c) {
     str[i+1] = 0;
 }
 
-void generateInstructionsSet() {
+instruction_t **generateInstructionsSet() {
     lld_t *lld = lld_init();
 
-        {
-            char str[] = "add r r"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_ADD_r_r));
-        }
-        {
-            char str[] = "jmp _"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_JMP_relativ));
-        }
-        {
-            char str[] = "ret"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_RET));
-        }
-        {
-            char str[] = "mov r r"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_MOV_r_r));
-        }
-        {
-            char str[] = "mov r r _"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_MOV_r_mem));
-        }
-        {
-            char str[] = "mov r _ r"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_MOV_mem_r));
-        }
-        {
-            char str[] = "call _"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_CALL));
-        }
-        {
-            char str[] = "mov r _"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_MOV_r_li));
-        }
-        {
-            char str[] = "cmp r r"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_CMP_r_r));
-        }
-        {
-            char str[] = "je _"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_JE_i));
-        }
-        {
-            char str[] = "jne _"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_JNE_i));
-        }
-        {
-            char str[] = "jge _"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_JGE_i));
-        }
-        {
-            char str[] = "jbe _"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_JBE_i));
-        }
-        {
-            char str[] = "jg _"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_JG_i));
-        }
-        {
-            char str[] = "jb _"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_JB_i));
-        }
-        {
-            char str[] = "push r"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_PUSH_r));
-        }
-        {
-            char str[] = "push _"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_PUSH_i));
-        }
-        {
-            char str[] = "pop r"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_POP_r));
-        }
-        {
-            char str[] = "syscall"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_SYSCALL));
-        }
-        {
-            char str[] = "int _"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_INT));
-        }
-        {
-            char str[] = "imul r r"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_IMUL_r_r));
-        }
-        {
-            char str[] = "idiv r"; 
-            PUSHBACK(lld, generateInstruction(str, &OpCode_IDIV_r));
-        }
+    {
+        char str[] = "add r r"; 
+        PUSHBACK(lld, generateInstruction(str, 0));
+    } {
+        char str[] = "jmp _";
+        PUSHBACK(lld, generateInstruction(str, 1));
+    } {
+        char str[] = "ret"; 
+        PUSHBACK(lld, generateInstruction(str, 2));
+    } {
+        char str[] = "mov r r"; 
+        PUSHBACK(lld, generateInstruction(str, 3));
+    } {
+        char str[] = "mov r r _"; 
+        PUSHBACK(lld, generateInstruction(str, 4));
+    } {
+        char str[] = "mov r _ r"; 
+        PUSHBACK(lld, generateInstruction(str, 5));
+    } {
+        char str[] = "mov r _"; 
+        PUSHBACK(lld, generateInstruction(str, 6));
+    } {
+        char str[] = "call _"; 
+        PUSHBACK(lld, generateInstruction(str, 7));
+    } {
+        char str[] = "cmp r r"; 
+        PUSHBACK(lld, generateInstruction(str, 9));
+    } {
+        char str[] = "je _"; 
+        PUSHBACK(lld, generateInstruction(str, 10));
+    } {
+        char str[] = "jne _"; 
+        PUSHBACK(lld, generateInstruction(str, 11));
+    } {
+        char str[] = "jbe _"; 
+        PUSHBACK(lld, generateInstruction(str, 12));
+    } {
+        char str[] = "jge _"; 
+        PUSHBACK(lld, generateInstruction(str, 13));
+    } {
+        char str[] = "jg _"; 
+        PUSHBACK(lld, generateInstruction(str, 14));
+    } {
+        char str[] = "jb _"; 
+        PUSHBACK(lld, generateInstruction(str, 15));
+    } {
+        char str[] = "push r"; 
+        PUSHBACK(lld, generateInstruction(str, 16));
+    } {
+        char str[] = "push _"; 
+        PUSHBACK(lld, generateInstruction(str, 17));
+    } {
+        char str[] = "pop r"; 
+        PUSHBACK(lld, generateInstruction(str, 18));
+    } {
+        char str[] = "syscall"; 
+        PUSHBACK(lld, generateInstruction(str, 19));
+    } {
+        char str[] = "int _"; 
+        PUSHBACK(lld, generateInstruction(str, 20));
+    } {
+        char str[] = "imul r r"; 
+        PUSHBACK(lld, generateInstruction(str, 21));
+    } {
+        char str[] = "idiv r"; 
+        PUSHBACK(lld, generateInstruction(str, 22));
+    }
 
-
-
-    //PUSHBACK(lld, generateInstruction("cmp r _", &OpCode_CMP_r_li));
-
-
-    instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
+    instruction_t **instructionsSet = lld_lld_to_tab(lld);
     lld_free(lld);
+    return instructionsSet;
 }
 
-void freeInstructionsSet() {
+void freeInstructionsSet(instruction_t **instructionsSet) {
     for (int i = 0; instructionsSet[i]; i++) {
         for (int j = 0; instructionsSet[i]->name[j]; j++)
             free(instructionsSet[i]->name[j]);
@@ -455,7 +418,7 @@ void freeInstructionsSet() {
     free(instructionsSet);
 }
 
-void printInstructionsSet() {
+void printInstructionsSet(instruction_t **instructionsSet) {
     printf("-----SET-----\n");
     for (int i = 0; instructionsSet[i]; i++) {
         printf("%4i| ", i);

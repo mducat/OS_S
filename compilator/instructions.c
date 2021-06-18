@@ -11,20 +11,20 @@ char *generateInstructionChars[32] = {
     "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"
 };
 
-instruction_t *generateInstruction(char *name, OpCode_t *(*func)(char **)) {
+instruction_t *generateInstruction(char *name, int id) {
     instruction_t *inst = malloc(sizeof(instruction_t));
     inst->name = strToWords(name, ' ');
-    inst->generate = func;
-    OpCode_t *op = func(generateInstructionChars);
+    inst->func_id = id;
+    OpCode_t *op = OpCode_funcs(id, generateInstructionChars);
     inst->c_size = op->c_size;
     free(op);
     return inst;
 }
 
-OpCode_t *OpCode_init(int size, char *code) {
+OpCode_t *OpCode_init(int size, unsigned char *code) {
     OpCode_t *op = malloc(sizeof(OpCode_t) + size);
     op->c_size = size;
-    memcpy(op->c, code, size);
+    memcpy(op->c, (char *)code, size);
     return op;
 }
 
@@ -295,4 +295,55 @@ OpCode_t *OpCode_IDIV_r(char **strs) {
     };
     OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
     return op;
+}
+
+OpCode_t *OpCode_funcs(int id, char **strs) {
+    switch (id) {
+        case 0:
+            return OpCode_ADD_r_r(strs);
+        case 1:
+            return OpCode_JMP_relativ(strs);
+        case 2:
+            return OpCode_RET(strs);
+        case 3:
+            return OpCode_MOV_r_r(strs);
+        case 4:
+            return OpCode_MOV_r_mem(strs);
+        case 5:
+            return OpCode_MOV_mem_r(strs);
+        case 6:
+            return OpCode_MOV_r_li(strs);
+        case 7:
+            return OpCode_CALL(strs);
+        case 8:
+            return OpCode_JE(strs);
+        case 9:
+            return OpCode_CMP_r_r(strs);
+        case 10:
+            return OpCode_JE_i(strs);
+        case 11:
+            return OpCode_JNE_i(strs);
+        case 12:
+            return OpCode_JBE_i(strs);
+        case 13:
+            return OpCode_JGE_i(strs);
+        case 14:
+            return OpCode_JG_i(strs);
+        case 15:
+            return OpCode_JB_i(strs);
+        case 16:
+            return OpCode_PUSH_r(strs);
+        case 17:
+            return OpCode_PUSH_i(strs);
+        case 18:
+            return OpCode_POP_r(strs);
+        case 19:
+            return OpCode_SYSCALL(strs);
+        case 20:
+            return OpCode_INT(strs);
+        case 21:
+            return OpCode_IMUL_r_r(strs);
+        case 22:
+            return OpCode_IDIV_r(strs);
+    }
 }

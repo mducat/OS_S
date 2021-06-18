@@ -15,7 +15,7 @@ all:
 		$(MAKE) -C $$dir re --no-print-directory ; \
 	done
 
-	python $(MKHEADER) $(PROGRAMS) and $(PLAIN) > $(NAME)
+	python3 $(MKHEADER) $(PROGRAMS) and $(PLAIN) > $(NAME)
 
 clean:
 	for dir in $(PROGRAMS) ; do \

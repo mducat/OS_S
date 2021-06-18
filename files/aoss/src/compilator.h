@@ -22,6 +22,9 @@
 #define RELATIVE_CALL_TO_2CHARS(addr, destAdrr, opcodesize) ADDRESS_TO_2CHARS(-(long int)(addr)-(long int)(opcodesize)+(long int)(destAdrr))
 #define RELATIVE_CALL_TO_1CHARS(addr, destAdrr, opcodesize) ADDRESS_TO_1CHARS(-(long int)(addr)-(long int)(opcodesize)+(long int)(destAdrr))
 
+#define printf(str, ...) {char buf[] = str; printf(buf __VA_OPT__(,) __VA_ARGS__); refresh();}
+
+
 #define GOODENOUGH1  "%s%3i Warning?                                            \n\
                                           C'est pas si mal!                                         \n\n"
 
@@ -111,6 +114,7 @@
                                     MEILLEUR PROGRAMMEUR FRANCAI                                    \n\
                                                                                                     \n\
 ")
+
 
 typedef struct OpCode {
     int adrr;
