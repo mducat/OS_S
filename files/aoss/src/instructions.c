@@ -21,10 +21,10 @@ instruction_t *generateInstruction(char *name, OpCode_t *(*func)(char **)) {
     return inst;
 }
 
-OpCode_t *OpCode_init(int size, char *code) {
+OpCode_t *OpCode_init(int size, unsigned char *code) {
     OpCode_t *op = malloc(sizeof(OpCode_t) + size);
     op->c_size = size;
-    memcpy(op->c, code, size);
+    memcpy(op->c, (char *)code, size);
     return op;
 }
 
