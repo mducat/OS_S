@@ -4,14 +4,18 @@
 
 int main(void)
 {
-    write("OSS terminal. commands:\n");
-    write("help: display this message.\n");
-    write("cat: concatenates files into display.\n");
-    write("ls: list files.\n");
+    char f1[] = "OSS terminal. commands:\n";
+    char f2[] = "help: display this message.\n";
+    char f3[] = "cat: concatenates files into display.\n";
+    char f4[] = "ls: list files.\n";
+    write(f1);
+    write(f2);
+    write(f3);
+    write(f4);
     refresh();
 
     rect_t *rect_test = malloc(sizeof(rect_t));
-
+ 
     rect_test->x = 50;
     rect_test->y = 50;
     rect_test->dx = 50;
@@ -35,10 +39,11 @@ int main(void)
     int r = read();
 
     while (GET_CHR(r) != 'a') {
-        printf("chr: '%c', is_ctrl: %d, is_alt: %d, "
+        char fmt[] = "chr: '%c', is_ctrl: %d, is_alt: %d, "
                "is_shift: %d, is_escape: %d, "
                "is_down: %d, is_up: %d, "
-               "is_left: %d, is_right: %d\n",
+            "is_left: %d, is_right: %d\n";
+        printf(fmt,
                GET_CHR(r), IS_LEFT_CTRL(r) ? 1 : 0,
                IS_LEFT_ALT(r) ? 1 : 0,
                IS_LEFT_SHIFT(r) ? 1 : 0,

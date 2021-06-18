@@ -1,3 +1,4 @@
+
 /*
 ** EPITECH PROJECT, 2019
 ** my_printf
@@ -40,6 +41,18 @@ void print_arg(char const *format, int *i, va_list *ap, pf_conf_t *conf)
         free(conf->flags);
         return;
     }
+    switch(ty) {
+    case 0:
+        print_str(ap, conf);
+        break;
+    case 1:
+    case 2:
+        //pf_put_nbr(12, conf);
+        print_nbr(ap, conf);
+        break;
+    }
+    return;
+
     switch (ty) {
     case 0:
         print_str(ap, conf);

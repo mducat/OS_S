@@ -36,7 +36,7 @@ int get_size(char const *format, int i)
 
 int get_type(char const *format, int i)
 {
-    char *types = "sdicSbpxuf%mnoX";
+    char types[] = "sdicSbpxuf%mnoX";
 
     i = get_length_index(format, i);
     for (int j = 0; types[j] != 0; j++){
