@@ -12,10 +12,10 @@ void *memset(void *dest, char c, size_t size)
 
 void *memcpy(void *dest, const void *src, size_t n)
 {
-    uint64_t *p_dest = (uint64_t *) dest;
-    uint64_t *p_src  = (uint64_t *) src;
+    uint8_t *p_dest = (uint8_t *) dest;
+    uint8_t *p_src  = (uint8_t *) src;
 
-    while ((n -= 8) >0)
+    while (n--)
         *p_dest++ = *p_src++;
     return dest;
 }

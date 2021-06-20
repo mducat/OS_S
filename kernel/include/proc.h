@@ -4,6 +4,6 @@
 
 #include <types.h>
 
-void syscall_handler(uint64_t, uint64_t, uint64_t);
+void syscall_handler(uint64_t, uint64_t, uint64_t, uint64_t);
 
 #endif

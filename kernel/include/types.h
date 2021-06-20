@@ -22,6 +22,9 @@ typedef _Bool uint1_t;
 
 typedef uint64_t size_t;
 
+typedef long unsigned int       u64;
+typedef unsigned int            u32;
+
 
 #define true  (1)
 #define false (0)

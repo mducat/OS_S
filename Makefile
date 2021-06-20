@@ -10,10 +10,16 @@ BIOS		=		bootloader/OVMF.fd
 VMFLAGS		=		-bios $(BIOS) -cdrom $(ISO_NAME)
 
 all:
+	$(MAKE) -C oss_lib
+	$(MAKE) -C files
+
 	$(MAKE) -C bootloader
 	$(MAKE) -C kernel
 
 clean:
+	$(MAKE) -C oss_lib    clean
+	$(MAKE) -C files      clean
+
 	$(MAKE) -C bootloader clean
 	$(MAKE) -C kernel     clean
 
@@ -22,6 +28,9 @@ clean:
 	rm -rf $(ISO_DIR)
 
 fclean: 
+	$(MAKE) -C oss_lib    fclean
+	$(MAKE) -C files      fclean
+
 	$(MAKE) -C bootloader fclean
 	$(MAKE) -C kernel     fclean
 
@@ -46,7 +55,11 @@ monitor:	iso
 # this one is accessible through gdb with gdb -ex 'target remote localhost:1234'
 # does not start CPU at startup
 debug:
-	$(MAKE) -C kernel debug
+	$(MAKE) -C oss_lib    debug
+	$(MAKE) -C files      
+
+	$(MAKE) -C bootloader 
+	$(MAKE) -C kernel     debug
 	$(MAKE) iso
 	qemu-system-x86_64 $(VMFLAGS) -monitor stdio -serial file:out.dbg -S -s
 

@@ -5,6 +5,18 @@
 #define KBD_DATA (0x60)
 #define KBD_STATUS (0x64)
 
+#define LEFT_CTRL  (0x00200)
+#define LEFT_ALT   (0x00400)
+#define LEFT_SHIFT (0x00800)
+#define ESCAPE     (0x01000)
+
+#define CUR_DOWN   (0x02000)
+#define CUR_UP     (0x04000)
+#define CUR_LEFT   (0x08000)
+#define CUR_RIGHT  (0x10000)
+
+int read(void);
+
 static const unsigned char scan_code_set_2[] =
 {
     0,     /* 0x00 - undef */

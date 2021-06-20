@@ -1,4 +1,8 @@
 
+#include <string.h>
+#include <malloc.h>
+#include <lld.h>
+
 int strlen(const char *str)
 {
     int length = 0;
@@ -44,16 +48,14 @@ int strcmp(char const *str1, char const *str2)
     return (str1[i] - str2[i]);
 }
 
-int strncmp(char const *str1, char const *str2, int nb)
+int strncmp(char const *s, char const *t, int n)
 {
-    int i = 0;
-
-    while (str1[i] == str2[i] && str1[i] && str2[i]) {
-        if (i == nb)
-            break;
-        i++;
+    while (n-- && *s == *t) {
+          ++s;
+          ++t;
     }
-    return (str1[i] - str2[i]);
+    if (n >= 0) return *s - *t;
+    return 0;
 }
 
 void strcat(char *dest, char const *src)
@@ -65,6 +67,36 @@ void strcat(char *dest, char const *src)
         dest[x] = src[x];
     dest[x] = 0;
 }
+
+char **strToWords(char *str, char split) {
+    lld_t *lld = lld_init();
+    int p = -1;
+    int i = 0;
+    for (; str[i]; i++) {
+        if (str[i] == split) {
+            i--;
+            int len = i-p;
+            if (len) {
+                char *str2 = malloc(len+1);
+                str2[len] = 0;
+                memcpy(str2, str+p+1, len);
+                lld_insert(lld, lld_len(lld), str2);
+            }
+            i++;
+            p = i;
+        }
+    }
+    int len = i-p-1;
+    char *str2 = malloc(len+1);
+    str2[len] = 0;
+    memcpy(str2, str+p+1, len);
+    lld_insert(lld, lld_len(lld), str2);
+    p = i;
+    char **tab = (char **)lld_lld_to_tab(lld);
+    lld_free(lld);
+    return tab;
+}
+
 
 /*
 strlen done Mathieu
