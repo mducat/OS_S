@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "instruction.h": "c",
+        "compilator.h": "c",
+        "stdlib.h": "c",
+        "oss.h": "c",
+        "screen.h": "c",
+        "lld.h": "c",
+        "utils.h": "c",
+        "random": "c",
+        "sstream": "c",
+        "regex": "c",
+        "string.h": "c",
+        "stat.h": "c",
+        "source_location": "c",
+        "executor": "c",
+        "functional": "c",
+        "*.tcc": "c"
+    }
+}

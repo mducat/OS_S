@@ -103,7 +103,7 @@ int handle_char(char c)
     case '\n':
         flush_cmd(buf, cursor);
 
-        [[fallthrough]];
+        //[[fallthrough]];
     case 3:
         memset(buf, 0, buf_len);
 
