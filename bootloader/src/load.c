@@ -126,7 +126,8 @@ EFI_STATUS load_segment(EFI_FILE *kernel_file, Elf64_Phdr *p_header, EFI_PHYSICA
                 break;
                 
             case DT_RELASZ:
-                t_size = entry->d_un.d_val;
+                if (t_size == 0)
+                    t_size = entry->d_un.d_val;
                 break;
                 
             case DT_RELAENT:
