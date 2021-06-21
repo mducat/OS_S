@@ -21,7 +21,7 @@ int read(void);
 #define IS_LEFT_ALT(x)   (x & 0x0400)
 #define IS_LEFT_SHIFT(x) (x & 0x0800)
 #define IS_ESCAPE(x)     (x & 0x1000)
-#define IS_BACKSPACE(x)  (x & 0xFF == '\b')
+#define IS_BACKSPACE(x)  ((x & 0xFF) == '\b')
 
 #define IS_CURSOR_DOWN(x)  (x & 0x02000)
 #define IS_CURSOR_UP(x)    (x & 0x04000)
