@@ -112,6 +112,18 @@ void handle_touch(lld_t *screen, int *cline, int *ccolumn, int touch)
         if (IS_CURSOR_RIGHT(touch)) *ccolumn += 1;
     } else if (IS_BACKSPACE(touch)) {
         char *str = (char *) lld_read(screen, *cline);
+        char *newstr = malloc(strlen(str));
+        int line = 0;
+        memcpy(newstr, str, *ccolumn);
+        memcpy(newstr + *ccolumn, str + *ccolumn + 1, strlen(str) - *ccolumn - 1);
+        for (lld_t *mv = screen->next; mv; mv = mv->next, line++) {
+            if (line == *cline) {
+                mv->data = newstr;
+                free(str);
+                *ccolumn += 1;
+                break;
+            }
+        }
     } else {
         char *str = (char *) lld_read(screen, *cline);
         char *endstr = str + *ccolumn + 1;
