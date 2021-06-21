@@ -2,8 +2,8 @@
 #ifndef _MALLOC_
 
                               
-    #define MEM_START ((void *) 0x2000000)
-    #define MEM_END   ((void *) 0x80000000)
+    #define MEM_START ((void *) 0x20000000)
+    #define MEM_END   ((void *) 0x800000000)
     //133Mo de ram
 
     //tempo
