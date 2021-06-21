@@ -239,3 +239,15 @@ void clear(void)
 {
     memset8(disp->back, 0, disp->screen->buf_size);
 }
+
+uint32_t get_screenX(void)
+{
+    screen_t *screen = (screen_t *) disp->screen;
+    return screen->x_len; 
+}
+
+uint32_t get_screenY(void)
+{
+    screen_t *screen = (screen_t *) disp->screen;
+    return screen->y_len;
+}
