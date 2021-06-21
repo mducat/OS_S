@@ -48,6 +48,8 @@ typedef struct circle_s {
 
     void draw_rect(rect_t *rec, uint32_t color);
     void draw_circle(circle_t *rec, uint32_t color);
+    uint32_t get_screenX(void);
+    uint32_t get_screenY(void);
 
 #endif
 

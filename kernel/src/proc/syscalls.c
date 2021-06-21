@@ -64,5 +64,15 @@ void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
         draw_circle((circle_t *) par1, (uint32_t) par2);
 
         break;
+    case 12:
+        ptr = get_screenX();
+        *((uint64_t *) 0x1234560) = (uint64_t) ptr;
+
+        break;
+    case 13:
+        ptr = get_screenY();
+        *((uint64_t *) 0x1234560) = (uint64_t) ptr;
+
+        break;
     }
 }

@@ -3,6 +3,7 @@ OBJ		=	src/write.o  \
 			src/memory.o  \
 			src/fs.o  \
 			src/draw.o  \
+			src/screen.o \
 			src/printf/conf.o  \
 			src/printf/is_num.o  \
 			src/printf/my_printf.o  \
