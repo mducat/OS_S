@@ -6,6 +6,8 @@
 
 void serial_out(char *str);
 void write_serial(char c);
+void write_nbr_serial(int nb);
+void serial_write_addr(void *ptr);
 int  init_serial();
 
 #endif

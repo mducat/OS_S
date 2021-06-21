@@ -5,7 +5,66 @@
 int is_transmit_empty() {
    return inb(PORT + 5) & 0x20;
 }
- 
+
+int ser_get_display_length(uint64_t nbr, char const *base)
+{
+    int i = 0;
+    unsigned long long int len = 0;
+
+    for (; base[len] != '\0'; len++);
+    while (nbr >= len){
+        nbr /= len;
+        i++;
+    }
+    return (i);
+}
+
+void ser_my_putnbr_base(uint64_t nbr, char const *base,
+                        int disp_len)
+{
+    unsigned long long int len = 0;
+    int i = 0;
+    int checker;
+    char mem_display[disp_len];
+
+    for (; base[len] != '\0'; len++);
+    while (nbr >= len){
+        checker = nbr % len;
+        nbr /= len;
+        mem_display[i++] = base[checker];
+    }
+    mem_display[i] = base[nbr % len];
+    for (int j = disp_len - 1; j != -1; j--)
+        write_serial(mem_display[j]);
+}
+
+void serial_write_addr(void *ptr)
+{
+    char *base = "0123456789ABCDEF";
+    serial_out("0x");
+    int len = ser_get_display_length((uint64_t) ptr, base);
+    ser_my_putnbr_base((uint64_t) ptr, base, len);
+}
+
+void write_nbr_serial(int nb)
+{
+    int count = 100000000;
+    int len = 0;
+    char print[] = {0, 0};
+    nb < 0 ? nb *= -1, serial_out("-"), len++, 1 : 0;
+
+    while (nb / count == 0 && count > 1)
+        count = count / 10;
+
+    while (count != 0){
+        print[0] = '0' + nb / count;
+        serial_out(print);
+        len++;
+        nb -= (nb/count) * count;
+        count = count / 10;
+    }
+}
+
 void write_serial(char c) {
    while (is_transmit_empty() == 0);
  

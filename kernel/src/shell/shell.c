@@ -38,7 +38,6 @@ void reinit_shell(void)
 
 void flush_cmd(char *buf, size_t buf_len)
 {
-    void (*entry)(int, char **) = 0;
     char **av = strToWords(buf, ' ');
     file_t *file = open(av[0]);
     int ac = 0;
@@ -58,15 +57,9 @@ void flush_cmd(char *buf, size_t buf_len)
         return;
     }
 
-    if (strncmp(file->content, OSS_HDR, OSS_HDR_LEN)) {
+    if (exec(file, ac, av))
         write_screen("This file is not executable.\n", 29);
-        goto out;
-    }
 
-    entry = (void(*)(int, char**)) (file->content + OSS_HDR_LEN);
-    entry(ac, av);
-
-out:
     free(file->name);
     free(file->content);
     free(file);

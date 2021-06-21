@@ -24,7 +24,8 @@ OBJ			=		src/kernel.o                \
 					src/screen/data.o           \
                                                 \
 					src/shell/shell.o           \
-                                                \
+					src/shell/exec.o            \
+					                            \
 					src/utils/string.o          \
                                                 \
 					src/lld/lld_db.o            \

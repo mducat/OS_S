@@ -38,7 +38,7 @@ INC		= 	-Iinc -I../kernel/include
 
 CFLAGS	=	$(INC) -Wall -Wextra 				\
 			-ffreestanding -nostdinc -nostdlib	\
-			-D_OSS_SOURCE
+			-D_OSS_SOURCE -fpie
 
 CC		=	x86_64-elf-gcc
 AR		=	x86_64-elf-ar

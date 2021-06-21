@@ -12,7 +12,7 @@ MKHEADER	=	mkhdr.py
 
 all:
 	for dir in $(PROGRAMS) ; do \
-		$(MAKE) -C $$dir re --no-print-directory ; \
+		$(MAKE) -C $$dir --no-print-directory ; \
 	done
 
 	python3 $(MKHEADER) $(PROGRAMS) and $(PLAIN) > $(NAME)
@@ -22,6 +22,13 @@ clean:
 		$(MAKE) -C $$dir clean --no-print-directory ; \
 	done
 
+debug:
+	for dir in $(PROGRAMS) ; do \
+		$(MAKE) -C $$dir debug --no-print-directory ; \
+	done
+
+	python3 $(MKHEADER) $(PROGRAMS) and $(PLAIN) > $(NAME)
+
 fclean:
 	for dir in $(PROGRAMS) ; do \
 		$(MAKE) -C $$dir fclean --no-print-directory ; \
@@ -29,3 +36,4 @@ fclean:
 	rm -f $(NAME)
 
 re:	fclean all
+

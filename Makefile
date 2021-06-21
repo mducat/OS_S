@@ -56,7 +56,7 @@ monitor:	iso
 # does not start CPU at startup
 debug:
 	$(MAKE) -C oss_lib    debug
-	$(MAKE) -C files      
+	$(MAKE) -C files      debug      
 
 	$(MAKE) -C bootloader 
 	$(MAKE) -C kernel     debug
