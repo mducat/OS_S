@@ -69,7 +69,7 @@ int strcmp(const char *str1, const char *str2) {
 }
 
 char *strdup(const char *str){
-    char *dest = malloc(strlen(str));
+    char *dest = malloc(strlen(str)+1);
     memcpy(dest, str, strlen(str)+1);
     return dest;
 }

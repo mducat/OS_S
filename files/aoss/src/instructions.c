@@ -4,34 +4,27 @@
 #include <oss.h>
 #include <my.h>
 
-#include "instruction.h"
+#include "instructions.h"
 #include <lld.h>
 
-instruction_t *generateInstruction(char *name, int id) {
-    char str1[] = "0";
-    char *generateInstructionChars[] = {
-        str1,
-        str1,
-        str1,
-        str1,
-        str1,
-        str1,
-        str1,
-    };
-    
+char *generateInstructionChars[32] = {
+    "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"
+};
+
+instruction_t *generateInstruction(char *name, OpCode_t *(*func)(char **)) {
     instruction_t *inst = malloc(sizeof(instruction_t));
     inst->name = strToWords(name, ' ');
-    inst->func_id = id;
-    OpCode_t *op = OpCode_funcs(id, generateInstructionChars);
+    inst->generate = func;
+    OpCode_t *op = func(generateInstructionChars);
     inst->c_size = op->c_size;
     free(op);
     return inst;
 }
 
-OpCode_t *OpCode_init(int size, unsigned char *code) {
+OpCode_t *OpCode_init(int size, char *code) {
     OpCode_t *op = malloc(sizeof(OpCode_t) + size);
     op->c_size = size;
-    memcpy(op->c, (char *)code, size);
+    memcpy(op->c, code, size);
     return op;
 }
 
@@ -302,56 +295,4 @@ OpCode_t *OpCode_IDIV_r(char **strs) {
     };
     OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
     return op;
-}
-
-OpCode_t *OpCode_funcs(int id, char **strs) {
-    if (id == 0) {
-        return OpCode_ADD_r_r(strs);
-    } else if (id == 1) {
-        return OpCode_JMP_relativ(strs);
-    } else if (id == 2) {
-        return OpCode_RET(strs);
-    } else if (id == 3) {
-        return OpCode_MOV_r_r(strs);
-    } else if (id == 4) {
-        return OpCode_MOV_r_mem(strs);
-    } else if (id == 5) {
-        return OpCode_MOV_mem_r(strs);
-    } else if (id == 6) {
-        return OpCode_MOV_r_li(strs);
-    } else if (id == 7) {
-        return OpCode_CALL(strs);
-    } else if (id == 8) {
-        return OpCode_JE(strs);
-    } else if (id == 9) {
-        return OpCode_CMP_r_r(strs);
-    } else if (id == 10) {
-        return OpCode_JE_i(strs);
-    } else if (id == 11) {
-        return OpCode_JNE_i(strs);
-    } else if (id == 12) {
-        return OpCode_JBE_i(strs);
-    } else if (id == 13) {
-        return OpCode_JGE_i(strs);
-    } else if (id == 14) {
-        return OpCode_JG_i(strs);
-    } else if (id == 15) {
-        return OpCode_JB_i(strs);
-    } else if (id == 16) {
-        return OpCode_PUSH_r(strs);
-    } else if (id == 17) {
-        return OpCode_PUSH_i(strs);
-    } else if (id == 18) {
-        return OpCode_POP_r(strs);
-    } else if (id == 19) {
-        return OpCode_SYSCALL(strs);
-    } else if (id == 20) {
-        return OpCode_INT(strs);
-    } else if (id == 21) {
-        return OpCode_IMUL_r_r(strs);
-    } else if (id == 22) {
-        return OpCode_IDIV_r(strs);
-    }
-    printf("youre not supose to be here\n");
-    return 0;
 }

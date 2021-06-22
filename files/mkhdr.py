@@ -28,11 +28,11 @@ for v in sys.argv[1:]:
             print(f'static char {fname}[] = ', end='\n')
 
             for line in data[:-1]:
-                line = line.replace('"', '\"')[:-1]
+                line = line.replace('"', '\\\"')[:-1]
                 print(f'    "{line}\\n" \\')
                 csize += len(line) + 1
 
-            line = data[-1].replace('"', '\"')[:-1]
+            line = data[-1].replace('"', '\\\"')[:-1]
             print(f'    "{line}\\n";')
             csize += len(line) + 1
 

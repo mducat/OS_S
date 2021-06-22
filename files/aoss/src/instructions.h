@@ -6,15 +6,10 @@
 typedef struct instruction {
     char **name;
     int c_size;
-    int func_id;
+    OpCode_t *(*generate)(char **args);
 } instruction_t;
 
-#define printf(str, ...) {char buf[] = str; printf(buf __VA_OPT__(,) __VA_ARGS__); refresh();}
-
-
-instruction_t *generateInstruction(char *name, int id);
-
-OpCode_t *OpCode_funcs(int id, char **strs);
+instruction_t *generateInstruction(char *name, OpCode_t *(*func)(char **));
 
 OpCode_t *OpCode_ADD_r_r(char **strs);
 OpCode_t *OpCode_JMP_relativ(char **strs);
