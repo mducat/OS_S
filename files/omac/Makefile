@@ -1,5 +1,7 @@
 
-OBJ		=	src/omac.o   \
+OBJ		=	src/omac.o   	\
+			src/screen.o	\
+			src/touch.o 	\
 
 NAME	=	omac
 
