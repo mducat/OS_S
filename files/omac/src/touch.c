@@ -4,6 +4,12 @@
 
 #include "omac.h"
 
+void updateCurrentInformation(odata_t *data)
+{
+    data->currentLineString = lld_read(data->text, data->cursor.line);
+    data->currentLineStringLength = strlen(data->currentLineString);
+}
+
 void handle_cursor(odata_t *data, int touch)
 {
     if (IS_CURSOR_DOWN(touch))  data->cursor.line += 1;
@@ -22,8 +28,7 @@ void handle_cursor(odata_t *data, int touch)
         data->cursor.line = lld_len(data->text) - 1;
 
     // Set new currentLineString and currentLineStringLength
-    data->currentLineString = lld_read(data->text, data->cursor.line);
-    data->currentLineStringLength = strlen(data->currentLineString);
+    updateCurrentInformation(data);
 }
 
 // TODO : void handle_selector();
@@ -41,8 +46,7 @@ void add_character(odata_t *data, int touch)
     lld_pop(data->text, data->cursor.line);
     lld_insert(data->text, data->cursor.line, newstr);
     // Update column
-    data->currentLineString = newstr;
-    data->currentLineStringLength = strlen(newstr);
+    updateCurrentInformation(data);
     data->cursor.column++;
 }
 
@@ -60,6 +64,32 @@ void add_newline(odata_t *data, int touch)
     data->cursor.column = 0;
 }
 
+void remove_character(odata_t *data, int touch)
+{
+    char *str = data->currentLineString;
+
+    if (strlen(data->currentLineString) == 0) {
+        if (lld_len(data->text) == 1) return;
+        lld_pop(data->text, data->cursor.line);
+        data->cursor.line--;
+    } else if (data->cursor.column == 0) {
+        if (data->cursor.line == 0) return;
+        char *str = data->currentLineString;
+        char *laststr = lld_read(data->text, data->cursor.line - 1);
+        char *newstr = malloc(strlen(str) + strlen(laststr) + 1);
+        memcpy(newstr, laststr, strlen(laststr));
+        memcpy(newstr + strlen(laststr), str, strlen(str));
+        lld_pop(data->text, data->cursor.line);
+        lld_pop(data->text, data->cursor.line - 1);
+        lld_insert(data->text, data->cursor.line - 1, newstr);
+        data->cursor.line--;
+        data->cursor.column = strlen(newstr);
+    } else {
+        printf("SHOULD REMOVE CHAR\n");
+    }
+    updateCurrentInformation(data);
+}
+
 void handle_touch(odata_t *data, int touch)
 {     
     if ((IS_LEFT_CTRL(touch) || IS_LEFT_ALT(touch)
@@ -73,22 +103,7 @@ void handle_touch(odata_t *data, int touch)
     } else if (IS_CURSOR(touch)) {
         return handle_cursor(data, touch);
     } else if (IS_BACKSPACE(touch)) {
-        // TODO FIX BUGGY
-        /* EVEN A FULL REDO !!!!!!!
-        char *str = (char *) lld_read(screen, *cline);
-        char *newstr = malloc(strlen(str));
-        int line = 0;
-        memcpy(newstr, str, *ccolumn);
-        memcpy(newstr + *ccolumn, str + *ccolumn + 1, strlen(str) - *ccolumn - 1);
-        for (lld_t *mv = screen->next; mv; mv = mv->next, line++) {
-            if (line == *cline) {
-                mv->data = newstr;
-                free(str);
-                *ccolumn += 1;
-                break;
-            }
-        }
-        */
+        remove_character(data, touch);
     } else if (IS_ENTER(touch)) {
         add_newline(data, touch);
     } else {
