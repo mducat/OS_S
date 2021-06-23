@@ -102,8 +102,23 @@ void handle_touch(odata_t *data, int touch)
     ||   IS_LEFT_SHIFT(touch) || IS_ESCAPE(touch))
     &&  !IS_CURSOR(touch)) {
         // TODO
-        // CTRL-C / CTRL-V
+        // CTRL-C / CTRL-V / CTRL-X
         // CTRL-A
+        // CTRL-S
+        char c = GET_CHR(touch);
+        if (IS_LEFT_CTRL(touch) && c == 's') {
+            int len = 1;
+            for (lld_t *mv = data->text->next; mv; mv = mv->next)
+                len += strlen(mv->data) + 1;
+            char *newstr = malloc(len);
+            int clen = 0;
+            for (lld_t *mv = data->text->next; mv; mv = mv->next) {
+                memcpy(newstr + clen, mv->data, strlen(mv->data));
+                clen += strlen(mv->data);
+                newstr[clen++] = "\n";
+            }
+            write_file(data->filename, newstr, len);
+        }
     } else if (IS_CURSOR(touch) && IS_LEFT_CTRL(touch)) {
         // TODO handle_selector
     } else if (IS_CURSOR(touch)) {
