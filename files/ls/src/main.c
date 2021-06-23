@@ -6,7 +6,7 @@ int main(void)
     dir_t *dir = opendir("/");
     char *name = readdir(dir);
 
-    printf(" files in folder '/':\n");
+    printf("%d files in folder '/':\n", dir->size);
 
     while (name) {
         file_t *file = open(name);
