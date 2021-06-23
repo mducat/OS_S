@@ -57,7 +57,7 @@ void remove_file(char *name)
     if (!it)
         return;
 
-    lld_pop(files, pos);
+    lld_pop(files, pos - 1);
 }
 
 void write_file(char *name, char *content, size_t len)
