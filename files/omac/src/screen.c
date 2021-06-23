@@ -30,7 +30,7 @@ void draw_title()
 
 void display(odata_t *data)
 {
-//    clear();
+    clear();
     draw_title();
     int line = 0;
     for (lld_t *mv = data->text->next; mv; mv = mv->next, line++) {
@@ -38,16 +38,20 @@ void display(odata_t *data)
         printf("\e128,128,128,0;%4d|" RESET_BACK_CLR, line);
         char *str = (char *) mv->data;
         if (line == data->cursor.line) {
-            int y = 0;
-            for (y = 0; y < data->cursor.column; y++) {
-                char t = str[y];
-                write_raw(&t, 1);
+            if (data->cursor.column == strlen(str)) {
+                printf("%s" BACK_BR_GREEN " \n" RESET_BACK_CLR, str);
+            } else {
+                int y = 0;
+                for (y = 0; y < data->cursor.column; y++) {
+                    char t = str[y];
+                    write_raw(&t, 1);
+                }
+                char c = str[y];
+                printf(BACK_BR_GREEN);
+                write_raw(&c, 1);
+                printf(RESET_BACK_CLR);
+                printf("%s\n", str + y + 1);
             }
-            char c = str[y];
-            printf(BACK_BR_GREEN);
-            write_raw(&c, 1);
-            printf(RESET_BACK_CLR);
-            printf("%s\n", str + y + 1);
         } else {
             printf("%s\n", str);
         }

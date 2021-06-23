@@ -11,19 +11,19 @@ void handle_cursor(odata_t *data, int touch)
     if (IS_CURSOR_LEFT(touch))  data->cursor.column -= 1;
     if (IS_CURSOR_RIGHT(touch)) data->cursor.column += 1;
 
-    // Set new currentLineString and currentLineStringLength
-    data->currentLineString = lld_read(data->text, data->cursor.line);
-    data->currentLineStringLength = strlen(data->currentLineString);
-
     // Prevent going over limit
     if (data->cursor.column < 0)
         data->cursor.column = 0;
     if (data->cursor.line < 0)
         data->cursor.line = 0;
-    if (data->cursor.column > data->currentLineStringLength - 1)
-        data->cursor.column = data->currentLineStringLength - 1;
+    if (data->cursor.column > data->currentLineStringLength)
+        data->cursor.column = data->currentLineStringLength;
     if (data->cursor.line > lld_len(data->text) - 1)
         data->cursor.line = lld_len(data->text) - 1;
+
+    // Set new currentLineString and currentLineStringLength
+    data->currentLineString = lld_read(data->text, data->cursor.line);
+    data->currentLineStringLength = strlen(data->currentLineString);
 }
 
 // TODO : void handle_selector();
@@ -31,12 +31,12 @@ void handle_cursor(odata_t *data, int touch)
 void add_character(odata_t *data, int touch)
 {
     char *str = data->currentLineString;
-    char *endstr = str + data->cursor.column + 1;
+    char *endstr = str + data->cursor.column;
     char *newstr = malloc(strlen(str) + 2);
     // Create new str
-    memcpy(newstr, str, data->cursor.column + 1);
-    newstr[data->cursor.column + 1] = GET_CHR(touch);
-    memcpy(newstr + data->cursor.column + 2, endstr, strlen(str) - data->cursor.column + 1);
+    memcpy(newstr, str, data->cursor.column);
+    newstr[data->cursor.column] = GET_CHR(touch);
+    memcpy(newstr + data->cursor.column + 1, endstr, strlen(str) - data->cursor.column + 2);
     // Set in LLD
     lld_pop(data->text, data->cursor.line);
     lld_insert(data->text, data->cursor.line, newstr);
@@ -44,6 +44,20 @@ void add_character(odata_t *data, int touch)
     data->currentLineString = newstr;
     data->currentLineStringLength = strlen(newstr);
     data->cursor.column++;
+}
+
+void add_newline(odata_t *data, int touch)
+{
+    char *str = data->currentLineString;
+    char *newstr = malloc(strlen(str) - data->cursor.column + 1);
+    char *oldstr = malloc(data->cursor.column + 2);
+    memcpy(oldstr, str, data->cursor.column);
+    memcpy(newstr, str + data->cursor.column, strlen(str) - data->cursor.column);
+    lld_pop(data->text, data->cursor.line);
+    lld_insert(data->text, data->cursor.line, oldstr);
+    lld_insert(data->text, data->cursor.line + 1, newstr);
+    data->cursor.line++;
+    data->cursor.column = 0;
 }
 
 void handle_touch(odata_t *data, int touch)
@@ -75,6 +89,8 @@ void handle_touch(odata_t *data, int touch)
             }
         }
         */
+    } else if (IS_ENTER(touch)) {
+        add_newline(data, touch);
     } else {
         add_character(data, touch);
     }
