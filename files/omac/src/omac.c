@@ -46,6 +46,7 @@ int main(int ac, char **av)
     init_data(&data, av);
     while (1) {
         display(&data);
+        refresh();
         int rs = read();
         char c = GET_CHR(rs);
         if (c == 'x' && IS_LEFT_CTRL(rs)) return 0;

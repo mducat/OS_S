@@ -30,7 +30,7 @@ void draw_title()
 
 void display(odata_t *data)
 {
-    clear();
+//    clear();
     draw_title();
     int line = 0;
     for (lld_t *mv = data->text->next; mv; mv = mv->next, line++) {
@@ -52,7 +52,6 @@ void display(odata_t *data)
             printf("%s\n", str);
         }
     }
-    refresh();
 }
 
 int write_nbr(int nb)

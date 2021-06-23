@@ -33,18 +33,17 @@ void add_character(odata_t *data, int touch)
     char *str = data->currentLineString;
     char *endstr = str + data->cursor.column + 1;
     char *newstr = malloc(strlen(str) + 2);
+    // Create new str
     memcpy(newstr, str, data->cursor.column + 1);
     newstr[data->cursor.column + 1] = GET_CHR(touch);
-    memcpy(newstr + data->cursor.column + 2, endstr, strlen(str) - data->cursor.column);
-    int line = 0;
-    for (lld_t *mv = data->text->next; mv; mv = mv->next, line++) {
-        if (line == data->cursor.line) {
-            mv->data = newstr;
-            free(str);
-            data->cursor.column += 1;
-            break;
-        }
-    }
+    memcpy(newstr + data->cursor.column + 2, endstr, strlen(str) - data->cursor.column + 1);
+    // Set in LLD
+    lld_pop(data->text, data->cursor.line);
+    lld_insert(data->text, data->cursor.line, newstr);
+    // Update column
+    data->currentLineString = newstr;
+    data->currentLineStringLength = strlen(newstr);
+    data->cursor.column++;
 }
 
 void handle_touch(odata_t *data, int touch)
