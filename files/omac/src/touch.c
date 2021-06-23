@@ -115,7 +115,7 @@ void handle_touch(odata_t *data, int touch)
             for (lld_t *mv = data->text->next; mv; mv = mv->next) {
                 memcpy(newstr + clen, mv->data, strlen(mv->data));
                 clen += strlen(mv->data);
-                newstr[clen++] = "\n";
+                newstr[clen++] = '\n';
             }
             write_file(data->filename, newstr, len);
         }
