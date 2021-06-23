@@ -18,15 +18,16 @@ void handle_cursor(odata_t *data, int touch)
     if (IS_CURSOR_RIGHT(touch)) data->cursor.column += 1;
 
     // Prevent going over limit
-    if (data->cursor.column < 0)
-        data->cursor.column = 0;
     if (data->cursor.line < 0)
         data->cursor.line = 0;
-    if (data->cursor.column > data->currentLineStringLength)
-        data->cursor.column = data->currentLineStringLength;
     if (data->cursor.line > lld_len(data->text) - 1)
         data->cursor.line = lld_len(data->text) - 1;
-
+    if (data->cursor.column < 0)
+        data->cursor.column = 0;
+    updateCurrentInformation(data);
+    if (data->cursor.column > data->currentLineStringLength)
+        data->cursor.column = data->currentLineStringLength;
+    
     // Set new currentLineString and currentLineStringLength
     updateCurrentInformation(data);
 }
@@ -62,6 +63,7 @@ void add_newline(odata_t *data, int touch)
     lld_insert(data->text, data->cursor.line + 1, newstr);
     data->cursor.line++;
     data->cursor.column = 0;
+    updateCurrentInformation(data);
 }
 
 void remove_character(odata_t *data, int touch)
@@ -74,7 +76,6 @@ void remove_character(odata_t *data, int touch)
         data->cursor.line--;
     } else if (data->cursor.column == 0) {
         if (data->cursor.line == 0) return;
-        char *str = data->currentLineString;
         char *laststr = lld_read(data->text, data->cursor.line - 1);
         char *newstr = malloc(strlen(str) + strlen(laststr) + 1);
         memcpy(newstr, laststr, strlen(laststr));
@@ -85,7 +86,12 @@ void remove_character(odata_t *data, int touch)
         data->cursor.line--;
         data->cursor.column = strlen(newstr);
     } else {
-        printf("SHOULD REMOVE CHAR\n");
+        char *newstr = malloc(strlen(str));
+        memcpy(newstr, str, data->cursor.column - 1);
+        memcpy(newstr + data->cursor.column - 1, str + data->cursor.column, strlen(str) - data->cursor.column);
+        lld_pop(data->text, data->cursor.line);
+        lld_insert(data->text, data->cursor.line, newstr);
+        data->cursor.column--;
     }
     updateCurrentInformation(data);
 }

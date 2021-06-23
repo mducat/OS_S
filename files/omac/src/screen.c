@@ -34,7 +34,6 @@ void display(odata_t *data)
     draw_title();
     int line = 0;
     for (lld_t *mv = data->text->next; mv; mv = mv->next, line++) {
-        // Line prefix
         printf("\e128,128,128,0;%4d|" RESET_BACK_CLR, line);
         char *str = (char *) mv->data;
         if (line == data->cursor.line) {
