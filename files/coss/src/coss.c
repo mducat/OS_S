@@ -2,6 +2,7 @@
 #include <my.h>
 
 #include "coss.h"
+#include "instructions.h"
 
 #ifdef __OSS__
 #include <lld.h>
@@ -15,13 +16,15 @@
 
 #endif
 
+
 typedef struct variable {
     char *name;
     int stack_pos;
 } variable_t;
 
 typedef struct function {
-    int argc; // push on stack
+    int argc; // nb of args to push/pull on stack
+    scope_t *scope;
 } function_t;
 
 typedef struct scope {
@@ -33,6 +36,11 @@ typedef struct instruction {
     char *(*generate)(char **);
     int (*match)(lld_t *mv);
 } instruction_t;
+
+typedef struct ligne {
+    char *line;
+    char **words;
+} ligne_t;
 
 typedef unsigned int uint;
 
@@ -56,15 +64,7 @@ void rmDoubledCHar(char *str, char c) {
     str[i+1] = 0;
 }
 
-char *generate_nothing(char **words) {
-    (void)words;
-    return 0;
-}
 
-int match_nothing(lld_t *mv) {
-    (void)mv;
-    return 0;
-}
 
 instruction_t *generateInstruction(int (*match)(lld_t *mv), char *(*generate)(char **)) {
     instruction_t *inst = malloc(sizeof(instruction_t));
@@ -164,7 +164,8 @@ int main(int ac, char **av) {
             char **words = strToWords(mv->data, ' ');
             free(mv->data);
             mv->data = words;
-            if (!words[0] || !strcmp(words[0], "//")) {
+            // spot useless lines
+            if (!words[0] || !words[0][0] || !strcmp(words[0], "//")) {
                 lld_insert(to_pop, 0, (void *)line_count);
             } else  {
             }
@@ -188,6 +189,10 @@ int main(int ac, char **av) {
                 printf("%4li|", line_count);
             for (int i = 0; words[i]; i++) 
                 printf(" %s", words[i]);
+
+
+
+
             printf("\n");
         }
 

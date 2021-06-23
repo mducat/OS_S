@@ -1,5 +1,6 @@
 
 OBJ		=	src/coss.o   \
+			src/instructions.o   \
 
 SRC		=	$(OBJ:.o=.c)
 

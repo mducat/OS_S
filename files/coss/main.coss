@@ -13,7 +13,7 @@ def main(ac av)
     $g = func($c _-5)
 
     if (ac == _10) {
-        
+        $c = ac
     }
 
     // this is a comment

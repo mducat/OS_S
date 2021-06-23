@@ -1,11 +1,20 @@
-push rdi
-mov rcx rdi
-mov rdx _10
-je _:ici
-mov rbx _1 !ici
-mov rax _4
-//int _0x80
-imul rax rcx
-add rax rax
-pop rax
-ret
+def func(a b)
+{
+    a = a + b
+    return a
+}
+
+def main(ac av)
+{ $c $d $g
+    // this is a comment
+    $c = $ac
+    $d = $d * $ac
+    $c = $c + _15
+    $g = func($c _-5)
+
+    if (ac == _10) {
+        
+    }
+
+    // this is a comment
+}

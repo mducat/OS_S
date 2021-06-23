@@ -9,3 +9,7 @@
 #include <stdlib.h>
 
 #endif
+
+char *generate_nothing(char **words);
+int match_nothing(lld_t *mv);
+
