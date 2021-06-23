@@ -1,10 +1,9 @@
 
-OBJ		=	src/compilator.o   \
-			src/instructions.o   \
+OBJ		=	src/coss.o   \
 
 SRC		=	$(OBJ:.o=.c)
 
-NAME	=	aoss
+NAME	=	coss
 
 INC_OSS		= 	-I../../oss_lib/inc -I../../kernel/include
 
@@ -40,7 +39,7 @@ debug: fclean all
 valgrind: fclean
 	clear
 	gcc -g $(SRC) $(INC) $(LIBS) -o $(NAME) -Wall -Wextra
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) main.aoss | cat -e
-	####################################################################################################
-	objdump -D -Mintel,x86-64 -b binary -m i386 main.oss
-	rm main.oss
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) main.coss | cat -e
+	###################################################################################################
+	cat main.aoss
+	rm main.aoss

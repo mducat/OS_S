@@ -6,6 +6,7 @@ PROGRAMS	=	ls	\
 				help \
 				aoss \
 				omac \
+				coss \
 
 PLAIN		=   $(shell ls plain/*)
 

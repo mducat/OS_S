@@ -34,5 +34,8 @@ OpCode_t *OpCode_SYSCALL(char **strs);
 OpCode_t *OpCode_INT(char **strs);
 OpCode_t *OpCode_IMUL_r_r(char **strs);
 OpCode_t *OpCode_IDIV_r(char **strs);
+OpCode_t *OpCode_binary_4(char **strs);
+OpCode_t *OpCode_binary_2(char **strs);
+OpCode_t *OpCode_binary_1(char **strs);
 
 #endif

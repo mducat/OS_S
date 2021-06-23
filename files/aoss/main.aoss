@@ -1,0 +1,16 @@
+push rdi
+mov rcx rdi
+mov rdx _10
+je _:ici
+mov rbx _1 !ici
+mov rax _4
+//int _0x80
+imul rax rcx
+idiv rax
+add rax rax
+pop rax
+ret
+
+b4 _0xFFFFFFFF
+b4 _0xFFFFFFFF
+b2 _0x0541

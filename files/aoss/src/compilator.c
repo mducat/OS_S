@@ -1,10 +1,21 @@
-#include <lld.h>
-#include <oss.h>
+#include <my.h>
 
 #include "compilator.h"
 #include "instructions.h"
+
+#ifdef __OSS__
 #include <lld.h>
-#include <my.h>
+#include <oss.h>
+
+#else
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#endif
+
+
 
 typedef unsigned int uint;
 
@@ -19,6 +30,8 @@ void rmDoubledCHar(char *str, char c) {
         str[i++] = str[p];
     }
     i--;
+    if (i < 0)
+        i = 0;
     while (str[i] == c) 
         str[i--] = 0;
     str[i+1] = 0;
@@ -51,7 +64,10 @@ void generateInstructionsSet() {
     PUSHBACK(lld, generateInstruction("syscall", &OpCode_SYSCALL));
     PUSHBACK(lld, generateInstruction("int _", &OpCode_INT));
     PUSHBACK(lld, generateInstruction("imul r r", &OpCode_IMUL_r_r));
-    PUSHBACK(lld, generateInstruction("idiv r", &OpCode_IDIV_r));
+    //PUSHBACK(lld, generateInstruction("idiv r", &OpCode_IDIV_r));
+    PUSHBACK(lld, generateInstruction("b4 _", &OpCode_binary_4));
+    PUSHBACK(lld, generateInstruction("b2 _", &OpCode_binary_2));
+    PUSHBACK(lld, generateInstruction("b1 _", &OpCode_binary_1));
 
     instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
     lld_free(lld);
@@ -97,30 +113,41 @@ char registers[][3] = {
 };
 
 int main(int ac, char **av) {
-
-
     if (ac != 2){
         printf("need a file at first arg\n");
         return 1;
     }
     int error_count = 0;
 
-    //FILE *src = fopen("main.coss", "r+");
-    //FILE *src = fopen("main.coss", "r+");
+    #ifdef __OSS__
     file_t *src = open(av[1]);
+    
+    #else
+    FILE *src = fopen(av[1], "r+");
+    
+    #endif
     if (!src){
         printf("cannot open: %s\n", av[1]);
         return 1;
     }
     lld_t *file = lld_init();
-    char *line = 0;
+
+    #ifdef __OSS__
     char *fileBuf = malloc(src->size+1);
     memcpy(fileBuf, src->content, src->size);
     fileBuf[src->size] = 0;
 
     char **file_split = strToWords(fileBuf, '\n');
     free(fileBuf);
-    /*size_t line_len = 0;
+
+        for (int i = 0; file_split[i]; i++) {
+        lld_insert(file, lld_len(file), file_split[i]);
+    }
+    free(file_split);
+
+    #else
+    char *line = 0;
+    size_t line_len = 0;
     int line_len2 = 0;
     while ((line_len2 = getline(&line, &line_len, src)) > 0){
         if (!line)
@@ -129,13 +156,12 @@ int main(int ac, char **av) {
             line[line_len2-1] = 0;
         lld_insert(file, lld_len(file), line);
         line = 0;
-    }*/
-    for (int i = 0; file_split[i]; i++) {
-        lld_insert(file, lld_len(file), file_split[i]);
     }
-    free(file_split);
+
     free(line);
-    //fclose(src);
+    fclose(src);
+    
+    #endif
 
     // init instruction set
     generateInstructionsSet();
@@ -158,7 +184,7 @@ int main(int ac, char **av) {
         // iter through words
         for (int i = 0; words[i]; i++) {
             // apply aliases
-            for (uint j = 0; j < aliasesNb; j += 2) {
+            for (int j = 0; j < aliasesNb; j += 2) {
                 if (!strcmp(words[i], &aliases[4*j])) {
                     free(words[i]);
                     words[i] = strdup(&aliases[4*(j+1)]);
@@ -172,7 +198,9 @@ int main(int ac, char **av) {
         mv->data = words;
     }
     
+    #ifdef __OSS__
     refresh();
+    #endif
 
     printf("1 ############################\n");
 
@@ -244,7 +272,9 @@ int main(int ac, char **av) {
     balise_t **balises = (balise_t **)lld_lld_to_tab(lld_balises);
     lld_free(lld_balises);
 
+    #ifdef __OSS__
     refresh();
+    #endif
 
     printf("2 ############################\n");
 
@@ -296,7 +326,9 @@ int main(int ac, char **av) {
         }
     }
 
+    #ifdef __OSS__
     refresh();
+    #endif
 
     printf("3 ############################\n");
 
@@ -374,8 +406,6 @@ int main(int ac, char **av) {
     }
     free(balises);
 
-    //FILE *dest = fopen("main.oss", "wb");
-    //file_t *dest = open("main.oss");
     int file_name_len = 0;
     for (; av[1][file_name_len] != '.' && av[1][file_name_len]; file_name_len++);
     char *destName = malloc(file_name_len+5);
@@ -383,11 +413,17 @@ int main(int ac, char **av) {
     memcpy(destName+file_name_len, ".oss", 5);
     char OSS[] = "OSS";
     memcpy(((char *)binary)-3, OSS, 3);
+
+    #ifdef __OSS__
     write_file(destName, ((char *)binary)-3, prog_size+3);
+    #else
+    FILE *dest = fopen("main.oss", "wb");
+    fwrite(binary, prog_size, 1, dest);
+    fclose(dest);
+    #endif
+
     free(destName);
-    //fwrite(binary, prog_size, 1, dest);
     
-    //fclose(dest);
 
     free(binary-3);
     freeInstructionsSet();
