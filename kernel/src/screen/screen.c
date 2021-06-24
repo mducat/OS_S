@@ -207,22 +207,54 @@ void draw_circle(circle_t *circle, uint32_t color)
     }
 }
 
+typedef struct _u128 {
+    uint64_t a;
+    uint64_t b;
+} u128;
+
+typedef struct _u256 {
+    u128 a;
+    u128 b;
+} u256;
+
+typedef struct _u512 {
+    u256 a;
+    u256 b;
+} u512;
+
+typedef struct _u1024 {
+    u512 a;
+    u512 b;
+} u1024;
+
+typedef struct _u2048 {
+    u1024 a;
+    u1024 b;
+} u2048;
+
+typedef struct _u4096 {
+    u2048 a;
+    u2048 b;
+} u4096;
+
 void *memcpy8(void *dest, const void *src, size_t n)
 {
-    uint64_t *p_dest = (uint64_t *) dest;
-    uint64_t *p_src  = (uint64_t *) src;
+    u2048 *p_dest = (u2048 *) dest;
+    u2048 *p_src  = (u2048 *) src;
 
-    while ((n -= 8) >0)
+    while ((n -= 256) >0)
         *p_dest++ = *p_src++;
     return dest;
 }
 
+u2048 v_n = {0};
+
 void *memset8(void *dest, int val, size_t n)
 {
-    uint64_t *p_dest = (uint64_t *) dest;
+    u2048 *p_dest = (u2048 *) dest;
 
-    while ((n -= 8) >0)
-        *p_dest++ = val;
+    while ((n -= 256) >0)
+        *p_dest++ = v_n;
     return dest;
 }
 
