@@ -242,7 +242,7 @@ void *memcpy8(void *dest, const void *src, size_t n)
     u2048 *p_dest = (u2048 *) dest;
     u2048 *p_src  = (u2048 *) src;
 
-    while ((n -= 256) >0)
+    while ((n -= 256) > 0)
         *p_dest++ = *p_src++;
     return dest;
 }
@@ -253,7 +253,7 @@ void *memset8(void *dest, int val, size_t n)
 {
     u2048 *p_dest = (u2048 *) dest;
 
-    while ((n -= 256) >0)
+    while ((n -= 256) > 0)
         *p_dest++ = v_n;
     return dest;
 }
