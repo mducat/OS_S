@@ -47,6 +47,9 @@ char **strToWords(const char *str, char split);
 void memcpy(char *dest, const char *src, int size);
 int strlen(const char *str);
 
+
+char *strconcat(char const *str1, char const *str2);
+
 //backend functions
 
 int abs_rec(int);

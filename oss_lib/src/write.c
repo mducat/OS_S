@@ -47,3 +47,11 @@ int read(void)
 
     return res;
 }
+
+void export_serial(char *string, size_t len)
+{
+    int num = 14;
+
+    LOAD3(num, string, len)
+    asm volatile("int $0x30");
+}

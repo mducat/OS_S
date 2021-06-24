@@ -32,7 +32,7 @@ for v in sys.argv[1:]:
                 print(f'    "{line}\\n" \\')
                 csize += len(line) + 1
 
-            line = data[-1].replace('"', '\\\"')[:-1]
+            line = data[-1].replace('"', '\\\"').replace('\n', '')
             print(f'    "{line}\\n";')
             csize += len(line) + 1
 

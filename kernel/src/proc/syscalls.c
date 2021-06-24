@@ -1,5 +1,6 @@
 
 #include <dev/kbd.h>
+#include <dev/serial.h>
 
 #include <screen.h>
 #include <malloc.h>
@@ -10,6 +11,7 @@ void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
     size_t n;
     void *ptr;
     int res;
+    uint32_t n32;
 
     switch (num) {
     case 0:
@@ -65,14 +67,17 @@ void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
 
         break;
     case 12:
-        ptr = get_screenX();
-        *((uint64_t *) 0x1234560) = (uint64_t) ptr;
+        n32 = get_screenX();
+        *((uint64_t *) 0x1234560) = (uint64_t) n32;
 
         break;
     case 13:
-        ptr = get_screenY();
-        *((uint64_t *) 0x1234560) = (uint64_t) ptr;
+        n32 = get_screenY();
+        *((uint64_t *) 0x1234560) = (uint64_t) n32;
 
+        break;
+    case 14:
+        serial_out_raw((char *) par1, (size_t) par2);
         break;
     }
 }

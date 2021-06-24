@@ -62,6 +62,7 @@ CFLAGS		=		$(INC) -Wall -Wextra 				\
 LDFLAGS		=		-pie
 
 CC			=		x86_64-elf-gcc
+LD			=		x86_64-elf-ld
 
 all: font update_files $(NAME)
 
@@ -69,7 +70,7 @@ update_files:
 	rm -f src/fs/init.o
 
 $(NAME):$(OBJ)
-	ld $(LINKER) $(LDFLAGS) -o $(NAME) $(OBJ)
+	$(LD) $(LINKER) $(LDFLAGS) -o $(NAME) $(OBJ)
 
 font:
 	make -C ./src/font/

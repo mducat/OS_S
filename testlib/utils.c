@@ -2,6 +2,12 @@
 #include <string.h>
 
 char **strToWords(const char *str, char split) {
+    if (strlen(str) == 0) {
+        char **ret = malloc(sizeof(char *));
+        ret[0] = 0;
+        return ret;
+    }
+
     lld_t *lld = lld_init();
     int p = -1;
     int i = 0;
@@ -18,12 +24,10 @@ char **strToWords(const char *str, char split) {
         }
     }
     int len = i-p-1;
-    if (len > 0) {
-        char *str2 = malloc(len+1);
-        str2[len] = 0;
-        memcpy(str2, str+p+1, len);
-        lld_insert(lld, lld_len(lld), str2);
-    }
+    char *str2 = malloc(len+1);
+    str2[len] = 0;
+    memcpy(str2, str+p+1, len);
+    lld_insert(lld, lld_len(lld), str2);
     p = i;
     char **tab = (char **)lld_lld_to_tab(lld);
     lld_free(lld);
@@ -48,6 +52,17 @@ char *my_putnbr_base_str(unsigned long int nbr, char *base){
     to_print2[0] == 0 ? to_print2[0] = base[0] : 0;
     return (to_print2);
 }
+
+char *strconcat(char const *str1, char const *str2) {
+    char *str3 = malloc(sizeof(char) * (strlen(str1) + strlen(str2)+1));
+    int x = 0;
+
+    for (int i = 0; str1[i]; i++, x++) str3[x] = str1[i];
+    for (int i = 0; str2[i]; i++, x++) str3[x] = str2[i];
+    str3[x] = 0;
+    return (str3);
+}
+
 
 #ifndef ULONG_MAX
 #define        ULONG_MAX        ((unsigned long)(~0L))                /* 0xFFFFFFFF */

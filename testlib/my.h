@@ -13,6 +13,9 @@ typedef unsigned int u32;
 int ucp(char *str, char *regex, ...);
 char ***ucp_tab(char *str, char *regex, ...);
 void ucp_free(char ***tab);
+void ucpDestroy();
+void ucpInit();
+
 
 void *is_made1(char *str);
 void *is_made2(char *str);
@@ -53,4 +56,4 @@ lld_t *lld_tab_to_lld(void **tab, int size);
 char **strToWords(const char *str, char split);
 char *my_putnbr_base_str(unsigned long int nbr, char *base);
 
-
+char *strconcat(char const *str1, char const *str2);

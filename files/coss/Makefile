@@ -38,9 +38,14 @@ debug: CFLAGS += -g
 debug: fclean all
 
 valgrind: fclean
+	make -C ../../testlib
+	make -C ../aoss/ valgrind
 	clear
 	gcc -g $(SRC) $(INC) $(LIBS) -o $(NAME) -Wall -Wextra
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) main.coss | cat -e
 	###################################################################################################
-	cat main.aoss
+	
+	../aoss/aoss main.aoss
 	rm main.aoss
+	objdump -D -Mintel,x86-64 -b binary -m i386 main.oss
+	rm main.oss

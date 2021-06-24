@@ -165,3 +165,13 @@ long strtol(const char *nptr, char **endptr, register int base)
                 *endptr = (char *) (any ? s - 1 : nptr);
         return (acc);
 }
+
+char *strconcat(char const *str1, char const *str2) {
+    char *str3 = malloc(sizeof(char) * (strlen(str1) + strlen(str2)+1));
+    int x = 0;
+
+    for (int i = 0; str1[i]; i++, x++) str3[x] = str1[i];
+    for (int i = 0; str2[i]; i++, x++) str3[x] = str2[i];
+    str3[x] = 0;
+    return (str3);
+}

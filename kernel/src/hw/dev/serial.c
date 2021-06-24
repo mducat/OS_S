@@ -77,6 +77,12 @@ void serial_out(char *st)
         write_serial(st[i]);
 }
 
+void serial_out_raw(char *st, size_t len)
+{
+    for (size_t i = 0; i < len; i++)
+        write_serial(st[i]);
+}
+
 int init_serial()
 {
     outb(PORT + 1, 0x00);    // Disable all interrupts

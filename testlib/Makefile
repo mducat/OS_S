@@ -22,7 +22,7 @@ NAME	=	liboss.a
 
 INC		= 	-I.
 
-CFLAGS	=	$(INC) -Wall -Wextra
+CFLAGS	=	$(INC) -Wall -Wextra -g
 
 CC		=	gcc
 AR		=	ar

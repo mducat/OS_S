@@ -5,11 +5,8 @@
 ** main file for ucp
 */
 
-#include <stdarg.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "../my.h"
+#include "my.h"
+#include "lld.h"
 
 int ucp_recursiv(char *str, char *buf, char *regex, int (**fonc)(char *))
 {

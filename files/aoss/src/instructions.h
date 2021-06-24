@@ -37,5 +37,6 @@ OpCode_t *OpCode_IDIV_r(char **strs);
 OpCode_t *OpCode_binary_4(char **strs);
 OpCode_t *OpCode_binary_2(char **strs);
 OpCode_t *OpCode_binary_1(char **strs);
+OpCode_t *OpCode_sub_r_r(char **strs);
 
 #endif

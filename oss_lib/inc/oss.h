@@ -13,6 +13,8 @@ void refresh(void);
 
 int printf(const char *format, ...);
 
+void export_serial(char *string, size_t len);
+
 /* KBD */
 
 int read(void);

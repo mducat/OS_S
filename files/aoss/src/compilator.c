@@ -68,6 +68,8 @@ void generateInstructionsSet() {
     PUSHBACK(lld, generateInstruction("b4 _", &OpCode_binary_4));
     PUSHBACK(lld, generateInstruction("b2 _", &OpCode_binary_2));
     PUSHBACK(lld, generateInstruction("b1 _", &OpCode_binary_1));
+    PUSHBACK(lld, generateInstruction("sub r r", &OpCode_sub_r_r));
+    
 
     instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
     lld_free(lld);
@@ -123,6 +125,8 @@ int main(int ac, char **av) {
     file_t *src = open(av[1]);
     
     #else
+    setbuf(stdout, NULL);
+    setbuf(stderr, NULL);
     FILE *src = fopen(av[1], "r+");
     
     #endif
@@ -191,9 +195,7 @@ int main(int ac, char **av) {
                     break;
                 }
             }
-            printf(" %s", words[i]);
         }
-        printf("\n");
         free(mv->data);
         mv->data = words;
     }
@@ -236,7 +238,7 @@ int main(int ac, char **av) {
         // found the matching instruction
         int instruction = -1;
         for (int i = 0; instructionsSet[i]; i++) {
-            if (!strcmp(words[0], instructionsSet[i]->name[0])) {
+            if (words[0] && !strcmp(words[0], instructionsSet[i]->name[0])) {
                 int j = 1;
                 for (; instructionsSet[i]->name[j]; j++){
                     if (!words[j] || instructionsSet[i]->name[j][0] != words[j][0]) {
@@ -261,7 +263,11 @@ int main(int ac, char **av) {
         }
 
         // change instruction name to instruction id
-        free(words[0]);
+        if (instruction == -1)
+            for (int i = 0; words[i]; i++)
+                free(words[i]);
+        else
+            free(words[0]);
         words[0] = (void *)(long int)instruction;
         printf("\n");
     }
@@ -290,9 +296,9 @@ int main(int ac, char **av) {
             printf(" %s", instructionsSet[(long int)words[0]]->name[0]);
         else 
             printf(" UNKNOWN");
-        for (int i = 1; words[i]; i++) {
-            printf(" %s", words[i]);
-        }
+        if ((long int)words[0] != -1)
+            for (int i = 1; words[i]; i++)
+                printf(" %s", words[i]);
         printf("\n");
         // compile an instruction
         long int instruction = (long int)words[0];
@@ -340,9 +346,9 @@ int main(int ac, char **av) {
             printf(" %s", instructionsSet[(long int)words[0]]->name[0]);
         else 
             printf(" UNKNOWN");
-        for (int i = 1; words[i]; i++) {
-            printf(" %s", words[i]);
-        }
+        if ((long int)words[0] != -1)
+            for (int i = 1; words[i]; i++)
+                printf(" %s", words[i]);
         printf("\n");
     }
 
@@ -359,16 +365,7 @@ int main(int ac, char **av) {
     printf("programe lengh = %i\n", prog_size);
 
     // puts the opcodes togethers
-    //char *binary = malloc(prog_size);
     void *binary = malloc(prog_size+3)+3;
-    //int pagesize = sysconf(_SC_PAGE_SIZE);
-    /*void *binary = 0;
-    if (posix_memalign(&binary, pagesize, pagesize*4)) {
-        perror("posix_memalign ");
-    }
-    if (mprotect(binary-(long int)binary%pagesize, (prog_size/pagesize+2)*(pagesize), PROT_EXEC | PROT_READ | PROT_WRITE)) {
-        perror("mprotect ");
-    }*/
 
     int p = 0;
     for (int i = 0; opcodes[i]; i++) {
@@ -393,8 +390,9 @@ int main(int ac, char **av) {
     line_count = 0;
     for (lld_t *mv = file->next; mv; mv = mv->next, line_count++) {
         char **words = mv->data;
-        for (int j = 1; words[j] != 0; j++)
-            free(words[j]);
+        if ((long int)words[0] != -1)
+            for (int j = 1; words[j] != 0; j++)
+                free(words[j]);
         free(words);
     }
     lld_free(file);
@@ -417,7 +415,7 @@ int main(int ac, char **av) {
     #ifdef __OSS__
     write_file(destName, ((char *)binary)-3, prog_size+3);
     #else
-    FILE *dest = fopen("main.oss", "wb");
+    FILE *dest = fopen(destName, "wb");
     fwrite(binary, prog_size, 1, dest);
     fclose(dest);
     #endif
