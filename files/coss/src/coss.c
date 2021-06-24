@@ -64,6 +64,8 @@ void generateInstructionsSet() {
     PUSHBACK(lld, generateInstruction(&matchOperator_e, &generateOperator_e));
     PUSHBACK(lld, generateInstruction(&matchOperator_e_operator, &generateOperator_e_operator));
     PUSHBACK(lld, generateInstruction(&matchEndOfScope, &generateEndOfScope));
+    PUSHBACK(lld, generateInstruction(&matchReturn, &generateReturn));
+    PUSHBACK(lld, generateInstruction(&matchCall, &generateCall));
 
 
     global_coss->instructionsSet = (instruction_t **)lld_lld_to_tab(lld);

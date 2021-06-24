@@ -30,3 +30,9 @@ brick_t *generateOperator_e_operator(lld_t *mv);
 
 int matchEndOfScope(lld_t *mv);
 brick_t *generateEndOfScope(lld_t *mv);
+
+int matchReturn(lld_t *mv);
+brick_t *generateReturn(lld_t *mv);
+
+int matchCall(lld_t *mv);
+brick_t *generateCall(lld_t *mv);

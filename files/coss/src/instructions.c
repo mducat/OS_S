@@ -196,3 +196,31 @@ int matchEndOfScope(lld_t *mv) {
 brick_t *generateEndOfScope(lld_t *mv) {
     return 0;
 }
+
+int matchReturn(lld_t *mv) {
+    line_t *line = mv->data;
+    return ucp(line->line, "return *", ucp_var) == 1;
+}
+
+brick_t *generateReturn(lld_t *mv) {
+    line_t *line = mv->data;
+    char ***tab = ucp_tab(line->line, "return *", ucp_var);
+    printf("%s", tab[0][0]);
+
+    ucp_free(tab);
+    return 0;
+}
+
+int matchCall(lld_t *mv) {
+    line_t *line = mv->data;
+    return ucp(line->line, "*(*)", ucp_var, ucp_alpha, ucp_args) == 1;
+}
+
+brick_t *generateCall(lld_t *mv) {
+    line_t *line = mv->data;
+    char ***tab = ucp_tab(line->line, "* = *(*)", ucp_var, ucp_alpha, ucp_args);
+    printf("%s = %s(%s)", tab[0][0], tab[0][1], tab[0][2]);
+
+    ucp_free(tab);
+    return 0;
+}

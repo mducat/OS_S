@@ -10,7 +10,7 @@ def func($a $b)
     $aa = $ad + _0x23
     $aa = _0x3 + _0x23
     _56 = _0x3 + _0x23
-    return a
+    return $a
 }
 
 def main($ac $av)
@@ -21,7 +21,8 @@ def main($ac $av)
     $c = $c + _15
     $g = func($c _-5)
 
-    if ($ac == _10) {
+    if ($ac == _10) 
+    {
         $c = $ac
     }
 
