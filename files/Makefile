@@ -7,6 +7,7 @@ PROGRAMS	=	ls	\
 				aoss \
 				omac \
 				coss \
+				export \
 
 PLAIN		=   $(shell ls plain/*)
 

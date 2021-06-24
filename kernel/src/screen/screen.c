@@ -41,7 +41,7 @@ vec_t move_cursor(vec_t pos)
     }
 
     // loop to top 
-    if (pos.y >= 40) {
+    if (pos.y >= 50) {
         pos.y = 0;
     }
 
@@ -127,10 +127,6 @@ size_t write_screen(const char *buf, size_t count)
             pos.y = 0;
             pos.x = 0;
             break;
-        case '\v':
-            state.back_color = 0x00FF0000;
-            state.line_color = 0x00FFFFFF;
-            break;
         case '\n':
             pos.y += 1;
             pos.x  = 0;
@@ -139,14 +135,14 @@ size_t write_screen(const char *buf, size_t count)
 
             
             {// clear next line on \n
-                const disp_state_t state = {
+                disp_state_t clear = {
                     .front_color = 0x00FFFFFF,
                     .back_color  = 0x00000000,
                     .line_color  = 0x00000000
                 };
                 pos.y++;
-                for (int i = 0; i < disp->screen->x_len / (8 + 1); i++, pos.x++) {
-                    print_char_at(pos, ' ', &state);
+                for (uint32_t i = 0; i < disp->screen->x_len / (8 + 1); i++, pos.x++) {
+                    print_char_at(pos, ' ', &clear);
                 }
                 pos.y--;
                 pos.x = 0;
