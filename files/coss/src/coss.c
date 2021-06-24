@@ -22,15 +22,17 @@ typedef struct variable {
     int stack_pos;
 } variable_t;
 
-typedef struct function {
-    int argc; // nb of args to push/pull on stack
-    scope_t *scope;
-} function_t;
+
 
 typedef struct scope {
     int stack_size;
     variable_t *variables;
 } scope_t;
+
+typedef struct function {
+    int argc; // nb of args to push/pull on stack
+    scope_t *scope;
+} function_t;
 
 typedef struct instruction {
     char *(*generate)(char **);

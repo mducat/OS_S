@@ -25,7 +25,7 @@ char *generate_nothing(char **words) {
     return 0;
 }
 
-int match_operator_e(ligne_t **) 
+int match_operator_e(lld_t *mv) 
 {
     return 0;
 }
