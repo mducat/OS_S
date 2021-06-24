@@ -29,7 +29,7 @@ void get_file(const char *filename, odata_t *data)
 void init_data(odata_t *data, char **av)
 {
     data->cursor = (cursor_t) {0, 0};
-    data->cpdata = (cpdata_t) {(cursor_t) {0, 0}, (cursor_t) {0, 0}};
+    data->cpdata = (cpdata_t) {(cursor_t) {-1, -1}, (cursor_t) {-1, -1}, 0};
     get_file(av[1], data);
     
     data->currentLineString = lld_read(data->text, 0);

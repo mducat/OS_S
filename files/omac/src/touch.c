@@ -51,7 +51,7 @@ void add_character(odata_t *data, int touch)
     data->cursor.column++;
 }
 
-void add_newline(odata_t *data, int touch)
+void add_newline(odata_t *data)
 {
     char *str = data->currentLineString;
     char *newstr = malloc(strlen(str) - data->cursor.column + 1);
@@ -66,7 +66,7 @@ void add_newline(odata_t *data, int touch)
     updateCurrentInformation(data);
 }
 
-void remove_character(odata_t *data, int touch)
+void remove_character(odata_t *data)
 {
     char *str = data->currentLineString;
 
@@ -96,37 +96,134 @@ void remove_character(odata_t *data, int touch)
     updateCurrentInformation(data);
 }
 
+void save(odata_t *data)
+{
+    int len = 1;
+    for (lld_t *mv = data->text->next; mv; mv = mv->next)
+        len += strlen(mv->data) + 1;
+    char *newstr = malloc(len);
+    int clen = 0;
+    for (lld_t *mv = data->text->next; mv; mv = mv->next) {
+        memcpy(newstr + clen, mv->data, strlen(mv->data));
+        clen += strlen(mv->data);
+        newstr[clen++] = '\n';
+    }
+    write_file(data->filename, newstr, len);
+}
+
 void handle_touch(odata_t *data, int touch)
 {     
     if ((IS_LEFT_CTRL(touch) || IS_LEFT_ALT(touch)
     ||   IS_LEFT_SHIFT(touch) || IS_ESCAPE(touch))
     &&  !IS_CURSOR(touch)) {
         // TODO
-        // CTRL-C / CTRL-V / CTRL-X
-        // CTRL-A
+        // CTRL-C / CTRL-V
         // CTRL-S
         char c = GET_CHR(touch);
         if (IS_LEFT_CTRL(touch) && c == 's') {
-            int len = 1;
-            for (lld_t *mv = data->text->next; mv; mv = mv->next)
-                len += strlen(mv->data) + 1;
-            char *newstr = malloc(len);
-            int clen = 0;
-            for (lld_t *mv = data->text->next; mv; mv = mv->next) {
-                memcpy(newstr + clen, mv->data, strlen(mv->data));
-                clen += strlen(mv->data);
-                newstr[clen++] = '\n';
+            save(data);
+        }
+        if (IS_LEFT_CTRL(touch) && c == 'c') {
+            char *copystrings = 0;
+            if (data->cpdata.from.line == -1)
+                copystrings = strdup(data->currentLineString);
+            else {
+                cursor_t cpfrom = data->cpdata.from;
+                cursor_t cpto   = data->cpdata.to;
+
+                cursor_t cpfromtrad;
+                cursor_t cptotrad;
+
+                if (cpfrom.line == cpto.line) {
+                    cpfromtrad  = cpfrom.column < cpto.column ? cpfrom : cpto;
+                    cptotrad    = cpto.column > cpfrom.column ? cpto : cpfrom;
+                } else {
+                    cpfromtrad = cpfrom.line < cpto.line ? cpfrom : cpto;
+                    cptotrad   = cpfrom.line > cpto.line ? cpfrom : cpto;
+                }
+                int len = 0;
+                for (int i = cpfromtrad.line; i <= cptotrad.line; i++) {
+                    char *str = (char *) lld_read(data->text, i);
+                    if (i == cpfromtrad.line) {
+                        if (cpfromtrad.line == cptotrad.line) {
+                            len += cptotrad.column - cpfromtrad.column + 1;
+                        } else {
+                            len += strlen(str) - cpfromtrad.column + 1;
+                        }
+                    } else if (i == cptotrad.line) {
+                        len += cptotrad.column + 2;
+                    } else {
+                        len += strlen(str) + 1;
+                    }
+                }
+                copystrings = malloc(len);
+                int dist = 0;
+                for (int i = cpfromtrad.line; i <= cptotrad.line; i++) {
+                    char *str = (char *) lld_read(data->text, i);
+                    if (i == cpfromtrad.line) {
+                        if (cpfromtrad.line == cptotrad.line)
+                            memcpy(copystrings, str + cpfromtrad.column, cptotrad.column - cpfromtrad.column);
+                        else {
+                            memcpy(copystrings, str + cpfromtrad.column, strlen(str) - cpfromtrad.column + 1);
+                            dist += strlen(str) - cpfromtrad.column;
+                            copystrings[dist++] = '\n';
+                        }
+                    } else if (i == cptotrad.line) {
+                        memcpy(copystrings + dist, str, cptotrad.column);
+                        dist += cptotrad.column;
+                    } else {
+                        memcpy(copystrings + dist, str, strlen(str));
+                        dist += strlen(str);
+                        copystrings[dist++] = '\n';
+                    }
+                }
+                data->cpdata.copydata = copystrings;
             }
-            write_file(data->filename, newstr, len);
+        }
+        if (IS_LEFT_CTRL(touch) && c == 'v') {
+            if (data->cpdata.copydata == 0)
+                return;
+            char **newstr = strToWords(data->cpdata.copydata, '\n');
+            char *currentfirststr = data->currentLineString;
+            int firstlinelength = data->cursor.column + strlen(newstr[0] + 1);
+            char *newfirststr = malloc(firstlinelength);
+            memcpy(newfirststr, currentfirststr, data->cursor.column);
+            memcpy(newfirststr + data->cursor.column, newstr[0], strlen(newstr[0]));
+            newfirststr[data->cursor.column + strlen(newstr[0])] = '\0';
+            lld_pop(data->text, data->cursor.line);
+            lld_insert(data->text, data->cursor.line, newfirststr);
+            int i = 1;
+            if (newstr[i]) {
+                for (; newstr[i + 1]; i++) {
+                    lld_insert(data->text, data->cursor.line + i, newstr[i]);
+                }
+            }
+            char *endstr = newstr[i];
+            int endlinelength = strlen(endstr) + 1 + strlen(currentfirststr) - data->cursor.column;
+            char *newendstr = malloc(endlinelength);
+            memcpy(newendstr, endstr, strlen(endstr));
+            memcpy(newendstr + strlen(endstr), currentfirststr + data->cursor.column, strlen(currentfirststr) - data->cursor.column);
+            lld_insert(data->text, data->cursor.line + i + 1, newendstr);
         }
     } else if (IS_CURSOR(touch) && IS_LEFT_CTRL(touch)) {
-        // TODO handle_selector
+        if (data->cpdata.from.line == -1) {
+            data->cpdata.from.line = data->cursor.line;
+            data->cpdata.from.column = data->cursor.column;
+            data->cpdata.to.line = data->cursor.line;
+            data->cpdata.to.column = data->cursor.column;
+        } else {
+            handle_cursor(data, touch);
+            data->cpdata.to.line = data->cursor.line;
+            data->cpdata.to.column = data->cursor.column;
+        }
     } else if (IS_CURSOR(touch)) {
+        data->cpdata.from   = (cursor_t) {-1, -1};
+        data->cpdata.to     = (cursor_t) {-1, -1};
         return handle_cursor(data, touch);
     } else if (IS_BACKSPACE(touch)) {
-        remove_character(data, touch);
+        remove_character(data);
     } else if (IS_ENTER(touch)) {
-        add_newline(data, touch);
+        add_newline(data);
     } else {
         add_character(data, touch);
     }

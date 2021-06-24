@@ -8,7 +8,8 @@ typedef struct cursor {
 
 typedef struct copypaste {
     cursor_t from;
-    cursor_t to;    
+    cursor_t to;
+    char *copydata;
 } cpdata_t;
 
 typedef struct _omac_data {
