@@ -1,6 +1,6 @@
 def funky()
 {
-
+    return _15
 }
 
 def func($a $b)
@@ -20,11 +20,13 @@ def main($ac $av)
     $d = $d * $ac
     $c = $c + _15
     $g = func($c _-5)
+    $g = func(_5)
 
-    if ($ac == _10) 
+    if ($ac = _10) 
     {
         $c = $ac
     }
 
     // this is a comment
+    return _0
 }

@@ -13,6 +13,9 @@ typedef unsigned int u32;
 int ucp(char *str, char *regex, ...);
 char ***ucp_tab(char *str, char *regex, ...);
 void ucp_free(char ***tab);
+void ucpDestroy();
+void ucpInit();
+
 
 void *is_made1(char *str);
 void *is_made2(char *str);

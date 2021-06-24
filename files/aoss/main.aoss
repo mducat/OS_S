@@ -2,7 +2,8 @@ push rdi
 mov rcx rdi
 mov rdx _10
 je _:ici
-mov rbx _1 !ici
+!ici
+mov rbx _1 
 mov rax _4
 //int _0x80
 imul rax rcx

@@ -8,6 +8,8 @@
 #include <lld.h>
 #include <oss.h>
 
+#define printf(str, ...) {printf(str __VA_OPT__(,) __VA_ARGS__); refresh();}
+
 #else
 
 #include <stdio.h>
@@ -21,10 +23,13 @@ coss_t *global_coss = 0;
 void init_coss_global(void) {
     global_coss = malloc(sizeof(coss_t));
     global_coss->stack_vars = lld_init();
+    global_coss->last_func_name = 0;
 }
 
 void free_coss_global(void) {
     lld_free(global_coss->stack_vars);
+    if (global_coss->last_func_name)
+        free(global_coss->last_func_name);
     free(global_coss);   
 }
 
@@ -79,8 +84,130 @@ void freeInstructionsSet() {
     free(global_coss->instructionsSet);
 }
 
+
+lld_t *nextLine() {
+    global_coss->current_line = global_coss->current_line->next;
+    global_coss->line_id++;
+    return global_coss->current_line;
+}
+
+int addVarToStack(char *varname) {
+    for (lld_t *mv = global_coss->stack_vars->next; mv; mv = mv->next)
+        if (!strcmp(((var_t *)mv->data)->name, varname))
+            printf("l%i : a variable with this name already exist", global_coss->line_id);
+
+    var_t *var = malloc(sizeof(var_t));
+    var->name = strdup(varname);
+    lld_insert(global_coss->stack_vars, 0, var);
+    return 0;
+}
+
+int rmVarFromStack() {
+    var_t *var = lld_pop(global_coss->stack_vars, 0);
+    free(var->name);
+    free(var);
+    return 0;
+}
+
+int findInStack(char *str) {
+    int id = 0;
+    for (lld_t *mv = global_coss->stack_vars->next; mv; mv = mv->next, id++) {
+        if (!strcmp(((var_t *)mv->data)->name, str))
+            return id;
+    }
+    printf("var %s not found\n", str);
+    return -1;
+}
+
+brick_t *loadInRax(char *str) {
+    char *make2 = 0;
+    if (str[0] == '$') {
+        int id = findInStack(str);
+        char line[] = "mov rax _-0x";
+        char line2[] = "\nadd rax rsp\n";
+        char *id_str = my_putnbr_base_str(id*8, "0123456789ABCDEF");
+        char *make1 = strconcat(line, id_str);
+        make2 = strconcat(make1, line2);
+        free(make1);
+    } else if (str[0] == '_') {
+        char line[] = "mov rax ";
+        char *make1 = strconcat(line, str);
+        make2 = strconcat(make1, "\n");
+        free(make1);
+    }
+    return brickInit(make2);
+}
+
+int incScopeDepth() {
+    return ++global_coss->scopeDepth;
+
+}
+
+int decScopeDepth() {
+    return --global_coss->scopeDepth;
+}
+
+brick_t *trigerGenerator(lld_t *mv) {
+    int match = 0;
+    brick_t *ret = 0;
+    line_t *line = mv->data;
+    printf("\n");
+    printf("%4i| %s",  global_coss->line_id, line->line);
+    int spacetoprint = 40-strlen(line->line);
+    for (; spacetoprint; spacetoprint--){
+        if (global_coss->line_id % 2 || spacetoprint % 3) {
+            printf(" ");
+        } else {
+            printf("-");
+        }
+    }
+
+    for (int i = 0; global_coss->instructionsSet[i]; i++) {
+        instruction_t *inst = global_coss->instructionsSet[i];
+        if (inst->match(mv)) {
+            ret = inst->generate(mv);
+            match++;
+        }
+    }
+    if (match == 0) {
+        printf("does not match");
+    } else if (match > 1) {
+        printf("match %i time!!!", match);
+    }
+    return ret;
+}
+
+void compileScope(lld_t *mv) {
+    (void)mv;
+    //compileScope
+}
+
+void compileFunction(lld_t *mv) {
+    (void)mv;
+    // compileScope
+}
+
+brick_t *compileFile(lld_t *file) {
+    global_coss->file = file;
+    global_coss->current_line = file->next;
+    global_coss->line_id = 0;
+    global_coss->scopeDepth = 0;
+    brick_t *brick = brickInit(strdup(""));
+    for (; global_coss->current_line; nextLine()) {
+        lld_t *mv = global_coss->current_line;
+        brick_t *func = trigerGenerator(mv);
+        brickAdd(brick, func);
+        printf("\n");
+        printf("code:\n%s\n", func->code);
+        brickFree(func);
+    }
+    return brick;
+    // compileFunction
+}
+
 int main(int ac, char **av) {
 
+    ucpInit();
     if (ac != 2){
         printf("need a file at first arg\n");
         return 1;
@@ -92,6 +219,8 @@ int main(int ac, char **av) {
     file_t *src = open(av[1]);
     
     #else
+    setbuf(stdout, NULL);
+    setbuf(stderr, NULL);
     FILE *src = fopen(av[1], "r+");
     
     #endif
@@ -160,45 +289,32 @@ int main(int ac, char **av) {
         lld_free(to_pop);
     }
     printf("1 ############################ clear the text\n");
+    #ifdef __OSS__
+    refresh();
+    #endif
 
-    {
-        long int line_count = 0;
-        for (lld_t *mv = file->next; mv; mv = mv->next, line_count++) {
-            line_t *line = mv->data;
-            printf("%4li| %s", line_count, line->line);
-
-            int spacetoprint = 40-strlen(line->line);
-            for (; spacetoprint; spacetoprint--){
-                if (line_count%2 || spacetoprint % 3)
-                    printf(" ");
-                else
-                    printf("-");
-            }
-
-            int match = 0;
-            for (int i = 0; global_coss->instructionsSet[i]; i++) {
-                instruction_t *inst = global_coss->instructionsSet[i];
-                if (inst->match(mv)) {
-                    inst->generate(mv);
-                    match++;
-                }
-            }
-            if (match == 0) {
-                printf("does not match");
-            } else if (match > 1) {
-                printf("match %i time!!!", match);
-            }
-
-
-            printf("\n");
-        }
-
-    }
+    brick_t *main_brique = compileFile(file);
     printf("2 ############################ find the instructions\n");
-
+    #ifdef __OSS__
+    refresh();
+    #endif
 
     // write code to file
+    int file_name_len = 0;
+    for (; av[1][file_name_len] != '.' && av[1][file_name_len]; file_name_len++);
+    char *destName = malloc(file_name_len+6);
+    memcpy(destName, av[1], file_name_len);
+    memcpy(destName+file_name_len, ".aoss", 6);
 
+    #ifdef __OSS__
+    write_file(destName, main_brique->code, strlen(main_brique->code));
+    #else
+    FILE *dest = fopen(destName, "wb");
+    fwrite(main_brique->code, strlen(main_brique->code), 1, dest);
+    fclose(dest);
+    #endif
+    brickFree(main_brique);
+    free(destName);
 
     // free everytyhing
     for (lld_t *mv = file->next; mv; mv = mv->next) {
@@ -212,5 +328,6 @@ int main(int ac, char **av) {
     lld_free(file);
     freeInstructionsSet();
     free_coss_global();
+    ucpDestroy();
     return 0;
 }

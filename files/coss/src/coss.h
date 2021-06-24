@@ -58,8 +58,27 @@ typedef struct instruction {
 typedef struct coss {
     lld_t *stack_vars; // stack of all variables var_t
     instruction_t **instructionsSet;
+    lld_t *file;
+    lld_t *current_line;
+    char *last_func_name;
+    int line_id;
+    int scopeDepth;
 } coss_t;
 
 extern coss_t *global_coss;
+
+lld_t *nextLine();
+brick_t *trigerGenerator(lld_t *mv);
+
+int addVarToStack(char *varname);
+int rmVarFromStack();
+
+int findInStack(char *str);
+
+
+int decScopeDepth();
+int incScopeDepth();
+
+brick_t *loadInRax(char *str);
 
 #endif

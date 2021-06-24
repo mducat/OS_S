@@ -2,6 +2,12 @@
 #include <string.h>
 
 char **strToWords(const char *str, char split) {
+    if (strlen(str) == 0) {
+        char **ret = malloc(sizeof(char *));
+        ret[0] = 0;
+        return ret;
+    }
+
     lld_t *lld = lld_init();
     int p = -1;
     int i = 0;
@@ -18,12 +24,10 @@ char **strToWords(const char *str, char split) {
         }
     }
     int len = i-p-1;
-    if (len > 0) {
-        char *str2 = malloc(len+1);
-        str2[len] = 0;
-        memcpy(str2, str+p+1, len);
-        lld_insert(lld, lld_len(lld), str2);
-    }
+    char *str2 = malloc(len+1);
+    str2[len] = 0;
+    memcpy(str2, str+p+1, len);
+    lld_insert(lld, lld_len(lld), str2);
     p = i;
     char **tab = (char **)lld_lld_to_tab(lld);
     lld_free(lld);

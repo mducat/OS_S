@@ -30,10 +30,20 @@ void ucp_get_recursiv2(char **str, int (**fonc)(char *), lld_t *lld_split)
     } while (str[0][i++]);
 }
 
+
+lld_t *lld_split = 0;
+lld_t *soluce = 0;
+
+void ucpInit() {
+    lld_split = lld_init();
+}
+
+void ucpDestroy() {
+    lld_free(lld_split);
+}
+
 lld_t *ucp_get_recursiv(char **str, int (**fonc)(char *))
 {
-    static lld_t *lld_split = 0; !lld_split ? lld_split = lld_init() : 0;
-    static lld_t *soluce = 0;
     (u64)fonc[0] == (u64) - 1 ? soluce = lld_init(), fonc++ : 0;
     if (*str[2] == '*'){
         ucp_get_recursiv2(str, fonc, lld_split);

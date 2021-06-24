@@ -12,6 +12,22 @@
 
 #endif
 
+typedef enum ligne_type {
+    FUNCTION,
+    SCOPE,
+    OPERATOR_E,
+    OPERATOR_E_OPERATOR,
+    END_OF_SCOPE,
+    RETURN,
+    CALL,
+} ligne_type_e;
+
+brick_t *concatBrick(brick_t *a, brick_t *b);
+void brickAdd(brick_t *a, brick_t *b);
+void brickFree(brick_t *a);
+brick_t *brickInit(char *str);
+
+
 char *generate_nothing(lld_t *mv);
 int match_nothing(lld_t *mv);
 
@@ -36,3 +52,4 @@ brick_t *generateReturn(lld_t *mv);
 
 int matchCall(lld_t *mv);
 brick_t *generateCall(lld_t *mv);
+
