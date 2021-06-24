@@ -8,7 +8,7 @@
 #include <lld.h>
 #include <oss.h>
 
-#define printf(str, ...) {printf(str __VA_OPT__(,) __VA_ARGS__); refresh();}
+//#define printf(str, ...) {printf(str __VA_OPT__(,) __VA_ARGS__); refresh();}
 
 #else
 

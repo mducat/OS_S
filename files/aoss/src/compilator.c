@@ -114,7 +114,27 @@ char registers[][3] = {
     "rdi"
 };
 
+char *my_putnbr_base_str_int(unsigned int nbr, char *base){
+    int len = strlen(base);
+    int i;
+    static char to_print[65];
+    static char to_print2[65];
+    //nbr < 0 ? nbr *= -1 : 0;
+    for (int y = 0; y < 65; to_print[y] = 0, to_print2[y] = 0, y++);
+    for (len = 0; base[len]; len++);
+    for (i = 0; nbr != 0; i++){
+        to_print[i] = base[nbr%len];
+        nbr /= len;
+    }
+    int a = 0;
+    for (i = i-1; i >= 0; i--, a++)
+        to_print2[a] = to_print[i];
+    to_print2[0] == 0 ? to_print2[0] = base[0] : 0;
+    return (to_print2);
+}
+
 int main(int ac, char **av) {
+
     if (ac != 2){
         printf("need a file at first arg\n");
         return 1;
@@ -315,7 +335,7 @@ int main(int ac, char **av) {
                             words[i] = malloc(64);
                             words[i][0] = old[0];
                             memcpy(words[i]+1, "0x", 2);
-                            char *base = my_putnbr_base_str(balises[j]->adrr-current_adr, "0123456789ABCDEF");
+                            char *base = my_putnbr_base_str_int((balises[j]->adrr-current_adr), "0123456789ABCDEF");
                             memcpy(words[i]+3, base, strlen(base)+1);
                             free(old);
                             goto instend;

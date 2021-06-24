@@ -1,37 +1,10 @@
-def funky()
-{
-    return _15
+
+def simpleCall($a)
+{ $b $c $d
 }
 
-def func($aa $bb)
-{ $cc
-    $aa = $bb - $aa
-    $aa = $cc * $aa
-    $cc = $aa + _0x23
-    $aa = _0x3 * _0x23
-    _56 = _0x3 + _0x23
-    return $a
-}
-
-def simpleassign($a) 
-{ $b
-    $a = $b
-}
-
-def main($ac $av)
-{ $c $d $g
-    // this is a comment
-    $c = $ac
-    $d = $d * $ac
-    $c = $c + _15
-    $g = func($c _-5)
-    $g = func(_5)
-
-    if ($ac = _10) 
-    {
-        $c = $ac
-    }
-
-    // this is a comment
+def main()
+{ $ac $av $c $d $g
+    $g = simpleCall($av)
     return _0
 }

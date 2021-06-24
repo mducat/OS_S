@@ -7,7 +7,7 @@
 #include <lld.h>
 #include <oss.h>
 
-#define printf(str, ...) {printf(str __VA_OPT__(,) __VA_ARGS__); refresh();}
+//#define printf(str, ...) {printf(str __VA_OPT__(,) __VA_ARGS__); refresh();}
 
 #else
 
@@ -223,48 +223,36 @@ brick_t *generateFunction(lld_t *mv) {
     balise[len-2] = '\n';
     balise[len-1] = 0;
     
+    brick_t *brick = brickInit(balise);
+
     if (global_coss->last_func_name)
         free(global_coss->last_func_name);
     global_coss->last_func_name = strdup(tab[0][0]);
 
-    brick_t *brick = brickInit(balise);
     // push vars on the stack and lld
     int depth = 0;
-    for (int i = 0; args[i]; i++, depth++) {
+    for (int i = 0; args[i]; i++, depth++)
         addVarToStack(args[i]);
-        brick_t *var = brickInit(strdup("push _0\n"));
-        brickAdd(brick, var);
-        brickFree(var);
-    }
+
 
 
     brick_t *bri = trigerGenerator(nextLine());
     brickAdd(brick, bri);
     brickFree(bri);
 
+
+    brick_t *br_ret = brickInit(strdup("// end of function\nret\n"));
+    brickAdd(brick, br_ret);
+    brickFree(br_ret);
+
     for (int i = 0; i < depth; i++)
         rmVarFromStack();
 
-
-    brick_t *var = 0;
-    if (depth) {
-        char mvo[] = "// exiting func\nmov rcx _-0x";
-        char *nb_str = my_putnbr_base_str(depth*8, "0123456789ABCDEF");
-        char *tmpstr = strconcat(mvo, nb_str);
-        char *tmpstr2 = strconcat(tmpstr, "\nadd rsp rcx\nret\n");
-        free(tmpstr);
-        var = brickInit(tmpstr2);
-    } else {
-        var = brickInit(strdup("// exiting func\nret\n"));
-    }
-    brickAdd(brick, var);
-    brickFree(var);
-
-    //end:;
     for (int i = 0; args[i]; i++)
         free(args[i]);
     free(args);
     ucp_free(tab);
+
     return brick;
 }
 
@@ -302,21 +290,28 @@ brick_t *generateScope(lld_t *mv) {
     // pop vars on the stack and lld
     for (int i = 0; i < var_count; i++)
         rmVarFromStack();
-    
-    brick_t *var;
-    if (var_count) {
-        char mvo[] = "// deleting scope\nmov rcx _-0x";
-        char *nb_str = my_putnbr_base_str(var_count*8, "0123456789ABCDEF");
-        char *tmpstr = strconcat(mvo, nb_str);
-        char *tmpstr2 = strconcat(tmpstr, "\nadd rsp rcx\n");
-        free(tmpstr);
-        var = brickInit(tmpstr2);
-    } else {
-        var = brickInit(strdup("// deleting scope\n"));
+
+    for (int i = 0; i < var_count; i++) {
+        //addVarToStack(args[i]);
+        brick_t *var = brickInit(strdup("pop rcx\n"));
+        brickAdd(brick, var);
+        brickFree(var);
     }
 
-    brickAdd(brick, var);
-    brickFree(var);
+    // brick_t *var;
+    // if (var_count) {
+    //     char mvo[] = "// deleting scope\nmov rcx _0x";
+    //     char *nb_str = my_putnbr_base_str(var_count*8, "0123456789ABCDEF");
+    //     char *tmpstr = strconcat(mvo, nb_str);
+    //     char *tmpstr2 = strconcat(tmpstr, "\nsub rsp rcx\n");
+    //     free(tmpstr);
+    //     var = brickInit(tmpstr2);
+    // } else {
+    //     var = brickInit(strdup("// deleting scope\n"));
+    // }
+    // brickAdd(brick, var);
+    // brickFree(var);
+
     printf("<-");
     //free
     //end:;
@@ -351,14 +346,25 @@ brick_t *generateReturn(lld_t *mv) {
 
     brick_t *brick1 = loadInRax(tab[0][0]);    
 
-    char mvo[] = "// return\nmov rcx _-0x";
-    char *nb_str = my_putnbr_base_str(depth*8, "0123456789ABCDEF");
-    char *tmpstr = strconcat(mvo, nb_str);
-    char *tmpstr2 = strconcat(tmpstr, "\nadd rsp rcx\nret\n");
-    free(tmpstr);
-    brick_t *brick = brickInit(tmpstr2);
-    brickAdd(brick1, brick);
-    brickFree(brick);
+    
+    for (int i = 0; i < depth; i++) {
+        //addVarToStack(args[i]);
+        brick_t *var = brickInit(strdup("pop rcx\n"));
+        brickAdd(brick1, var);
+        brickFree(var);
+    }
+    brick_t *br_return = brickInit(strdup("ret\n"));
+    brickAdd(brick1, br_return);
+    brickFree(br_return);
+
+    // char mvo[] = "// return\nmov rcx _0x";
+    // char *nb_str = my_putnbr_base_str(depth*8, "0123456789ABCDEF");
+    // char *tmpstr = strconcat(mvo, nb_str);
+    // char *tmpstr2 = strconcat(tmpstr, "\nsub rsp rcx\nret\n");
+    // free(tmpstr);
+    // brick_t *brick = brickInit(tmpstr2);
+    // brickAdd(brick1, brick);
+    // brickFree(brick);
 
     ucp_free(tab);
     return brick1;
@@ -373,7 +379,66 @@ brick_t *generateCall(lld_t *mv) {
     line_t *line = mv->data;
     char ***tab = ucp_tab(line->line, "* = *(*)", ucp_var, ucp_alpha, ucp_args);
     printf("%s = %s(%s)", tab[0][0], tab[0][1], tab[0][2]);
+    char **args = strToWords(tab[0][2], ' ');
 
+    brick_t *brick = brickInit(strdup("// call\n"));
+
+    // push args on stack
+    int depth = 0;
+    for (int i = 0; args[i]; i++, depth++) {
+        //addVarToStack(args[i]);
+        brick_t *br_load_rax = loadInRax(args[i]);
+        brick_t *var = brickInit(strdup("push rax\n"));
+        brickAdd(brick, br_load_rax);
+        brickAdd(brick, var);
+        brickFree(br_load_rax);
+        brickFree(var);
+    }
+
+    brick_t *br_comment = brickInit(strdup("// call function\n"));
+    brick_t *br_call = brickInit(strdup("call _:"));
+    brick_t *br_name = brickInit(strdup(tab[0][1]));
+    brick_t *br_enter = brickInit(strdup("\n"));
+    brickAdd(brick, br_comment);
+    brickAdd(brick, br_call);
+    brickAdd(brick, br_name);
+    brickAdd(brick, br_enter);
+    brickFree(br_comment);
+    brickFree(br_call);
+    brickFree(br_name);
+    brickFree(br_enter);
+
+    // pull stack
+    // for (int i = 0; i < depth; i++)
+    //     rmVarFromStack();
+
+    for (int i = 0; i < depth; i++) {
+        //addVarToStack(args[i]);
+        brick_t *var = brickInit(strdup("pop rcx\n"));
+        brickAdd(brick, var);
+        brickFree(var);
+    }
+
+    // if (depth) {
+    //     char mvo[] = "mov rcx _0x";
+    //     char *nb_str = my_putnbr_base_str(depth*8, "0123456789ABCDEF");
+    //     char *tmpstr = strconcat(mvo, nb_str);
+    //     char *tmpstr2 = strconcat(tmpstr, "\nsub rsp rcx\n");
+    //     free(tmpstr);
+    //     var = brickInit(tmpstr2);
+    // } else {
+    //     var = brickInit(strdup(""));
+    // }
+    // brickAdd(brick, var);
+    // brickFree(var);
+
+    brick_t *br_set_var = setVar(tab[0][0], "rax\n");
+    brickAdd(brick, br_set_var);
+    brickFree(br_set_var);
+
+    for (int i = 0; args[i]; i++)
+        free(args[i]);
+    free(args);
     ucp_free(tab);
-    return brickInit(strdup(""));
+    return brick;
 }

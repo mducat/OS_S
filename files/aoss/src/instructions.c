@@ -163,7 +163,7 @@ OpCode_t *OpCode_MOV_r_li(char **strs) {
 
 OpCode_t *OpCode_CALL(char **strs) {
     int adrr = strtol(strs[1]+1, 0, 0);
-
+    printf("%s %i\n", strs[1]+1, adrr);
     char thisOpcode[] = {
         0xe8,
         ADDRESS_TO_4CHARS(adrr)
