@@ -2,6 +2,7 @@ push rdi
 mov rcx rdi
 mov rdx _10
 je _:ici
+mov rax _10 rex
 !ici
 mov rbx _1 
 mov rax _4
@@ -10,6 +11,7 @@ imul rax rcx
 idiv rax
 add rax rax
 pop rax
+sub rax rcx
 ret
 
 b4 _0xFFFFFFFF

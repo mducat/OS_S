@@ -68,6 +68,8 @@ void generateInstructionsSet() {
     PUSHBACK(lld, generateInstruction("b4 _", &OpCode_binary_4));
     PUSHBACK(lld, generateInstruction("b2 _", &OpCode_binary_2));
     PUSHBACK(lld, generateInstruction("b1 _", &OpCode_binary_1));
+    PUSHBACK(lld, generateInstruction("sub r r", &OpCode_sub_r_r));
+    
 
     instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
     lld_free(lld);

@@ -123,12 +123,11 @@ brick_t *loadInRax(char *str) {
     char *make2 = 0;
     if (str[0] == '$') {
         int id = findInStack(str);
-        char line[] = "mov rax _-0x";
-        char line2[] = "\nadd rax rsp\n";
         char *id_str = my_putnbr_base_str(id*8, "0123456789ABCDEF");
-        char *make1 = strconcat(line, id_str);
-        make2 = strconcat(make1, line2);
-        free(make1);
+        id_str[strlen(id_str)+1] = 0;
+        id_str[strlen(id_str)] = '\n';
+        char line3[] = "mov rax rsp _-0x";
+        make2 =strconcat(line3, id_str);
     } else if (str[0] == '_') {
         char line[] = "mov rax ";
         char *make1 = strconcat(line, str);
@@ -136,6 +135,41 @@ brick_t *loadInRax(char *str) {
         free(make1);
     }
     return brickInit(make2);
+}
+
+brick_t *loadInRcx(char *str) {
+    char *make2 = 0;
+    if (str[0] == '$') {
+        int id = findInStack(str);
+        char *id_str = my_putnbr_base_str(id*8, "0123456789ABCDEF");
+        id_str[strlen(id_str)+1] = 0;
+        id_str[strlen(id_str)] = '\n';
+        char line3[] = "mov rcx rsp _-0x";
+        make2 =strconcat(line3, id_str);
+    } else if (str[0] == '_') {
+        char line[] = "mov rcx ";
+        char *make1 = strconcat(line, str);
+        make2 = strconcat(make1, "\n");
+        free(make1);
+    }
+    return brickInit(make2);
+}
+
+brick_t *setVar(char *var, char *register_name) {
+    if (var[0] == '$') {
+        int id = findInStack(var);
+        char *id_str = my_putnbr_base_str(id*8, "0123456789ABCDEF");
+        char *tmp1 = strconcat("mov rsp _-0x", id_str);
+        char *tmp2 = strconcat(tmp1, " ");
+        char *tmp3 = strconcat(tmp2, register_name);
+        free(tmp1);
+        free(tmp2);
+        return brickInit(tmp3);
+    } else {
+        int *a = 0;
+        a[0] = 1;
+    }
+    return 0;
 }
 
 int incScopeDepth() {
@@ -192,7 +226,7 @@ brick_t *compileFile(lld_t *file) {
     global_coss->current_line = file->next;
     global_coss->line_id = 0;
     global_coss->scopeDepth = 0;
-    brick_t *brick = brickInit(strdup(""));
+    brick_t *brick = brickInit(strdup("jmp _:main\n"));
     for (; global_coss->current_line; nextLine()) {
         lld_t *mv = global_coss->current_line;
         brick_t *func = trigerGenerator(mv);

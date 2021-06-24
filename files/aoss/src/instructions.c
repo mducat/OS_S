@@ -35,6 +35,17 @@ OpCode_t *OpCode_init(int size, char *code) {
     return op;
 }
 
+OpCode_t *OpCode_sub_r_r(char **strs) {
+    int r1 = strtol(strs[1]+1, 0, 0);
+    int r2 = strtol(strs[2]+1, 0, 0);
+    char thisOpcode[] = {
+        0x48, 0x29,
+        0xc0 | CHAR_TO_LEFT_REGISTER(r1) | CHAR_TO_RIGHT_REGISTER(r2)
+    };
+    OpCode_t *opcode = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    return opcode;
+}
+
 OpCode_t *OpCode_binary_4(char **strs) {
     int i1 = strtol(strs[1]+1, 0, 0);
     char thisOpcode[] = {
@@ -109,8 +120,9 @@ OpCode_t *OpCode_MOV_r_mem(char **strs) {
     int offset = strtol(strs[3]+1, 0, 0);
     
     char thisOpcode[] = {
-        0x48, 0x89 |OP_D,
-        REG_MOD_four_byte_signed_displacement | CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+        0x48, 0x8b,
+        0x80 | CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+        0x24,
         ADDRESS_TO_4CHARS(offset)
     };
     OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
@@ -128,6 +140,7 @@ OpCode_t *OpCode_MOV_mem_r(char **strs) {
     char thisOpcode[] = {
         0x48, 0x89,
         REG_MOD_four_byte_signed_displacement | CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+        0x24,
         ADDRESS_TO_4CHARS(offset)
     };
     OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);

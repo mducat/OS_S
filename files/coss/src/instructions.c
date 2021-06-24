@@ -152,9 +152,33 @@ brick_t *generateOperator_e_operator(lld_t *mv) {
     line_t *line = mv->data;
     char ***tab = ucp_tab(line->line, "* = * * *", ucp_var, ucp_arg, ucp_operator, ucp_arg);
     printf("%s = operator%s(%s, %s)", tab[0][0], tab[0][2], tab[0][1], tab[0][3]);
+    char operator = tab[0][2][0];
+
+    brick_t *br_comment = brickInit(strdup("// operator\n"));
+    brick_t *load_rax = loadInRax(tab[0][1]);
+    brick_t *load_rcx = loadInRcx(tab[0][3]);
+    
+    brick_t *br_operator = 0;
+    if (operator == '+') {
+        br_operator = brickInit(strdup("add rax rcx\n"));
+    } else if (operator == '-') {
+        br_operator = brickInit(strdup("sub rax rcx\n"));
+    } else if (operator == '*') {
+        br_operator = brickInit(strdup("imul rax rcx\n"));
+    }
+    brick_t *set_var = setVar(tab[0][0], "rax\n");
+    brickAdd(br_comment, load_rax);
+    brickAdd(br_comment, load_rcx);
+    brickAdd(br_comment, br_operator);
+    brickAdd(br_comment, set_var);
+    brickFree(load_rax);
+    brickFree(load_rcx);
+    brickFree(br_operator);
+    brickFree(set_var);
+
 
     ucp_free(tab);
-    return brickInit(strdup(""));
+    return br_comment;
 }
 
 int matchOperator_e(lld_t *mv) {
@@ -170,7 +194,7 @@ brick_t *generateOperator_e(lld_t *mv) {
     int var_id = findInStack(tab[0][0]);
     
     brick_t *load_in_rax = loadInRax(tab[0][1]);
-    char *tmpstr1 = strconcat("mov rcx rsp\nmov rcx _-0x", my_putnbr_base_str(var_id*8, "0123456789ABCDEF"));
+    char *tmpstr1 = strconcat("mov rsp _-0x", my_putnbr_base_str(var_id*8, "0123456789ABCDEF"));
     char *tmpstr2 = strconcat(tmpstr1, " rax\n");
     free(tmpstr1);
     brick_t *br = brickInit(tmpstr2);
@@ -220,12 +244,19 @@ brick_t *generateFunction(lld_t *mv) {
 
     for (int i = 0; i < depth; i++)
         rmVarFromStack();
-    char ins[] = "add rsp _-0x";
-    char *nb_str = my_putnbr_base_str(depth*8, "0123456789ABCDEF");
-    char *tmpstr = strconcat(ins, nb_str);
-    char *tmpstr2 = strconcat(tmpstr, "\nret\n");
-    free(tmpstr);
-    brick_t *var = brickInit(tmpstr2);
+
+
+    brick_t *var = 0;
+    if (depth) {
+        char mvo[] = "// exiting func\nmov rcx _-0x";
+        char *nb_str = my_putnbr_base_str(depth*8, "0123456789ABCDEF");
+        char *tmpstr = strconcat(mvo, nb_str);
+        char *tmpstr2 = strconcat(tmpstr, "\nadd rsp rcx\nret\n");
+        free(tmpstr);
+        var = brickInit(tmpstr2);
+    } else {
+        var = brickInit(strdup("// exiting func\nret\n"));
+    }
     brickAdd(brick, var);
     brickFree(var);
 
@@ -277,7 +308,7 @@ brick_t *generateScope(lld_t *mv) {
         char mvo[] = "// deleting scope\nmov rcx _-0x";
         char *nb_str = my_putnbr_base_str(var_count*8, "0123456789ABCDEF");
         char *tmpstr = strconcat(mvo, nb_str);
-        char *tmpstr2 = strconcat(tmpstr, "\nadd rsp rcx\nret\n");
+        char *tmpstr2 = strconcat(tmpstr, "\nadd rsp rcx\n");
         free(tmpstr);
         var = brickInit(tmpstr2);
     } else {

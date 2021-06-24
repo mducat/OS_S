@@ -80,5 +80,7 @@ int decScopeDepth();
 int incScopeDepth();
 
 brick_t *loadInRax(char *str);
+brick_t *loadInRcx(char *str);
+brick_t *setVar(char *var, char *register_name);
 
 #endif

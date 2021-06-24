@@ -3,14 +3,19 @@ def funky()
     return _15
 }
 
-def func($a $b)
-{
-    $aa = $ad - $be
-    $aa = $ad * $be
-    $aa = $ad + _0x23
-    $aa = _0x3 + _0x23
+def func($aa $bb)
+{ $cc
+    $aa = $bb - $aa
+    $aa = $cc * $aa
+    $cc = $aa + _0x23
+    $aa = _0x3 * _0x23
     _56 = _0x3 + _0x23
     return $a
+}
+
+def simpleassign($a) 
+{ $b
+    $a = $b
 }
 
 def main($ac $av)
