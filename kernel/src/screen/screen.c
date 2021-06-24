@@ -176,6 +176,22 @@ void draw_rect(rect_t *rect, uint32_t color)
     }
 }
 
+void draw_fb(void *pixels, rect_t *rect)
+{
+    uint32_t *screen = (uint32_t *) disp->back;
+    uint32_t *cursor = (uint32_t *) pixels;
+    uint32_t ppl = disp->screen->pix_per_line;
+
+    screen += rect->y * ppl + rect->x;
+
+    for (uint64_t i = 0; i < rect->dy; i++) {
+        for (uint64_t j = 0; j < rect->dx; j++)
+            *screen++ = *cursor++;
+
+        screen += ppl - rect->dx;
+    }
+}
+
 void draw_circle(circle_t *circle, uint32_t color)
 {
     uint32_t *screen = (uint32_t *) disp->back;

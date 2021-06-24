@@ -16,3 +16,11 @@ void draw_circle(circle_t *circle, uint32_t color)
     LOAD3(num, circle, color)
     asm volatile("int $0x30");
 }
+
+void draw_fb(void *pixels, rect_t *rect)
+{
+    int num = 15;
+
+    LOAD3(num, pixels, rect)
+    asm volatile("int $0x30");
+}

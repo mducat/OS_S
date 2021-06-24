@@ -75,8 +75,8 @@ iso:	img
 	xorriso -as mkisofs -R -f -e $(FAT) -no-emul-boot -o $(ISO_NAME) $(ISO_DIR) -volid "OS_S" 2> /dev/null
 
 img:	all
-	dd if=/dev/zero of=$(FAT) bs=1k count=1440 2> /dev/null
-	mformat -i $(FAT) -f 1440 ::
+	dd if=/dev/zero of=$(FAT) bs=1k count=2880 2> /dev/null
+	mformat -i $(FAT) -f 2880 ::
 	mmd -i $(FAT) ::/efi
 	mmd -i $(FAT) ::/efi/boot
 	mmd -i $(FAT) ::/efi/OS_S
