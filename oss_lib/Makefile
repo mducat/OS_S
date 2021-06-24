@@ -32,6 +32,10 @@ OBJ		=	src/write.o  \
 			src/lld/lld_sort.o  \
 			src/lld/lld_write.o  \
 			src/utils.o  \
+			src/ucp/is_.o  \
+			src/ucp/is_made.o  \
+			src/ucp/ucp_tab.o  \
+			src/ucp/ucp.o  \
 
 NAME	=	liboss.a
 

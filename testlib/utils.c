@@ -49,6 +49,17 @@ char *my_putnbr_base_str(unsigned long int nbr, char *base){
     return (to_print2);
 }
 
+char *strconcat(char const *str1, char const *str2) {
+    char *str3 = malloc(sizeof(char) * (strlen(str1) + strlen(str2)+1));
+    int x = 0;
+
+    for (int i = 0; str1[i]; i++, x++) str3[x] = str1[i];
+    for (int i = 0; str2[i]; i++, x++) str3[x] = str2[i];
+    str3[x] = 0;
+    return (str3);
+}
+
+
 #ifndef ULONG_MAX
 #define        ULONG_MAX        ((unsigned long)(~0L))                /* 0xFFFFFFFF */
 #endif

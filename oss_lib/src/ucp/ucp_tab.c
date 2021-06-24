@@ -5,11 +5,8 @@
 ** main file for ucp
 */
 
-#include <stdarg.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "../my.h"
+#include "my.h"
+#include "lld.h"
 
 lld_t *ucp_get_recursiv(char **str, int (**fonc)(char *));
 

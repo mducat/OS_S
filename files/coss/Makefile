@@ -38,6 +38,7 @@ debug: CFLAGS += -g
 debug: fclean all
 
 valgrind: fclean
+	make -C ../../testlib
 	clear
 	gcc -g $(SRC) $(INC) $(LIBS) -o $(NAME) -Wall -Wextra
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) main.coss | cat -e

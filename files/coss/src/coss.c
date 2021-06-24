@@ -16,35 +16,17 @@
 
 #endif
 
+coss_t *global_coss = 0;
 
-typedef struct variable {
-    char *name;
-    int stack_pos;
-} variable_t;
+void init_coss_global(void) {
+    global_coss = malloc(sizeof(coss_t));
+    global_coss->stack_vars = lld_init();
+}
 
-
-
-typedef struct scope {
-    int stack_size;
-    variable_t *variables;
-} scope_t;
-
-typedef struct function {
-    int argc; // nb of args to push/pull on stack
-    scope_t *scope;
-} function_t;
-
-typedef struct instruction {
-    char *(*generate)(char **);
-    int (*match)(lld_t *mv);
-} instruction_t;
-
-typedef struct ligne {
-    char *line;
-    char **words;
-} ligne_t;
-
-typedef unsigned int uint;
+void free_coss_global(void) {
+    lld_free(global_coss->stack_vars);
+    free(global_coss);   
+}
 
 void rmDoubledCHar(char *str, char c) {
     int p = 0;
@@ -66,45 +48,33 @@ void rmDoubledCHar(char *str, char c) {
     str[i+1] = 0;
 }
 
-
-
-instruction_t *generateInstruction(int (*match)(lld_t *mv), char *(*generate)(char **)) {
+instruction_t *generateInstruction(int (*match)(lld_t *mv), brick_t *(*generate)(lld_t *mv)) {
     instruction_t *inst = malloc(sizeof(instruction_t));
     inst->match = match;
     inst->generate = generate;
     return inst;
 }
 
-instruction_t **instructionsSet = 0;
 #define PUSHBACK(lld, data) lld_insert(lld, lld_len(lld), data)
+
 void generateInstructionsSet() {
     lld_t *lld = lld_init();
+    PUSHBACK(lld, generateInstruction(&matchFunction, &generateFunction));
+    PUSHBACK(lld, generateInstruction(&matchScope, &generateScope));
+    PUSHBACK(lld, generateInstruction(&matchOperator_e, &generateOperator_e));
+    PUSHBACK(lld, generateInstruction(&matchOperator_e_operator, &generateOperator_e_operator));
+    PUSHBACK(lld, generateInstruction(&matchEndOfScope, &generateEndOfScope));
 
-    PUSHBACK(lld, generateInstruction(&match_nothing, &generate_nothing));
-    PUSHBACK(lld, generateInstruction(&match_nothing, &generate_nothing));
-    PUSHBACK(lld, generateInstruction(&match_nothing, &generate_nothing));
 
-    PUSHBACK(lld, generateInstruction(&match_nothing, &generate_nothing));
-    PUSHBACK(lld, generateInstruction(&match_nothing, &generate_nothing));
-    PUSHBACK(lld, generateInstruction(&match_nothing, &generate_nothing));
-    
-    PUSHBACK(lld, generateInstruction(&match_nothing, &generate_nothing));
-    PUSHBACK(lld, generateInstruction(&match_nothing, &generate_nothing));
-    PUSHBACK(lld, generateInstruction(&match_nothing, &generate_nothing));
-
-    PUSHBACK(lld, generateInstruction(&match_nothing, &generate_nothing));
-    PUSHBACK(lld, generateInstruction(&match_nothing, &generate_nothing));
-    PUSHBACK(lld, generateInstruction(&match_nothing, &generate_nothing));
-
-    instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
+    global_coss->instructionsSet = (instruction_t **)lld_lld_to_tab(lld);
     lld_free(lld);
 }
 
 void freeInstructionsSet() {
-    for (int i = 0; instructionsSet[i]; i++) {
-        free(instructionsSet[i]);
+    for (int i = 0; global_coss->instructionsSet[i]; i++) {
+        free(global_coss->instructionsSet[i]);
     }
-    free(instructionsSet);
+    free(global_coss->instructionsSet);
 }
 
 int main(int ac, char **av) {
@@ -128,7 +98,7 @@ int main(int ac, char **av) {
         return 1;
     }
     lld_t *file = lld_init();
-    
+
     #ifdef __OSS__
     char *fileBuf = malloc(src->size+1);
     memcpy(fileBuf, src->content, src->size);
@@ -155,7 +125,9 @@ int main(int ac, char **av) {
     fclose(src);
     #endif
 
+    init_coss_global();
     generateInstructionsSet();
+
 
     {
         long int line_count = 0;
@@ -163,11 +135,12 @@ int main(int ac, char **av) {
         for (lld_t *mv = file->next; mv; mv = mv->next, line_count++) {
             rmDoubledCHar(mv->data, ' ');
             printf("%4li| %s\n", line_count, (char *)mv->data);
-            char **words = strToWords(mv->data, ' ');
-            free(mv->data);
-            mv->data = words;
+            line_t *line = malloc(sizeof(line_t));
+            line->words = strToWords(mv->data, ' ');
+            line->line = mv->data;
+            mv->data = line;
             // spot useless lines
-            if (!words[0] || !words[0][0] || !strcmp(words[0], "//")) {
+            if (!line->words[0] || !line->words[0][0] || !strcmp(line->words[0], "//")) {
                 lld_insert(to_pop, 0, (void *)line_count);
             } else  {
             }
@@ -175,10 +148,12 @@ int main(int ac, char **av) {
 
         // remove useless lines
         for (lld_t *mv = to_pop->next; mv; mv = mv->next) {
-            char **words = lld_pop(file, (long int)mv->data);
-            for (int i = 0; words[i]; i++)
-                free(words[i]);
-            free(words);
+            line_t *line = lld_pop(file, (long int)mv->data);
+            for (int i = 0; line->words[i]; i++)
+                free(line->words[i]);
+            free(line->words);
+            free(line->line);
+            free(line);
         }
         lld_free(to_pop);
     }
@@ -187,12 +162,30 @@ int main(int ac, char **av) {
     {
         long int line_count = 0;
         for (lld_t *mv = file->next; mv; mv = mv->next, line_count++) {
-            char **words = mv->data;
-                printf("%4li|", line_count);
-            for (int i = 0; words[i]; i++) 
-                printf(" %s", words[i]);
+            line_t *line = mv->data;
+            printf("%4li| %s", line_count, line->line);
 
+            int spacetoprint = 40-strlen(line->line);
+            for (; spacetoprint; spacetoprint--){
+                if (line_count%2 || spacetoprint % 3)
+                    printf(" ");
+                else
+                    printf("-");
+            }
 
+            int match = 0;
+            for (int i = 0; global_coss->instructionsSet[i]; i++) {
+                instruction_t *inst = global_coss->instructionsSet[i];
+                if (inst->match(mv)) {
+                    inst->generate(mv);
+                    match++;
+                }
+            }
+            if (match == 0) {
+                printf("does not match");
+            } else if (match > 1) {
+                printf("match %i time!!!", match);
+            }
 
 
             printf("\n");
@@ -207,12 +200,15 @@ int main(int ac, char **av) {
 
     // free everytyhing
     for (lld_t *mv = file->next; mv; mv = mv->next) {
-        char **data = mv->data;
-        for (int i = 0; data[i]; i++)
-            free(data[i]);
+        line_t *data = mv->data;
+        for (int i = 0; data->words[i]; i++)
+            free(data->words[i]);
+        free(data->words);
+        free(data->line);
         free(data);
     }
     lld_free(file);
     freeInstructionsSet();
+    free_coss_global();
     return 0;
 }
