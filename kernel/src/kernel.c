@@ -25,7 +25,7 @@ void k_start(boot_t *data)
 
     disp = malloc(sizeof(disp_t));
     disp->screen = data->screen;
-    disp->back = malloc(data->screen->buf_size);
+    disp->back = malloc(data->screen->buf_size + 256);
     clear();
 
     init_interrupts();

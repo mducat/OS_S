@@ -8,8 +8,11 @@ PROGRAMS	=	ls	\
 				omac \
 				coss \
 				export \
+				imshow \
 
 PLAIN		=   $(shell ls plain/*)
+
+IMAGES		=	$(shell ls images/*)
 
 MKHEADER	=	mkhdr.py
 
@@ -18,7 +21,7 @@ all:
 		$(MAKE) -C $$dir --no-print-directory ; \
 	done
 
-	python3 $(MKHEADER) $(PROGRAMS) and $(PLAIN) > $(NAME)
+	python3 $(MKHEADER) $(PROGRAMS) and $(PLAIN) also $(IMAGES) > $(NAME)
 
 clean:
 	for dir in $(PROGRAMS) ; do \
@@ -30,7 +33,7 @@ debug:
 		$(MAKE) -C $$dir debug --no-print-directory ; \
 	done
 
-	python3 $(MKHEADER) $(PROGRAMS) and $(PLAIN) > $(NAME)
+	python3 $(MKHEADER) $(PROGRAMS) and $(PLAIN) also $(IMAGES) > $(NAME)
 
 fclean:
 	for dir in $(PROGRAMS) ; do \

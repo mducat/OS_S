@@ -103,6 +103,7 @@ int read(void);
 
 void draw_circle(circle_t *circle, uint32_t color);
 void draw_rect(rect_t *rect, uint32_t color);
+void draw_fb(void *pixels, rect_t *rect);
 
 /* MEMORY */
 

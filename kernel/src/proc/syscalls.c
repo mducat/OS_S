@@ -79,5 +79,8 @@ void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
     case 14:
         serial_out_raw((char *) par1, (size_t) par2);
         break;
+    case 15:
+        draw_fb((void *) par1, (rect_t *) par2);
+        break;
     }
 }

@@ -176,6 +176,22 @@ void draw_rect(rect_t *rect, uint32_t color)
     }
 }
 
+void draw_fb(void *pixels, rect_t *rect)
+{
+    uint32_t *screen = (uint32_t *) disp->back;
+    uint32_t *cursor = (uint32_t *) pixels;
+    uint32_t ppl = disp->screen->pix_per_line;
+
+    screen += rect->y * ppl + rect->x;
+
+    for (uint64_t i = 0; i < rect->dy; i++) {
+        for (uint64_t j = 0; j < rect->dx; j++)
+            *screen++ = *cursor++;
+
+        screen += ppl - rect->dx;
+    }
+}
+
 void draw_circle(circle_t *circle, uint32_t color)
 {
     uint32_t *screen = (uint32_t *) disp->back;
@@ -242,7 +258,7 @@ void *memcpy8(void *dest, const void *src, size_t n)
     u2048 *p_dest = (u2048 *) dest;
     u2048 *p_src  = (u2048 *) src;
 
-    while ((n -= 256) >0)
+    while ((n -= 256) > 0)
         *p_dest++ = *p_src++;
     return dest;
 }
@@ -253,7 +269,7 @@ void *memset8(void *dest, int val, size_t n)
 {
     u2048 *p_dest = (u2048 *) dest;
 
-    while ((n -= 256) >0)
+    while ((n -= 256) > 0)
         *p_dest++ = v_n;
     return dest;
 }

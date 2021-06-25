@@ -62,7 +62,7 @@ CFLAGS		=		$(INC) -Wall -Wextra 				\
 LDFLAGS		=		-pie
 
 CC			=		x86_64-elf-gcc
-LD			=		x86_64-elf-ld
+LD			=		ld
 
 all: font update_files $(NAME)
 
