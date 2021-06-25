@@ -1,10 +1,12 @@
 
 def simpleCall($a)
 { $b $c $d
+    return _1
 }
 
 def main()
 { $ac $av $c $d $g
+    $av = _12
     $g = simpleCall($av)
     return _0
 }
