@@ -1,11 +1,14 @@
-push rdi
-mov rcx rdi
-mov rdx _10
-je _:ici
-mov rbx _1 !ici
-mov rax _4
-//int _0x80
-imul rax rcx
-add rax rax
-pop rax
+mov rax _0
+mov rcx _0
+mov rdx _0
+mov rdx _0x1234560 rcx
+mov rcx rsi
+mov rax _0x26
+add rcx rax
+mov rdx _0x1234660 rcx
+mov rcx _5
+mov rdx _0x1234760 rcx
+int _0x30
 ret
+b4 _0x434f434f !str
+b4 _0x00000000

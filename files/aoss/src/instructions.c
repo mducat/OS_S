@@ -119,14 +119,23 @@ OpCode_t *OpCode_MOV_r_mem(char **strs) {
     int Radrr = strtol(strs[2]+1, 0, 0);
     int offset = strtol(strs[3]+1, 0, 0);
     
-    char thisOpcode[] = {
-        0x48, 0x8b,
-        0x80 | CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
-        0x24,
-        ADDRESS_TO_4CHARS(offset)
-    };
-    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
-    return op;
+    if (Radrr != 4) {
+        char thisOpcode[] = {
+            0x48, 0x8b,
+            0x80 | CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+            ADDRESS_TO_4CHARS(offset)
+        };
+        OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+        return op;
+    } else {
+        char thisOpcode[] = {
+            0x48, 0x8b,
+            0x80 | CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+            0x24,
+            ADDRESS_TO_4CHARS(offset)
+        };
+        OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+    }
 }
 
 // 3ef0:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
@@ -136,15 +145,24 @@ OpCode_t *OpCode_MOV_mem_r(char **strs) {
     int Radrr = strtol(strs[1]+1, 0, 0);
     int offset = strtol(strs[2]+1, 0, 0);
     int Rsrc = strtol(strs[3]+1, 0, 0);
-
-    char thisOpcode[] = {
-        0x48, 0x89,
-        REG_MOD_four_byte_signed_displacement | CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
-        0x24,
-        ADDRESS_TO_4CHARS(offset)
-    };
-    OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
-    return op;
+    if (Radrr != 4) {
+        char thisOpcode[] = {
+            0x48, 0x89,
+            REG_MOD_four_byte_signed_displacement | CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+            ADDRESS_TO_4CHARS(offset)
+        };
+        OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+        return op;
+    } else {
+                char thisOpcode[] = {
+            0x48, 0x89,
+            REG_MOD_four_byte_signed_displacement | CHAR_TO_LEFT_REGISTER(Rsrc) | CHAR_TO_RIGHT_REGISTER(Radrr), // mov r to r
+            0x24,
+            ADDRESS_TO_4CHARS(offset)
+        };
+        OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+        return op;
+    }
 }
 
 OpCode_t *OpCode_MOV_r_li(char **strs) {
