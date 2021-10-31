@@ -36,7 +36,7 @@ float **rotate_points(float **points, float *mat)
     return (new_points);
 }
 
-float **create_mesh(int x, int y, int d)
+float **create_mesh(int x, int y, int d, int xof, int yof)
 {
     float **mesh = malloc(sizeof(float *) * (x+1));
     int i = 0;
@@ -46,7 +46,7 @@ float **create_mesh(int x, int y, int d)
         for (; ii < y; ii++){
             mesh[i][ii] = 0;
             for (int d_nb = 0; d_nb < d; d_nb++) {
-                mesh[i][ii] += perlin((float)i/(1.1*pow(2, d_nb)), (float)ii/(1.1*pow(2, d_nb)))*pow(2, d_nb);
+                mesh[i][ii] += perlin((float)(i+xof)/(1.1*pow(2, d_nb)), (float)(ii+yof)/(1.1*pow(2, d_nb)))*pow(2, d_nb);
             }
             mesh[i][ii] -= 5;
         }
@@ -55,6 +55,21 @@ float **create_mesh(int x, int y, int d)
     mesh[i] = 0;
     return (mesh);
 }
+
+void update_mesh(float **mesh, int x, int y, int d, int xof, int yof)
+{
+    
+    for (int i = 0; i < x; i++){
+        for (int ii = 0; ii < y; ii++){
+            mesh[i][ii] = 0;
+            for (int d_nb = 0; d_nb < d; d_nb++) {
+                mesh[i][ii] += perlin((float)(i+xof)/(1.1*pow(2, d_nb)), (float)(ii+yof)/(1.1*pow(2, d_nb)))*pow(2, d_nb);
+            }
+            mesh[i][ii] -= 5;
+        }
+    }
+}
+
 
 void drop_water(float **mesh, int *xy, float f, float n)
 {

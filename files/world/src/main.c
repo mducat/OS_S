@@ -36,7 +36,7 @@ world_t *create_world(int x, int y)
 
 int main(int ac, char **av)
 {
-    int size = 64;
+    int size = 128;
     if (ac == 2 && !my_strcmp(av[1], "-h")){
         help();
         return (0);
@@ -49,6 +49,7 @@ int main(int ac, char **av)
     world_t *world = create_world(size, size);
     //sfEvent event;
     for (int frame_nb = 0; 1; frame_nb++){
+        update_mesh(world->mesh, size, size, 6, frame_nb*4, frame_nb*2);
         main_cam(world);
         main_edit(world);
         refresh();

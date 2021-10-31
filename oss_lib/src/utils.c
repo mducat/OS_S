@@ -207,8 +207,8 @@ double pow(double x, unsigned int n) {
 }
 
 int rand() {
-    static int x = 123;
-    x = 1103515245 * x + 12345;
+    static int x = 0;
+    x = 1103515245 * x + 123456;
     return x < 0 ? -x : x;
 }
 

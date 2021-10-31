@@ -12,7 +12,7 @@ void init_map(world_t *world)
     int size_x = world->x;
     int size_y = world->y;
     printf("|   init mesh...\n")
-    float **mesh = create_mesh(world->x, world->y, 7);
+    float **mesh = create_mesh(world->x, world->y, 7, 0, 0);
     printf("|   init water...\n")
     for (int i = 0; i < size_x*size_y; i++){
         int xy[] = {rand()%(size_x-2)+1, rand()%(size_y-2)+1, size_x, size_y};
