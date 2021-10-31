@@ -36,6 +36,21 @@ OBJ		=	src/write.o  \
 			src/ucp/is_made.o  \
 			src/ucp/ucp_tab.o  \
 			src/ucp/ucp.o  \
+			src/ucp/ucp.o  \
+			src/draw/buffer.o  \
+			src/draw/my_draw_lines.o  \
+			src/draw/my_draw_rect.o  \
+			src/draw/buffer_fast.o  \
+			src/draw/my_draw_circle.o  \
+			src/draw/my_draw_square.o  \
+			src/mat/mat_inv.o  \
+			src/mat/mat_r.o  \
+			src/mat/mat_rr.o  \
+			src/mat/mat_t.o  \
+			src/mat/mat_tt.o  \
+			src/mat/mat.o  \
+			src/mat/mat2.o  \
+
 
 NAME	=	liboss.a
 

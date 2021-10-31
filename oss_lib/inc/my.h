@@ -2,7 +2,11 @@
 #ifndef _my_h
 #define _my_h
 
+#include "oss.h"
+
 // main functions
+# define CONST_PI 3.14159265358979323846 
+
 
 void my_putchar(char) __attribute__((deprecated));
 int my_isneg(int);
@@ -20,7 +24,7 @@ char *my_strcpy(char *, char const *);
 char *my_strncpy(char *, char const *, int);
 char *my_revstr(char *);
 char *my_strstr(char *, char const *);
-int my_strcmp(char const *, char const *);
+int my_strcmp(char const *s1, char const *s2);
 int my_strncmp(char const *, char const *, int);
 char *my_strupcase(char *);
 char *my_strlowcase(char *);
@@ -43,10 +47,9 @@ long strtol(const char *nptr, char **endptr, register int base);
 char *strdup(const char *str);
 int strcmp(const char *str1, const char *str2);
 char *my_putnbr_base_str(unsigned long int nbr, char *base);
-char **strToWords(const char *str, char split);
-void memcpy(char *dest, const char *src, int size);
+//char **strToWords(const char *str, char split);
+//void memcpy(char *dest, const char *src, int size);
 int strlen(const char *str);
-
 
 char *strconcat(char const *str1, char const *str2);
 
@@ -136,6 +139,18 @@ void print_octal(va_list *, pf_conf_t *);
 void print_hexa_maj(va_list *, pf_conf_t *);
 
 // macros
+
+#define modd(x, y) ((x) - (int)((x) / (y)) * (y))
+double cos_taylor_literal_6terms(double x);
+double cos(double x);
+double sin(double x);
+double tan(double x);
+double pow(double x, unsigned int n);
+
+float fabsf(float a);
+
+
+int rand();
 
 #define abs(x)    ((x) < 0 ? -(x) : (x))
 #define max(a, b) ((a) > (b) ? (a) : (b))

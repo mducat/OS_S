@@ -9,6 +9,7 @@ PROGRAMS	=	ls	\
 				coss \
 				export \
 				imshow \
+				world \
 
 PLAIN		=   $(shell ls plain/*)
 

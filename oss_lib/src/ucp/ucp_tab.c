@@ -7,6 +7,7 @@
 
 #include "my.h"
 #include "lld.h"
+#include "oss.h"
 
 lld_t *ucp_get_recursiv(char **str, int (**fonc)(char *));
 

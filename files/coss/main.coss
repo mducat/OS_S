@@ -7,6 +7,8 @@ def simpleCall($a)
 def main()
 { $ac $av $c $d $g
     $av = _12
-    $g = simpleCall($av)
+    { $coucou
+        $g = simpleCall($av)
+    }
     return _0
 }
