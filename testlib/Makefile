@@ -16,6 +16,12 @@ OBJ =	lld/lld_db.o  \
 			ucp/is_made.o  \
 			ucp/ucp_tab.o  \
 			ucp/ucp.o  \
+			draw/buffer.o  \
+			draw/my_draw_lines.o  \
+			draw/my_draw_rect.o  \
+			draw/buffer_fast.o  \
+			draw/my_draw_circle.o  \
+			draw/my_draw_square.o  \
 			utils.o  \
 
 NAME	=	liboss.a

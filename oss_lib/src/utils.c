@@ -1,4 +1,3 @@
-#include "my.h"
 #include <oss.h>
 #include <lld.h>
 #include <my.h>
@@ -174,4 +173,54 @@ char *strconcat(char const *str1, char const *str2) {
     for (int i = 0; str2[i]; i++, x++) str3[x] = str2[i];
     str3[x] = 0;
     return (str3);
+}
+
+inline double cos(double x) {
+    return cos_taylor_literal_6terms(x);
+}
+
+inline double sin(double x) {
+    return cos_taylor_literal_6terms(x+CONST_PI/2);
+}
+
+double cos_taylor_literal_6terms(double x) {
+    x = modd(x, CONST_PI*2);
+    char sign = 1;
+    if (x > CONST_PI) {
+        x -= CONST_PI;
+        sign = -1;
+    }
+    double xx = x * x;
+    return sign * (1 - ((xx) / (2)) + ((xx * xx) / (24)) - ((xx * xx * xx) / (720)) + ((xx * xx * xx * xx) / (40320)) - ((xx * xx * xx * xx * xx) / (3628800)) + ((xx * xx * xx * xx * xx * xx) / (479001600)));
+}
+
+
+double pow(double x, unsigned int n) {
+    if (n == 0)
+        return 1;
+    double r;
+    r = pow(x, n/2);
+    r *= r;
+    if (n%2)
+        r *= x;
+    return r;
+}
+
+int rand() {
+    static int x = 123;
+    x = 1103515245 * x + 12345;
+    return x < 0 ? -x : x;
+}
+
+float fabsf(float a) {
+    return a < 0 ? (-a) : a;
+}
+
+int my_strcmp(char const *s1, char const *s2)
+{
+    int i;
+
+    for (i = 0; s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0'; i++){
+    }
+    return (s1[i] - s2[i]);
 }

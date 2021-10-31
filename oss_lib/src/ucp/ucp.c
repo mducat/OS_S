@@ -7,6 +7,7 @@
 
 #include "my.h"
 #include "lld.h"
+#include "oss.h"
 
 int ucp_recursiv(char *str, char *buf, char *regex, int (**fonc)(char *))
 {
