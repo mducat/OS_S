@@ -47,7 +47,7 @@ re:	fclean all
 
 
 vm:	iso
-	qemu-system-x86_64 $(VMFLAGS) -serial stdio
+	qemu-system-x86_64 $(VMFLAGS) -serial stdio -enable-kvm
 
 monitor:	iso
 	qemu-system-x86_64 $(VMFLAGS) -monitor stdio -serial file:out.dbg
