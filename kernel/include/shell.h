@@ -3,6 +3,7 @@
 #define _SHELL_H
 
 #include <fs.h>
+#include <kboot.h>
 
 // executables header
 #define OSS_HDR      "OSS"
@@ -17,5 +18,7 @@ void init_shell(void);
 int send_tty(char c);
 
 int exec(file_t *, int ac, char **av);
+
+void do_reset(reset_t reset, reset_type_t type);
 
 #endif

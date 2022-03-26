@@ -29,6 +29,8 @@ void k_start(boot_t *data)
     clear();
 
     init_interrupts();
+
+    do_reset(data->reset, 0);
     init_shell();
 
     asm volatile("hlt");

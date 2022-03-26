@@ -99,7 +99,7 @@ void irq80_handler(void)
     uint64_t par2 = *((uint64_t *) 0x1234760);
     uint64_t par3 = *((uint64_t *) 0x1234860);
 
-    end_of_interrupt(30);
+    end_of_interrupt(0x30);
     syscall_handler(num, par1, par2, par3);
 }
 
