@@ -81,6 +81,7 @@ int exec_eoss(void *file, int ac, char **av)
 {
     Elf64_Ehdr *hdr = (Elf64_Ehdr *) (file);
 
+    
     if (hdr->e_ident[EI_CLASS] != ELFCLASS64 ||
         hdr->e_machine != EM_X86_64)
         return 1;

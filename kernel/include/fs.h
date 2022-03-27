@@ -5,21 +5,27 @@
 #include <types.h>
 #include <lld.h>
 
+#if !defined(_BOOT_FILESYSTEM_)
+
+#define _BOOT_FILESYSTEM_
+
 typedef struct file_s {
     char * name;
     char * content;
-    size_t size;
+    uint64_t size;
 } file_t;
 
 typedef struct dir_s {
     char  * name;
-    size_t  size;
-    size_t  idx;
+    uint64_t  size;
+    uint64_t  idx;
 } dir_t;
+
+#endif
 
 extern lld_t *files;
 
-void init_file_system(void);
+void init_file_system(file_t **);
 
 #ifndef _SYSCALL_OPEN
 #define _SYSCALL_OPEN

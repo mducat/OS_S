@@ -53,9 +53,6 @@ EFI_STATUS start_kernel(EFI_HANDLE handle)
 
     boot_t *data;
 
-    
-    status = load_kernel(handle, &kernel_entry_pt);
-    CHK_FWD (status);
 
     status = uefi_call_wrapper(BS->AllocatePool, 3,
                                EfiLoaderData,
@@ -63,6 +60,11 @@ EFI_STATUS start_kernel(EFI_HANDLE handle)
                                (void **)&data);
     Print(L"Allocated boot data buf at 0x%llx\r\n", data);
     data->sig = 0x42;
+
+        
+    status = load_kernel(handle, &kernel_entry_pt, data);
+    CHK_FWD (status);
+
 
     status = uefi_call_wrapper(BS->AllocatePool, 3,
                                EfiLoaderData,

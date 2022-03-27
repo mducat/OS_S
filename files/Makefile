@@ -1,5 +1,5 @@
 
-NAME		=	files_raw.h
+NAME		=	output
 
 PROGRAMS	=	ls	\
 				cat \
@@ -11,18 +11,19 @@ PROGRAMS	=	ls	\
 				imshow \
 				world \
 
-PLAIN		=   $(shell ls plain/*)
+PLAIN		=   plain
 
-IMAGES		=	$(shell ls images/*)
-
-MKHEADER	=	mkhdr.py
+IMAGES		=	images
 
 all:
+	mkdir -p $(NAME)
 	for dir in $(PROGRAMS) ; do \
 		$(MAKE) -C $$dir --no-print-directory ; \
+		sed -i '1s/^/OSS/' $$dir/$$dir; \
+		mv $$dir/$$dir $(NAME)/ ; \
 	done
-
-	python3 $(MKHEADER) $(PROGRAMS) and $(PLAIN) also $(IMAGES) > $(NAME)
+	cp $(PLAIN)/* $(NAME)/
+	cp $(IMAGES)/* $(NAME)/
 
 clean:
 	for dir in $(PROGRAMS) ; do \
@@ -34,13 +35,11 @@ debug:
 		$(MAKE) -C $$dir debug --no-print-directory ; \
 	done
 
-	python3 $(MKHEADER) $(PROGRAMS) and $(PLAIN) also $(IMAGES) > $(NAME)
-
 fclean:
 	for dir in $(PROGRAMS) ; do \
 		$(MAKE) -C $$dir fclean --no-print-directory ; \
 	done
-	rm -f $(NAME)
+	rm -rf $(NAME)
 
 re:	fclean all
 

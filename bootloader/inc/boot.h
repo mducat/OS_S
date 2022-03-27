@@ -2,37 +2,23 @@
 #ifndef _OS_S_BOOT
 #define _OS_S_BOOT
 
-# ifdef _GNU_EFI
+#if !defined(_BOOT_FILESYSTEM_)
 
-// bootloader macros
+#define _BOOT_FILESYSTEM_
 
-#  define CHK_STATUS(x, y, ...)                \
-    if (EFI_ERROR(x)) {                        \
-        Print(L"%H");                          \
-        Print(y, ## __VA_ARGS__);              \
-        return (x);                            \
-    }
+typedef struct file_s {
+    char * name;
+    char * content;
+    uint64_t size;
+} file_t;
 
-#  define TRIGGER(x, y, ...)                    \
-    {                                           \
-        Print(L"%H");                           \
-        Print(y, ## __VA_ARGS__);               \
-        return (x);                             \
-    }
+typedef struct dir_s {
+    char  * name;
+    uint64_t  size;
+    uint64_t  idx;
+} dir_t;
 
-#  define CHK_FWD(x)                           \
-    if (EFI_ERROR(x))                          \
-        return (x);                            \
-
-
-// internal kernel access functions
-
-EFI_STATUS get_kernel(EFI_HANDLE, EFI_FILE **);
-EFI_STATUS load_kernel(EFI_HANDLE, EFI_PHYSICAL_ADDRESS *);
-
-EFI_STATUS get_file_info(EFI_FILE *, EFI_FILE_INFO **);
-
-# endif
+#endif
 
 typedef struct screen_s {
     uint32_t version;
@@ -84,6 +70,41 @@ typedef struct boot_s {
     screen_t *       screen;
     mmap_t   *       mem_map;
     reset_t          reset;
+    file_t   **      files;
 } boot_t;
+
+
+# ifdef _GNU_EFI
+
+// bootloader macros
+
+#  define CHK_STATUS(x, y, ...)                \
+    if (EFI_ERROR(x)) {                        \
+        Print(L"%H");                          \
+        Print(y, ## __VA_ARGS__);              \
+        return (x);                            \
+    }
+
+#  define TRIGGER(x, y, ...)                    \
+    {                                           \
+        Print(L"%H");                           \
+        Print(y, ## __VA_ARGS__);               \
+        return (x);                             \
+    }
+
+#  define CHK_FWD(x)                           \
+    if (EFI_ERROR(x))                          \
+        return (x);                            \
+
+
+// internal kernel access functions
+
+EFI_STATUS get_kernel(EFI_HANDLE, EFI_FILE **, boot_t *);
+EFI_STATUS load_kernel(EFI_HANDLE, EFI_PHYSICAL_ADDRESS *, boot_t *);
+
+EFI_STATUS get_file_info(EFI_FILE *, EFI_FILE_INFO **);
+
+# endif
+
 
 #endif

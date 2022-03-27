@@ -3,6 +3,7 @@
 
 #include <malloc.h>
 #include <string.h>
+#include <screen.h>
 
 dir_t *opendir(char const *name)
 {
