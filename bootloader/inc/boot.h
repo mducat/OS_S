@@ -55,10 +55,35 @@ typedef struct mem_map_s {
     uint64_t attr;
 } mmap_t;
 
+typedef enum {
+    cold_reset,
+    warm_reset,
+    shutdown_reset
+} reset_type_t;
+
+
+#ifndef EFIAPI
+
+//#include "../lib/inc/x86_64/efibind.h"
+
+#define EFIAPI  __attribute__((ms_abi))
+
+#endif
+
+
+typedef uint64_t
+(EFIAPI * reset_t)(
+    reset_type_t r_type;
+    uint64_t     r_status;
+    uint64_t     r_size;
+    uint16_t *   r_data;
+);
+
 typedef struct boot_s {
-    uint8_t  sig;
-    screen_t *screen;
-    mmap_t *mem_map;
+    uint8_t          sig;
+    screen_t *       screen;
+    mmap_t   *       mem_map;
+    reset_t          reset;
 } boot_t;
 
 #endif

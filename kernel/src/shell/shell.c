@@ -13,6 +13,15 @@ int prompt(void)
     return write_screen("[oss] $ ", 8);
 }
 
+void do_reset(reset_t reset, reset_type_t type) {
+    static reset_t s_res = 0;
+
+    if (reset != 0)
+        s_res = reset;
+    else
+        s_res(type, 0, 0, 0);
+}
+
 void init_shell(void)
 {
     send_tty(3); // END OF TEXT
@@ -51,7 +60,13 @@ void flush_cmd(char *buf, size_t buf_len)
         reinit_shell();
         return;
     }
-    
+
+    if (!strcmp(av[0], "shutdown"))
+        do_reset(0, shutdown_reset);
+
+    if (!strcmp(av[0], "reboot"))
+        do_reset(0, cold_reset);
+
     if (!file) {
         write_screen("No such file.\n", 14);
         return;

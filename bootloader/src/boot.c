@@ -126,7 +126,10 @@ EFI_STATUS start_kernel(EFI_HANDLE handle)
     data->screen->buf_size = gop->Mode->FrameBufferSize;
     data->screen->p_loc = (void *) gop->Mode->FrameBufferBase;
 
+    data->reset = RT->ResetSystem;
+
     data->mem_map = 0;
+
     exit_boot(handle, (EFI_MEMORY_DESCRIPTOR **) &data->mem_map);
 
     jump_kernel(kernel_entry_pt, data);

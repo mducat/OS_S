@@ -2,6 +2,8 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
+#define __OSS__
+
 typedef char                    int8_t;
 typedef short int               int16_t;
 
