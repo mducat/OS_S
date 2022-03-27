@@ -81,6 +81,8 @@ void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
         break;
     case 15:
         draw_fb((void *) par1, (rect_t *) par2);
+    case 16:
+        draw_fb_win((int)par1, (void *) par2, (rect_t *) par3);
         break;
     }
 }
