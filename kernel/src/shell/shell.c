@@ -7,6 +7,8 @@
 #include <screen.h>
 #include <shell.h>
 #include <fs.h>
+#include <windows.h>
+#include <utils.h>
 
 int prompt(void)
 {
@@ -55,6 +57,45 @@ void flush_cmd(char *buf, size_t buf_len)
 
     if (!buf_len)
         return;
+
+    if (!strcmp(av[0], "window")) {
+        if (!g_WindowManager) {
+            write_screen("WindowManager_init\n", 19);
+            g_WindowManager = WindowManager_init();
+            Window_t *win = WindowManager_create_Window(g_WindowManager, 200, 200);
+            win->pos[0] = 200;
+            win->pos[1] = 100;
+            Color_t color;
+            color.r = 255;
+            color.g = 0;
+            color.b = 0;
+            color.a = 255;
+            my_draw_circle(win->buffer, (Vector2u_t){50, 50}, 5, color);
+        }
+        WindowManager_draw_all(g_WindowManager);
+        write_screen("done\n", 5);
+        return;
+    }
+
+    if (!strcmp(av[0], "windowmv")) {
+        if (ac != 4) {
+            write_screen("windowmv id x y\n", 16);
+            return;
+        }
+        int id = my_getnbr(av[1]);
+
+        Window_t *win = WindowManager_get_Window(g_WindowManager, id);
+        if (win) {
+            win->pos[0] = my_getnbr(av[2]);
+            win->pos[1] = my_getnbr(av[3]);
+            WindowManager_draw_all(g_WindowManager);
+            refresh();
+        } else {
+            write_screen("no window with this id\n", 23);
+        }
+        return;
+    }
+
 
     if (!strcmp(av[0], "clear")) {
         reinit_shell();

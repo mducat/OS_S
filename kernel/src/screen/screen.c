@@ -267,6 +267,7 @@ u2048 v_n = {0};
 
 void *memset8(void *dest, int val, size_t n)
 {
+    (void)val;
     u2048 *p_dest = (u2048 *) dest;
 
     while ((n -= 256) > 0)

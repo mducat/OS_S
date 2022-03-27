@@ -8,7 +8,7 @@
 
     //tempo
     int my_strlen(char const *str);
-    char *strdup(char *str);
+    char *strdup(char const *str);
     int my_put_nbr(int nb);
     char *my_putnbr_base(unsigned long int nbr, char *base);
     void mem_print(int x, int y, void *start, int size);

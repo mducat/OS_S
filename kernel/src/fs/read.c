@@ -4,7 +4,7 @@
 #include <malloc.h>
 #include <string.h>
 
-dir_t *opendir(char *name)
+dir_t *opendir(char const *name)
 {
     dir_t *dir = malloc(sizeof(dir_t));
 
@@ -25,7 +25,7 @@ char *readdir(dir_t *dir)
     return name;
 }
 
-file_t *open(char *name)
+file_t *open(char const *name)
 {
     file_t *file = 0;
     file_t *disk = 0;
@@ -47,7 +47,7 @@ file_t *open(char *name)
     return file;
 }
 
-void remove_file(char *name)
+void remove_file(char const *name)
 {
     lld_t *it = files;
     int pos = 0;
@@ -60,7 +60,7 @@ void remove_file(char *name)
     lld_pop(files, pos - 1);
 }
 
-void write_file(char *name, char *content, size_t len)
+void write_file(char const *name, char *content, size_t len)
 {
     file_t *file = malloc(sizeof(file_t));
 

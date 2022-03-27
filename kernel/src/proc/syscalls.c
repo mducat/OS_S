@@ -8,7 +8,7 @@
 
 void syscall_handler(uint64_t num, uint64_t par1, uint64_t par2, uint64_t par3)
 {
-    size_t n;
+    size_t n;   
     void *ptr;
     int res;
     uint32_t n32;

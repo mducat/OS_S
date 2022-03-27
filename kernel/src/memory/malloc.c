@@ -5,7 +5,7 @@
 
 //tempo pour les test de malloc
 #include "screen.h"
-char *strdup(char *str)
+char *strdup(char const *str)
 {
     int i = 0;
     char *dest = malloc(my_strlen(str)+1);

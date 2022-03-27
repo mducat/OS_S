@@ -42,6 +42,8 @@ char *my_strdup(char const *src);
 char **my_str_to_word_array(char const *);
 int my_show_word_array(char * const *);
 int is_num(char);
+char **strToWords(const char *str, char split);
+
 
 long strtol(const char *nptr, char **endptr, register int base);
 char *strdup(const char *str);

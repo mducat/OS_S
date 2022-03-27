@@ -23,10 +23,20 @@ OBJ			=		src/kernel.o                \
 					src/screen/screen.o         \
 					src/screen/data.o           \
                                                 \
+					src/screen/draw/buffer_fast.o           \
+					src/screen/draw/buffer.o           		\
+					src/screen/draw/my_draw_circle.o      	\
+					src/screen/draw/my_draw_lines.o        	\
+					src/screen/draw/my_draw_rect.o          \
+					src/screen/draw/my_draw_square.o        \
+                                                \
+					src/screen/windows/windows.o        \
+                                                \
 					src/shell/shell.o           \
 					src/shell/exec.o            \
 					                            \
 					src/utils/string.o          \
+					src/utils/utils.o          \
                                                 \
 					src/lld/lld_db.o            \
 					src/lld/lld_free.o          \

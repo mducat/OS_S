@@ -68,7 +68,7 @@ void strcat(char *dest, char const *src)
     dest[x] = 0;
 }
 
-char **strToWords(char *str, char split) {
+char **strToWords(char const *str, char split) {
     lld_t *lld = lld_init();
     int p = -1;
     int i = 0;

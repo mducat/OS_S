@@ -3,7 +3,7 @@
 
 #include <fs.h>
 
-dir_t *opendir(char *name)
+dir_t *opendir(char const *name)
 {
     int num = 4;
     dir_t *dir = 0;
@@ -27,7 +27,7 @@ char *readdir(dir_t *dir)
     return name;
 }
 
-file_t *open(char *path)
+file_t *open(char const *path)
 { 
     int num = 6;
     file_t *file = 0;
@@ -52,7 +52,7 @@ void closedir(dir_t *dir)
     free(dir);
 }
 
-void remove_file(char *name)
+void remove_file(char const *name)
 {
     int num = 7;
 
@@ -60,7 +60,7 @@ void remove_file(char *name)
     asm volatile("int $0x30");
 }
 
-void write_file(char *name, char *content, size_t len)
+void write_file(char const *name, char *content, size_t len)
 {
     int num = 8;
 

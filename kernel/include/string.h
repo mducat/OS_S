@@ -12,8 +12,8 @@ int strncmp(char const *str1, char const *str2, int nb);
 void strcat(char *dest, char const *src);
 
 void *memset(void *str, char c, size_t size);
-void *memcpy(void *dest, void *src, size_t n);
+void *memcpy(void *dest, void const *src, size_t n);
 
-char **strToWords(char *str, char split);
+char **strToWords(char const *str, char split);
 
 #endif
