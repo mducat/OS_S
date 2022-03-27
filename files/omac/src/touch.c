@@ -3,6 +3,7 @@
 #include <my.h>
 
 #include "omac.h"
+#include "string.h"
 
 void updateCurrentInformation(odata_t *data)
 {

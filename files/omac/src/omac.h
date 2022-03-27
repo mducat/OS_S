@@ -18,7 +18,7 @@ typedef struct _omac_data {
     // to free
     lld_t *text;
     // Given in argument
-    char *filename;
+    char const *filename;
     // Just returned do not free !
     file_t *file;
     bool existed;

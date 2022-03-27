@@ -47,8 +47,8 @@ int show(int ac, char **av)
     dim->dx = inf->width;
     dim->dy = inf->height;
 
-    for (int i = 0; i < dim->dy; i++) {
-        for (int j = 0; j < dim->dx; j++) {
+    for (unsigned int i = 0; i < dim->dy; i++) {
+        for (unsigned int j = 0; j < dim->dx; j++) {
             fb[(dim->dy - i) * dim->dx + j] = im_data[i * dim->dx + j];
         }
     }

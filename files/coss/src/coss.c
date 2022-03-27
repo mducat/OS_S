@@ -7,6 +7,7 @@
 #ifdef __OSS__
 #include <lld.h>
 #include <oss.h>
+#include <string.h>
 
 //#define printf(str, ...) {printf(str __VA_OPT__(,) __VA_ARGS__); refresh();}
 

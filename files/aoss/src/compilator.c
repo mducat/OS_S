@@ -6,6 +6,8 @@
 #ifdef __OSS__
 #include <lld.h>
 #include <oss.h>
+#include <string.h>
+
 
 #else
 
