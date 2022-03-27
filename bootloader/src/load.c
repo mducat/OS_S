@@ -162,7 +162,7 @@ EFI_STATUS load_segment(EFI_FILE *kernel_file, Elf64_Phdr *p_header, EFI_PHYSICA
     return status;
 }
 
-EFI_STATUS load_kernel(EFI_HANDLE handle, EFI_PHYSICAL_ADDRESS *entry_point)
+EFI_STATUS load_kernel(EFI_HANDLE handle, EFI_PHYSICAL_ADDRESS *entry_point, boot_t *data)
 {
     EFI_STATUS status;
     EFI_FILE *kernel_file;
@@ -171,7 +171,7 @@ EFI_STATUS load_kernel(EFI_HANDLE handle, EFI_PHYSICAL_ADDRESS *entry_point)
 
     EFI_FILE_INFO *k_info;
 
-    status = get_kernel(handle, &kernel_file);
+    status = get_kernel(handle, &kernel_file, data);
     CHK_FWD (status);
 
 

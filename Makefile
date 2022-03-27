@@ -2,9 +2,12 @@
 KERNEL		=		OS_S_kernel
 BOOTLOADER	=		bootx64.efi
 
+FILES		=		files/output
+
 ISO_NAME	=		system.iso
 ISO_DIR		=		iso
-FAT			=		system.img
+FAT_NAME	=		system.img
+FAT_DIR		=		efi
 BIOS		=		bootloader/OVMF.fd
 
 VMFLAGS		=		-bios $(BIOS) -cdrom $(ISO_NAME)
@@ -34,8 +37,9 @@ fclean:
 	$(MAKE) -C bootloader fclean
 	$(MAKE) -C kernel     fclean
 
-	rm -f  $(FAT)
+	rm -f  $(FAT_NAME)
 	rm -f  $(ISO_NAME)
+	rm -rf $(FAT_DIR)
 	rm -rf $(ISO_DIR)
 
 re:	fclean all
@@ -71,20 +75,25 @@ debug:
 
 iso:	img
 	mkdir -p $(ISO_DIR)
-	mv $(FAT) $(ISO_DIR)
-	xorriso -as mkisofs -R -f -e $(FAT) -no-emul-boot -o $(ISO_NAME) $(ISO_DIR) -volid "OS_S" 2> /dev/null
+	mv $(FAT_NAME) $(ISO_DIR)
+	xorriso -as mkisofs -R -f -e $(FAT_NAME) -no-emul-boot -o $(ISO_NAME) $(ISO_DIR) -volid "OS_S" 2> /dev/null
 
+# 5760
 img:	all
-	dd if=/dev/zero of=$(FAT) bs=1k count=2880 2> /dev/null
-	mformat -i $(FAT) -f 2880 ::
-	mmd -i $(FAT) ::/efi
-	mmd -i $(FAT) ::/efi/boot
-	mmd -i $(FAT) ::/efi/OS_S
-	mcopy -i $(FAT) bootloader/$(BOOTLOADER) ::/efi/boot/$(BOOTLOADER)
-	mcopy -i $(FAT) kernel/$(KERNEL) ::/efi/OS_S/$(KERNEL)
-	mattrib -i $(FAT) -a ::/efi/OS_S/$(KERNEL)
-	mlabel -i $(FAT) ::/:"OS_S"
+	mkdir -p $(FAT_DIR)/boot $(FAT_DIR)/OS_S
+	cp bootloader/$(BOOTLOADER) $(FAT_DIR)/boot/$(BOOTLOADER)
+	cp kernel/$(KERNEL) $(FAT_DIR)/OS_S/$(KERNEL)
+	cp $(FILES)/* $(FAT_DIR)/OS_S/
 
+	dd if=/dev/zero of=$(FAT_NAME) bs=1k count=2880 2> /dev/null
+
+	mformat -i $(FAT_NAME) -f 2880 ::
+	mcopy -i $(FAT_NAME) -s $(FAT_DIR) ::/
+	mattrib -i $(FAT_NAME) -a ::/efi/OS_S/$(KERNEL)
+	mlabel -i $(FAT_NAME) ::/:"OS_S"
+
+
+.PHONY: img iso
 
 #################
 #### INSTALL ####

@@ -64,10 +64,7 @@ LDFLAGS		=		-pie
 CC			=		x86_64-elf-gcc
 LD			=		ld
 
-all: font update_files $(NAME)
-
-update_files:
-	rm -f src/fs/init.o
+all: font $(NAME)
 
 $(NAME):$(OBJ)
 	$(LD) $(LINKER) $(LDFLAGS) -o $(NAME) $(OBJ)
