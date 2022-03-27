@@ -4,6 +4,7 @@
 
 #ifdef __OSS__
 
+#include <string.h>
 #include <lld.h>
 #include <oss.h>
 
@@ -136,6 +137,7 @@ OpCode_t *OpCode_MOV_r_mem(char **strs) {
             ADDRESS_TO_4CHARS(offset)
         };
         OpCode_t *op = OpCode_init(sizeof(thisOpcode), thisOpcode);
+        return op;
     }
 }
 

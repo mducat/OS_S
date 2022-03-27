@@ -1,0 +1,14 @@
+mov rax rax _0x1234560
+int _0x30
+mov rax _0
+mov rcx _0
+mov rax _0x1234560 rcx
+mov rcx rsi
+mov rax _0x29
+add rcx rax
+mov rax _0x1234660 rcx
+mov rcx _4
+mov rax _0x1234760 rcx
+ret
+b4 _0x434f434f !str
+b4 _0x00000000
