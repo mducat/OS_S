@@ -71,9 +71,12 @@ void flush_cmd(char *buf, size_t buf_len)
             win->pos[0] = 200;
             win->pos[1] = 100;
             Color_t color;
-            color.r = 255;
+            color.r = 0;
             color.g = 0;
             color.b = 0;
+            color.a = 0;
+            my_clear_buffer(win->buffer, color);
+            color.r = 255;
             color.a = 255;
             my_draw_circle(win->buffer, (Vector2u_t){50, 50}, 5, color);
         }

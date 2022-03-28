@@ -39,8 +39,12 @@ void framebuffer_destroy(framebuffer_t *framebuffer)
     free(framebuffer);
 }
 
-inline void my_put_pixel(framebuffer_t *framebuffer, unsigned int x, unsigned int y, Color_t color)
+inline void my_put_xor_pixel_fast(framebuffer_t *framebuffer, unsigned int x, unsigned int y);
+
+
+void my_put_pixel(framebuffer_t *framebuffer, unsigned int x, unsigned int y, Color_t color)
 {
+    //return my_overlay_pixel(framebuffer, x, y, color);
     if (x < framebuffer->width && y < framebuffer->height){
         framebuffer->pixels[(y*framebuffer->width + x)*4] = color.r;
         framebuffer->pixels[(y*framebuffer->width + x)*4 + 1] = color.g;
@@ -49,10 +53,22 @@ inline void my_put_pixel(framebuffer_t *framebuffer, unsigned int x, unsigned in
     }
 }
 
-inline void my_put_pixel_fast(framebuffer_t *framebuffer, unsigned int x, unsigned int y, Color_t color) {
+void my_put_pixel_fast(framebuffer_t *framebuffer, unsigned int x, unsigned int y, Color_t color) {
+    //return my_overlay_pixel(framebuffer, x, y, color);
     if (x < framebuffer->width && y < framebuffer->height)
         framebuffer->pixels4[(y*framebuffer->width + x)] = color.c;
 }
+
+void my_overlay_pixel(framebuffer_t *framebuffer, unsigned int x, unsigned int y, Color_t color) {
+    float ratio = ((float)(color.a))/255;
+    if (x < framebuffer->width && y < framebuffer->height){
+        framebuffer->pixels[(y*framebuffer->width + x)*4 + 0] = (framebuffer->pixels[(y*framebuffer->width + x)*4 + 0]*(1-ratio) + color.b*ratio);
+        framebuffer->pixels[(y*framebuffer->width + x)*4 + 1] = (framebuffer->pixels[(y*framebuffer->width + x)*4 + 1]*(1-ratio) + color.g*ratio);
+        framebuffer->pixels[(y*framebuffer->width + x)*4 + 2] = (framebuffer->pixels[(y*framebuffer->width + x)*4 + 2]*(1-ratio) + color.r*ratio);
+        framebuffer->pixels[(y*framebuffer->width + x)*4 + 3] = 255;
+    }
+}
+
 
 inline void my_put_xor_pixel_fast(framebuffer_t *framebuffer, unsigned int x, unsigned int y) {
     if (x < framebuffer->width && y < framebuffer->height)
@@ -83,5 +99,5 @@ void my_draw_buffer_on_buffer(framebuffer_t *dest, framebuffer_t *src, int x, in
 {
     for (unsigned int yy = 0; yy < src->height; yy++)
         for (unsigned int xx = 0; xx < src->width; xx++)
-            my_put_pixel_fast(dest, x+xx, y+yy, *(Color_t *)&src->pixels4[yy*src->width+xx]);
+            my_overlay_pixel(dest, x+xx, y+yy, *(Color_t *)&src->pixels4[yy*src->width+xx]);
 }
