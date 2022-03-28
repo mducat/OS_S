@@ -52,7 +52,7 @@ int show(int ac, char **av)
             fb[(dim->dy - i) * dim->dx + j] = im_data[i * dim->dx + j];
         }
     }
-    draw_fb(fb, dim);
+    draw_fb_win(-1, fb, dim);
 
     close(img_file);
     free(dim);

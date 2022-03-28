@@ -6,28 +6,26 @@
 
 #include <dev/serial.h>
 
+#include "frameBuffer.h"
+
 uint8_t m_buf[4] = {0};
 uint8_t m_off    =  0 ;
 
 uint64_t m_x = 0;
 uint64_t m_y = 0;
 
-#include "frameBuffer.h"
 
 void mouseClickCallBack(int x, int y, int32_t type) {
     (void)x, (void)y, (void)type;
-    
+
 }
 
 void (*mouse_click_call_back)(int x, int y, int32_t type) = mouseClickCallBack;
 
 void draw_mouse(int x, int y) {
     static framebuffer_t *buf = 0;
-    //static framebuffer_t *bufBack = 0;
-    if (!buf) {
+    if (!buf)
         buf = framebuffer_create_from_uint32_array(disp->screen->x_len, disp->screen->y_len, (uint32_t *)disp->screen->p_loc);
-        //bufBack = framebuffer_create_from_uint32_array(disp->screen->x_len, disp->screen->y_len, (uint32_t *)disp->back);
-    }
     
     static uint32_t lastColor = 0;
 
@@ -49,7 +47,6 @@ void draw_mouse(int x, int y) {
                 cursorLines[i].y += lastPos[1];
             }
             my_xor_lines(buf, cursorLines, 7);
-            //my_xor_lines(bufBack, cursorLines, 7);
         }
     }
     lastPos[0] = x;
@@ -72,8 +69,6 @@ void draw_mouse(int x, int y) {
         }
         my_xor_lines(buf, cursorLines, 7);
         lastColor = buf->pixels4[(y*buf->width + x)];
-
-        //my_xor_lines(bufBack, cursorLines, 7);
     }
 }
 
@@ -102,19 +97,13 @@ void irq12_handler(void)
     if (m_buf[0] & (1 << 5))
         d_y |= 0xFFFFFF00;
 
-
-
-
-
     m_x += d_x;
     m_y -= d_y;
-
 
     draw_mouse(m_x, m_y);
 
     if (mouse_click_call_back) 
         mouse_click_call_back(m_x, m_y, m_buf[0]);
-
 
     out:
     end_of_interrupt(12);

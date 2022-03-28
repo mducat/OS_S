@@ -2,8 +2,8 @@
 #include <lld.h>
 
 typedef enum {
-    MOUSE = 0,
-    KEYBOARD = 1,
+    EVENT_MOUSE = 0,
+    EVENT_KEYBOARD = 1,
 } EventType;
 
 typedef struct Event
@@ -30,7 +30,7 @@ typedef struct Window
     int size[2];
     int const id;
     framebuffer_t *buffer;
-    bool (*eventHandler)(struct window *win, Event_t *event);
+    bool (*eventHandler)(struct Window *win, Event_t *event);
     bool toDelete;
 } Window_t;
 
@@ -46,5 +46,8 @@ WindowManager_t *WindowManager_init();
 Window_t *WindowManager_create_Window(WindowManager_t *winManager, int sizex, int sizey);
 void WindowManager_draw_all(WindowManager_t *winManager);
 Window_t *WindowManager_get_Window(WindowManager_t *winManager, int id);
+
+void draw_fb_win(int id, void *pixels, rect_t *rect);
+
 
 extern WindowManager_t *g_WindowManager;

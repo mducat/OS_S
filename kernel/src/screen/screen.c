@@ -2,6 +2,7 @@
 #include <string.h>
 #include <screen.h>
 #include <font.h>
+#include <windows.h>
 
 void print_char_at(vec_t pos, char c, disp_state_t *state)
 {

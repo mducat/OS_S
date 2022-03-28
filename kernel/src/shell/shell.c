@@ -49,6 +49,11 @@ void reinit_shell(void)
 
 void flush_cmd(char *buf, size_t buf_len)
 {
+    static framebuffer_t *bufBack = 0;
+    if (!bufBack)
+        bufBack = framebuffer_create_from_uint32_array(disp->screen->x_len, disp->screen->y_len, (uint32_t *)disp->back);
+    Color_t color;
+
     char **av = strToWords(buf, ' ');
     file_t *file = open(av[0]);
     int ac = 0;
@@ -72,6 +77,9 @@ void flush_cmd(char *buf, size_t buf_len)
             color.a = 255;
             my_draw_circle(win->buffer, (Vector2u_t){50, 50}, 5, color);
         }
+        memset(&color, 0, sizeof(color));
+        my_clear_buffer(bufBack, color);
+
         WindowManager_draw_all(g_WindowManager);
         write_screen("done\n", 5);
         return;
@@ -88,6 +96,8 @@ void flush_cmd(char *buf, size_t buf_len)
         if (win) {
             win->pos[0] = my_getnbr(av[2]);
             win->pos[1] = my_getnbr(av[3]);
+            memset(&color, 0, sizeof(color));
+            my_clear_buffer(bufBack, color);
             WindowManager_draw_all(g_WindowManager);
             refresh();
         } else {
