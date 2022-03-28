@@ -21,8 +21,8 @@ bool is_in_rect(int rect[4], int p[2]) {
 
 Window_t *Window_init(int sizex, int sizey) {
     Window_t *window = (Window_t *)malloc(sizeof(Window_t));
-    window->pos[0] = 0;
-    window->pos[1] = 0;
+    window->pos[0] = 100;
+    window->pos[1] = 100;
     window->size[0] = sizex;
     window->size[1] = sizey;
     window->buffer = framebuffer_create(sizex, sizey);
