@@ -44,7 +44,7 @@ inline void my_put_xor_pixel_fast(framebuffer_t *framebuffer, unsigned int x, un
 
 void my_put_pixel(framebuffer_t *framebuffer, unsigned int x, unsigned int y, Color_t color)
 {
-    //return my_overlay_pixel(framebuffer, x, y, color);
+    return my_overlay_pixel(framebuffer, x, y, color);
     if (x < framebuffer->width && y < framebuffer->height){
         framebuffer->pixels[(y*framebuffer->width + x)*4] = color.r;
         framebuffer->pixels[(y*framebuffer->width + x)*4 + 1] = color.g;
@@ -54,7 +54,7 @@ void my_put_pixel(framebuffer_t *framebuffer, unsigned int x, unsigned int y, Co
 }
 
 void my_put_pixel_fast(framebuffer_t *framebuffer, unsigned int x, unsigned int y, Color_t color) {
-    //return my_overlay_pixel(framebuffer, x, y, color);
+    return my_overlay_pixel(framebuffer, x, y, color);
     if (x < framebuffer->width && y < framebuffer->height)
         framebuffer->pixels4[(y*framebuffer->width + x)] = color.c;
 }
@@ -65,7 +65,7 @@ void my_overlay_pixel(framebuffer_t *framebuffer, unsigned int x, unsigned int y
         framebuffer->pixels[(y*framebuffer->width + x)*4 + 0] = (framebuffer->pixels[(y*framebuffer->width + x)*4 + 0]*(1-ratio) + color.b*ratio);
         framebuffer->pixels[(y*framebuffer->width + x)*4 + 1] = (framebuffer->pixels[(y*framebuffer->width + x)*4 + 1]*(1-ratio) + color.g*ratio);
         framebuffer->pixels[(y*framebuffer->width + x)*4 + 2] = (framebuffer->pixels[(y*framebuffer->width + x)*4 + 2]*(1-ratio) + color.r*ratio);
-        framebuffer->pixels[(y*framebuffer->width + x)*4 + 3] = 255;
+        framebuffer->pixels[(y*framebuffer->width + x)*4 + 3] = 255;(1-(1-ratio)* (1-((float)(framebuffer->pixels[(y*framebuffer->width + x)*4 + 3]))) /255)*255;
     }
 }
 
